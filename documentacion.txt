@@ -1,0 +1,55 @@
+
+
+onSelectSlot:
+    Se dispara cuando el usuario hace clic o selecciona una celda vacía del calendario.
+Al hacer clic en una celda, la función handleSelectSlot recibe un objeto "slotInfo" con esta forma:
+    {
+        start: Date,
+        end: Date,
+        slots: Date[],
+        action: 'select' | 'click' | 'doubleClick'
+    }
+    Necesitamoss usar slotInfo.start y slotInfo.end como start y end del evento nuevo.
+Ejemplo de uso
+    const handleSelectSlot = (slotInfo) => {
+        // podemos desestructurar a conveniencia y trabajar con lo desestructurado
+        let { start, end } = slotInfo; // tendremos start y end disponibles
+        ...
+    }
+
+
+🎯 Eventos relevantes para interacción:
+Evento	¿Cuándo se dispara?	¿Para qué sirve?
+onSelectEvent	    Cuando haces clic en un evento	Ver/editar evento
+onSelectSlot	    Cuando seleccionas una celda vacía o rango	Crear evento
+onEventDrop	        Cuando arrastras un evento a otro día/hora	Mover evento
+onEventResize	    Cuando redimensionas un evento	Cambiar duración
+
+
+onSelectEvent:
+ Se dispara cuando el usuario hace clic sobre un evento existente en el calendario.
+La función manejadora (handleSelectEvent) recibe como parámetro el objeto del evento seleccionado.
+ * 
+ * Ese objeto tiene la forma:
+ * {
+ *   event_id: number,
+ *   title: string,
+ *   notes: string,
+ *   start: Date,
+ *   end: Date,
+ *   ...otrosCampos
+ * }
+ * 
+ * Se utiliza normalmente para abrir un formulario de edición con la información del evento.
+ */
+Ejemplo de uso
+    ...
+    const handleSelectEvent = (event) => { // para modificar un evento
+        setEventData({ ...event });
+        setIsEditing(true);
+        setSelectedEvent(event);
+        setDialogOpen(true);
+    };
+    ...
+    onSelectEvent={handleSelectEvent}
+    ...

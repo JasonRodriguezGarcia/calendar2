@@ -1,0 +1,25 @@
+npm create vite@latest frontend
+
+cd frontend    
+npm install    
+npm run dev
+
+npm i react-big-calendar
+
+npm i date-fns
+
+********
+
+    git add .
+    git commit -m "first commit"
+    git remote add origin https://github.com/JasonRodriguezGarcia/bigcalendar.git
+    git branch -M main
+    git push -u origin main
+
+***************
+
+npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
+npm install @mui/x-date-pickers @date-io/date-fns
+
+***************
+

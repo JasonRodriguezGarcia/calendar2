@@ -1,7 +1,15 @@
+🎯 Eventos relevantes para interacción:
+Evento	¿Cuándo se dispara?	¿Para qué sirve?
+onSelectSlot	    Cuando seleccionas una celda vacía o rango	Crear evento
+onSelectEvent	    Cuando haces clic en un evento	Ver/editar evento
+onEventDrop	        Cuando arrastras un evento a otro día/hora	Mover evento
+onEventResize	    Cuando redimensionas un evento	Cambiar duración
+
 
 
 onSelectSlot:
     Se dispara cuando el usuario hace clic o selecciona una celda vacía del calendario.
+    En este momento podemos preparar la información a mostrar.
 Al hacer clic en una celda, la función handleSelectSlot recibe un objeto "slotInfo" con esta forma:
     {
         start: Date,
@@ -17,13 +25,6 @@ Ejemplo de uso
         ...
     }
 
-
-🎯 Eventos relevantes para interacción:
-Evento	¿Cuándo se dispara?	¿Para qué sirve?
-onSelectEvent	    Cuando haces clic en un evento	Ver/editar evento
-onSelectSlot	    Cuando seleccionas una celda vacía o rango	Crear evento
-onEventDrop	        Cuando arrastras un evento a otro día/hora	Mover evento
-onEventResize	    Cuando redimensionas un evento	Cambiar duración
 
 
 onSelectEvent:

@@ -1,11 +1,6 @@
 // TO DO
-// - modificar creacion/edicion evento para que tenga los siguientes campos, hay que cambiar un mónton de cosas
-    // persona
-    // espacio
-    // programa
-    // inicio-fin
-    // observaciones
-
+// - drag and drop de eventos creados
+// - replantear espacios ya que contienen centro y espacio(despacho), crear tabla despachos
 
 import { useState } from 'react';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
@@ -49,144 +44,160 @@ const saltosTiempo = 15 // step={15}
 const saltosHora = 2 // timeslots={4}
 const horaMinima = new Date(1970, 1, 1, 7, 0) // Limitación hora mínima
 const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
-const eventColorPalette = ['#1976d2', '#899cafff', '#9c27b0', '#2e7d32', '#66514aff', '#d36900ff', '#009688', '#673ab7', '#3f51b5'];
+// const eventColorPalette = ['#1976d2', '#899cafff', '#9c27b0', '#2e7d32', '#66514aff', '#d36900ff', '#009688', '#673ab7', '#3f51b5'];
 
 const personas = [
-  { id: 1, name: "AINTZANE VILLALOBOS", color: "#FFD54F", email: "aintzanev@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 2, name: "AITOR TECEDOR", color: "#81C784", email: "aitort@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 3, name: "ALBA ARANGUREN", color: "#64B5F6", email: "alba@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 4, name: "ALMUDENA MAESTRE", color: "", email: "almudena@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 5, name: "AMANDA NEIRA", color: "", email: "amanda@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 6, name: "ANA MARIA MARTIN", color: "", email: "anamaria@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 7, name: "ANE LOPEZ", color: "", email: "ane@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 8, name: "ARANTZA ARRATIBEL", color: "", email: "arantzaa@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 9, name: "ARANTZA VÁZQUEZ", color: "", email: "arantzav@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 10, name: "ARITZ MANCHADO", color: "", email: "aritzm@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 11, name: "BAKARTXO LOPEZ", color: "", email: "bakartxo@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 12, name: "CARLOS ASENSIO", color: "", email: "carlosa@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 13, name: "CAROLINA FERNANDEZ", color: "", email: "erroak@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 14, name: "CENTRO EMPLEO", color: "", email: "centroempleo@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 15, name: "ELENA ANSOALDE", color: "", email: "elenaa@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 16, name: "EMPLEO ERROAK", color: "", email: "empleo@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 17, name: "ESMERALDA ROMAN", color: "", email: "esmeralda@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 18, name: "ESTIBALIZ ZUGASTI", color: "", email: "ezugasti@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 19, name: "ETOR CARRO", color: "", email: "etorc@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 20, name: "EVA VIRTO", color: "", email: "evav@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 21, name: "GARBIÑE CARTON", color: "", email: "garbine@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 22, name: "HARRERA ERROAK", color: "", email: "harrera@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 23, name: "IDOYA ARTEAGA", color: "", email: "idoya@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 24, name: "IÑAKI LOPE", color: "", email: "lope@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 25, name: "IRATI MAÑERU", color: "", email: "irati@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 26, name: "IRATXE BEOBIDE", color: "", email: "iratxe@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 27, name: "IVALIN DIMITROV", color: "", email: "ivalind@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 28, name: "IZASKUN JIMENEZ", color: "", email: "izaskun@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 29, name: "JONE KRUZELEGI", color: "", email: "jonek@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 30, name: "KIEL RICO", color: "", email: "kiel@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 31, name: "LIERNI ESNAOLA", color: "", email: "liernie@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 32, name: "MAIALEN AROCENA", color: "", email: "maialena@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 33, name: "MAITE ARRETXE", color: "", email: "maite@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 34, name: "MAMEN PAJARES", color: "", email: "mamenp@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 35, name: "MARIVI SAN JUAN", color: "", email: "marivis@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 36, name: "MARKEL LAZARO", color: "", email: "markel@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 37, name: "MIKEL ZUMETA", color: "", email: "mikelz@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 38, name: "MIREN GARCIA", color: "", email: "miren@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 39, name: "NATALIA GONZALEZ", color: "", email: "nataliag@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 40, name: "NEREA AMUNARRIZ", color: "", email: "nereaa@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 41, name: "NICOLETA LOIDI", color: "", email: "nicoletal@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 42, name: "NURIA RUIZ", color: "", email: "nuriarc@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 43, name: "OIHANA MERINO", color: "", email: "oihana@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 44, name: "PEPE LAZARO", color: "", email: "martutene@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 45, name: "PILAR SANSUAN", color: "", email: "pilars@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 46, name: "RAQUEL RUIZ", color: "", email: "raquelr@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 47, name: "ROSA ARANDIA", color: "", email: "arandia@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 48, name: "ROSA OYARZABAL", color: "", email: "rosao@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 49, name: "SHANTI IRIBAR", color: "", email: "shanti@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 50, name: "SONIA TOBIA", color: "", email: "sonia@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 51, name: "SUSANA CARRANZA", color: "", email: "susanac@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 52, name: "TERESA MOREDA", color: "", email: "teresam@erroak.sartu.org", contraseña: "Erro@k2025" },
-  { id: 53, name: "TXELO BERRA", color: "", email: "txelobe@erroak.sartu.org", contraseña: "Erro@k2025" }
+  { persona_Id: 1, name: "AINTZANE VILLALOBOS", color: "#FFD54F", email: "aintzanev@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 2, name: "AITOR TECEDOR", color: "#81C784", email: "aitort@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 3, name: "ALBA ARANGUREN", color: "#64B5F6", email: "alba@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 4, name: "ALMUDENA MAESTRE", color: "", email: "almudena@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 5, name: "AMANDA NEIRA", color: "", email: "amanda@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 6, name: "ANA MARIA MARTIN", color: "", email: "anamaria@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 7, name: "ANE LOPEZ", color: "", email: "ane@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 8, name: "ARANTZA ARRATIBEL", color: "", email: "arantzaa@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 9, name: "ARANTZA VÁZQUEZ", color: "", email: "arantzav@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 10, name: "ARITZ MANCHADO", color: "", email: "aritzm@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 11, name: "BAKARTXO LOPEZ", color: "", email: "bakartxo@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 12, name: "CARLOS ASENSIO", color: "", email: "carlosa@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 13, name: "CAROLINA FERNANDEZ", color: "", email: "erroak@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 14, name: "CENTRO EMPLEO", color: "", email: "centroempleo@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 15, name: "ELENA ANSOALDE", color: "", email: "elenaa@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 16, name: "EMPLEO ERROAK", color: "", email: "empleo@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 17, name: "ESMERALDA ROMAN", color: "", email: "esmeralda@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 18, name: "ESTIBALIZ ZUGASTI", color: "", email: "ezugasti@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 19, name: "ETOR CARRO", color: "", email: "etorc@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 20, name: "EVA VIRTO", color: "", email: "evav@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 21, name: "GARBIÑE CARTON", color: "", email: "garbine@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 22, name: "HARRERA ERROAK", color: "", email: "harrera@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 23, name: "IDOYA ARTEAGA", color: "", email: "idoya@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 24, name: "IÑAKI LOPE", color: "", email: "lope@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 25, name: "IRATI MAÑERU", color: "", email: "irati@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 26, name: "IRATXE BEOBIDE", color: "", email: "iratxe@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 27, name: "IVALIN DIMITROV", color: "", email: "ivalind@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 28, name: "IZASKUN JIMENEZ", color: "", email: "izaskun@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 29, name: "JONE KRUZELEGI", color: "", email: "jonek@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 30, name: "KIEL RICO", color: "", email: "kiel@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 31, name: "LIERNI ESNAOLA", color: "", email: "liernie@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 32, name: "MAIALEN AROCENA", color: "", email: "maialena@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 33, name: "MAITE ARRETXE", color: "", email: "maite@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 34, name: "MAMEN PAJARES", color: "", email: "mamenp@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 35, name: "MARIVI SAN JUAN", color: "", email: "marivis@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 36, name: "MARKEL LAZARO", color: "", email: "markel@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 37, name: "MIKEL ZUMETA", color: "", email: "mikelz@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 38, name: "MIREN GARCIA", color: "", email: "miren@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 39, name: "NATALIA GONZALEZ", color: "", email: "nataliag@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 40, name: "NEREA AMUNARRIZ", color: "", email: "nereaa@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 41, name: "NICOLETA LOIDI", color: "", email: "nicoletal@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 42, name: "NURIA RUIZ", color: "", email: "nuriarc@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 43, name: "OIHANA MERINO", color: "", email: "oihana@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 44, name: "PEPE LAZARO", color: "", email: "martutene@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 45, name: "PILAR SANSUAN", color: "", email: "pilars@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 46, name: "RAQUEL RUIZ", color: "", email: "raquelr@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 47, name: "ROSA ARANDIA", color: "", email: "arandia@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 48, name: "ROSA OYARZABAL", color: "", email: "rosao@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 49, name: "SHANTI IRIBAR", color: "", email: "shanti@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 50, name: "SONIA TOBIA", color: "", email: "sonia@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 51, name: "SUSANA CARRANZA", color: "", email: "susanac@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 52, name: "TERESA MOREDA", color: "", email: "teresam@erroak.sartu.org", contraseña: "Erro@k2025" , movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: ""},
+  { persona_Id: 53, name: "TXELO BERRA", color: "", email: "txelobe@erroak.sartu.org", contraseña: "Erro@k2025", movil: "", extension: "", centro_id: "", llave: true, alarma: true, turno_trabajo: "" }
 ];
 
 const espacios = [
-    { espacio_id: 1, espacio: "AMARA DESPACHO 0" },
-    { espacio_id: 2, espacio: "AMARA DESPACHO 1" },
-    { espacio_id: 3, espacio: "AMARA DESPACHO 2" },
-    { espacio_id: 4, espacio: "AMARA DESPACHO 3" },
-    { espacio_id: 5, espacio: "AMARA DESPACHO 4" },
-    { espacio_id: 6, espacio: "AMARA DESPACHO 5" },
-    { espacio_id: 7, espacio: "AMARA DESPACHO 6" },
-    { espacio_id: 8, espacio: "AMARA DESPACHO 7" },
-    { espacio_id: 9, espacio: "AMARA DESPACHO 8" },
-    { espacio_id: 10, espacio: "AMARA CENTRO EMPLEO" },
-    { espacio_id: 11, espacio: "AMARA AULA INFORMATICA" },
-    { espacio_id: 12, espacio: "MARTUTENE 12 AULA INFORMÁTICA" },
-    { espacio_id: 13, espacio: "MARTUTENE 12 ELKARREKIN" },
-    { espacio_id: 14, espacio: "MARTUTENE 12 EMARI" },
-    { espacio_id: 15, espacio: "MARTUTENE 12 AURRERA" },
-    { espacio_id: 16, espacio: "MARTUTENE 30 DESPACHO 1" },
-    { espacio_id: 17, espacio: "MARTUTENE 30 DESPACHO 2" },
-    { espacio_id: 18, espacio: "MARTUTENE 30 AULA INFORMÁTICA" },
-    { espacio_id: 19, espacio: "MARTUTENE 30 AULA 1" },
-    { espacio_id: 20, espacio: "MARTUTENE 30 AULA 2" },
-    { espacio_id: 21, espacio: "MARTUTENE 30 SUKALDEA" },
-    { espacio_id: 22, espacio: "MARTUTENE 30 SOCIOSANITARIO" },
-    { espacio_id: 23, espacio: "MARTUTENE 30 CENTRO DE DÍA" },
-    { espacio_id: 24, espacio: "MARTUTENE 30 BIDEAN" },
-    { espacio_id: 25, espacio: "MARTUTENE 30 TABERNA" },
-    { espacio_id: 26, espacio: "MARTUTENE 30 ITURGINTZA" },
-    { espacio_id: 27, espacio: "MARTUTENE 30 SOLDADURA" },
-    { espacio_id: 28, espacio: "AMARA DESPACHO 0 TARDE" },
-    { espacio_id: 29, espacio: "AMARA DESPACHO 1 TARDE" },
-    { espacio_id: 30, espacio: "AMARA DESPACHO 2" },
-    { espacio_id: 31, espacio: "AMARA DESPACHO 3" },
-    { espacio_id: 32, espacio: "AMARA DESPACHO 4" },
-    { espacio_id: 33, espacio: "AMARA DESPACHO 5" },
-    { espacio_id: 34, espacio: "AMARA DESPACHO 6" },
-    { espacio_id: 35, espacio: "AMARA DESPACHO 7" },
-    { espacio_id: 36, espacio: "AMARA DESPACHO 8" },
-    { espacio_id: 37, espacio: "AMARA CENTRO EMPLEO" },
-    { espacio_id: 38, espacio: "AMARA AULA INFORMATICA" },
-    { espacio_id: 39, espacio: "MARTUTENE 12 AULA INFORMÁTICA" },
-    { espacio_id: 40, espacio: "MARTUTENE 12 ELKARREKIN" },
-    { espacio_id: 41, espacio: "MARTUTENE 12 EMARI" },
-    { espacio_id: 42, espacio: "MARTUTENE 12 AURRERA" },
-    { espacio_id: 43, espacio: "MARTUTENE 30 DESPACHO 1" },
-    { espacio_id: 44, espacio: "MARTUTENE 30 DESPACHO 2" },
-    { espacio_id: 45, espacio: "MARTUTENE 30 AULA INFORMÁTICA" },
-    { espacio_id: 46, espacio: "MARTUTENE 30 AULA 1" },
-    { espacio_id: 47, espacio: "MARTUTENE 30 AULA 2" },
-    { espacio_id: 48, espacio: "MARTUTENE 30 SUKALDEA" },
-    { espacio_id: 49, espacio: "MARTUTENE 30 SOCIOSANITARIO" },
-    { espacio_id: 50, espacio: "MARTUTENE 30 CENTRO DE DÍA" },
-    { espacio_id: 51, espacio: "MARTUTENE 30 BIDEAN" },
-    { espacio_id: 52, espacio: "MARTUTENE 30 TABERNA" },
-    { espacio_id: 53, espacio: "MARTUTENE 30 ITURGINTZA" },
-    { espacio_id: 54, espacio: "MARTUTENE 30 SOLDADURA" }
+    { espacio_Id: 1, espacio: "AMARA DESPACHO 0" },
+    { espacio_Id: 2, espacio: "AMARA DESPACHO 1" },
+    { espacio_Id: 3, espacio: "AMARA DESPACHO 2" },
+    { espacio_Id: 4, espacio: "AMARA DESPACHO 3" },
+    { espacio_Id: 5, espacio: "AMARA DESPACHO 4" },
+    { espacio_Id: 6, espacio: "AMARA DESPACHO 5" },
+    { espacio_Id: 7, espacio: "AMARA DESPACHO 6" },
+    { espacio_Id: 8, espacio: "AMARA DESPACHO 7" },
+    { espacio_Id: 9, espacio: "AMARA DESPACHO 8" },
+    { espacio_Id: 10, espacio: "AMARA CENTRO EMPLEO" },
+    { espacio_Id: 11, espacio: "AMARA AULA INFORMATICA" },
+    { espacio_Id: 12, espacio: "MARTUTENE 12 AULA INFORMÁTICA" },
+    { espacio_Id: 13, espacio: "MARTUTENE 12 ELKARREKIN" },
+    { espacio_Id: 14, espacio: "MARTUTENE 12 EMARI" },
+    { espacio_Id: 15, espacio: "MARTUTENE 12 AURRERA" },
+    { espacio_Id: 16, espacio: "MARTUTENE 30 DESPACHO 1" },
+    { espacio_Id: 17, espacio: "MARTUTENE 30 DESPACHO 2" },
+    { espacio_Id: 18, espacio: "MARTUTENE 30 AULA INFORMÁTICA" },
+    { espacio_Id: 19, espacio: "MARTUTENE 30 AULA 1" },
+    { espacio_Id: 20, espacio: "MARTUTENE 30 AULA 2" },
+    { espacio_Id: 21, espacio: "MARTUTENE 30 SUKALDEA" },
+    { espacio_Id: 22, espacio: "MARTUTENE 30 SOCIOSANITARIO" },
+    { espacio_Id: 23, espacio: "MARTUTENE 30 CENTRO DE DÍA" },
+    { espacio_Id: 24, espacio: "MARTUTENE 30 BIDEAN" },
+    { espacio_Id: 25, espacio: "MARTUTENE 30 TABERNA" },
+    { espacio_Id: 26, espacio: "MARTUTENE 30 ITURGINTZA" },
+    { espacio_Id: 27, espacio: "MARTUTENE 30 SOLDADURA" },
+    { espacio_Id: 28, espacio: "AMARA DESPACHO 0 TARDE" },
+    { espacio_Id: 29, espacio: "AMARA DESPACHO 1 TARDE" },
+    { espacio_Id: 30, espacio: "AMARA DESPACHO 2" },
+    { espacio_Id: 31, espacio: "AMARA DESPACHO 3" },
+    { espacio_Id: 32, espacio: "AMARA DESPACHO 4" },
+    { espacio_Id: 33, espacio: "AMARA DESPACHO 5" },
+    { espacio_Id: 34, espacio: "AMARA DESPACHO 6" },
+    { espacio_Id: 35, espacio: "AMARA DESPACHO 7" },
+    { espacio_Id: 36, espacio: "AMARA DESPACHO 8" },
+    { espacio_Id: 37, espacio: "AMARA CENTRO EMPLEO" },
+    { espacio_Id: 38, espacio: "AMARA AULA INFORMATICA" },
+    { espacio_Id: 39, espacio: "MARTUTENE 12 AULA INFORMÁTICA" },
+    { espacio_Id: 40, espacio: "MARTUTENE 12 ELKARREKIN" },
+    { espacio_Id: 41, espacio: "MARTUTENE 12 EMARI" },
+    { espacio_Id: 42, espacio: "MARTUTENE 12 AURRERA" },
+    { espacio_Id: 43, espacio: "MARTUTENE 30 DESPACHO 1" },
+    { espacio_Id: 44, espacio: "MARTUTENE 30 DESPACHO 2" },
+    { espacio_Id: 45, espacio: "MARTUTENE 30 AULA INFORMÁTICA" },
+    { espacio_Id: 46, espacio: "MARTUTENE 30 AULA 1" },
+    { espacio_Id: 47, espacio: "MARTUTENE 30 AULA 2" },
+    { espacio_Id: 48, espacio: "MARTUTENE 30 SUKALDEA" },
+    { espacio_Id: 49, espacio: "MARTUTENE 30 SOCIOSANITARIO" },
+    { espacio_Id: 50, espacio: "MARTUTENE 30 CENTRO DE DÍA" },
+    { espacio_Id: 51, espacio: "MARTUTENE 30 BIDEAN" },
+    { espacio_Id: 52, espacio: "MARTUTENE 30 TABERNA" },
+    { espacio_Id: 53, espacio: "MARTUTENE 30 ITURGINTZA" },
+    { espacio_Id: 54, espacio: "MARTUTENE 30 SOLDADURA" }
 ]
 
 const programas = [
-    { programa_id: 1, programa: "LANBIDE"},
-    { programa_id: 2, programa: "INCORPORA"},
-    { programa_id: 3, programa: "SENDOTU"},
-    { programa_id: 4, programa: "EMARI"},
-    { programa_id: 5, programa: "ELKARREKIN"},
-    { programa_id: 6, programa: "AURRERA"},
-    { programa_id: 7, programa: "BIDEAN"},
-    { programa_id: 8, programa: "EGUNEKO ZENTRO"},
+    { programa_Id: 1, programa: "LANBIDE"},
+    { programa_Id: 2, programa: "INCORPORA"},
+    { programa_Id: 3, programa: "SENDOTU"},
+    { programa_Id: 4, programa: "EMARI"},
+    { programa_Id: 5, programa: "ELKARREKIN"},
+    { programa_Id: 6, programa: "AURRERA"},
+    { programa_Id: 7, programa: "BIDEAN"},
+    { programa_Id: 8, programa: "EGUNEKO ZENTRO"},
 ]
+
+const centros = [
+    { centro_Id: 1, centro: "AMARA"},
+    { centro_Id: 2, centro: "MARTUTENE 12"},
+    { centro_Id: 3, centro: "MARTUTENE 30"},
+    { centro_Id: 4, centro: "EXTERIOR"},
+]
+
 const App = () => {
         
 
     const [events, setEvents] = useState([]);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [eventData, setEventData] = useState({
+        // event_id: Date.now(), 
+        // title: '',
+        // notes: '',
+        // start: new Date(),
+        // end: new Date(),
+        // user_id: '',
+        // chosenColor: 0
         event_id: Date.now(), 
-        title: '',
-        notes: '',
+        persona_Id: '',
+        espacio_Id: '',
+        programa_Id: '',
         start: new Date(),
         end: new Date(),
-        user_id: '',
-        chosenColor: 0
+        observaciones: '',
+        color: ''
     });
     const [date, setDate] = useState(new Date());
     // const [view, setView] = useState(Views.WORK_WEEK);   // POR DEFECTO VISTA MES
@@ -233,30 +244,17 @@ const App = () => {
             newEventId = Date.now() + Math.floor(Math.random() * 100000);
         }
 
-        // Buscar un color no usado
-        const availableColors = eventColorPalette.filter(c => !usedColors.includes(c));
-
-        // Si ya se usaron todos, reiniciar la lista
-        let chosenColor;
-        if (availableColors.length > 0) {
-            chosenColor = availableColors[Math.floor(Math.random() * availableColors.length)];
-        } else {
-            chosenColor = eventColorPalette[Math.floor(Math.random() * eventColorPalette.length)];
-            setUsedColors([]); // reinicia para permitir reutilización
-        }
-
-        // Añadir color a usados
-        setUsedColors(prev => [...prev, chosenColor]);
-
         // Generando el evento
         setEventData({
-            event_id: newEventId,
-            title: '',
-            notes: '',
+            event_id: newEventId, 
+            persona_Id: '',
+            espacio_Id: '',
+            programa_Id: '',
             start,
             end,
-            user_id: '',
-            color: chosenColor
+            observaciones: '',
+            color: ''
+
         });
         setIsEditing(false);
         setSelectedEvent(null);
@@ -281,17 +279,11 @@ const App = () => {
         const maxTime = new Date(eventData.start);
         maxTime.setHours(horaMaxima.getHours(), horaMaxima.getMinutes());
 
-        if (eventData.title.length < 1) {
-            setErrorDialogMessage('Introducir título del evento');
-            setErrorDialogOpen(true);
-            return;
-        }
-
-        if (eventData.notes.length < 1) {
-            setErrorDialogMessage('Introducir notas del evento');
-            setErrorDialogOpen(true);
-            return;
-        }
+        // if (eventData.observaciones.length < 1) {
+        //     setErrorDialogMessage('Introducir observaciones del evento');
+        //     setErrorDialogOpen(true);
+        //     return;
+        // }
 
         // Limitar inicio y fin si están fuera de los límites
         if (eventData.start >= eventData.end) {
@@ -301,7 +293,8 @@ const App = () => {
         }
 
         if (eventData.start < minTime || eventData.end > maxTime) {
-            setErrorDialogMessage('La hora del evento debe estar entre 07:00 y 21:00.');
+            // setErrorDialogMessage('La hora del evento debe estar entre 07:00 y 21:00.');
+            setErrorDialogMessage(`La hora del evento debe estar entre ${horaMinima.getHours()}hrs y ${horaMaxima.getHours()}hrs.`);
             setErrorDialogOpen(true);
             return;
         }
@@ -313,11 +306,17 @@ const App = () => {
             return;
         }
 
-        // if (eventData.user_id < 1) {
-        //     setErrorDialogMessage('Seleccionar un User Id');
-        //     setErrorDialogOpen(true);
-        //     return;
-        // }
+        if (eventData.persona_Id < 1) {
+            setErrorDialogMessage('Seleccionar una Persona');
+            setErrorDialogOpen(true);
+            return;
+        }
+
+        if (eventData.programa_Id < 1) {
+            setErrorDialogMessage('Seleccionar un Programa');
+            setErrorDialogOpen(true);
+            return;
+        }
 
         if (isEditing && selectedEvent) {
             setEvents(events.map(ev => ev.event_id === selectedEvent.event_id ? eventData : ev));
@@ -353,9 +352,12 @@ const App = () => {
 
     // Personalizando la visualizacion de eventos en el calendario, por defecto "start-end title"
     const CustomEvent = ({ event }) => {
+        const persona = personas.find(p => p.persona_Id === event.persona_Id);
+        const programa = programas.find(p => p.programa_Id === event.programa_Id);
+
         return (
             <div>
-                <strong>{event.title}</strong> {event.user_id}
+                <strong>{persona?.name || 'Sin nombre'}</strong> {programa?.programa || 'Sin nombre'}
             </div>
         );
     };
@@ -389,11 +391,16 @@ const App = () => {
             weekdayFormat: (date, culture, localizer) =>
             localizer.format(date, 'eeee', culture), // 'lunes', 'martes', etc.
         }}
-        tooltipAccessor={(event) =>                     // Muestra "start - end" y otros al pasar el cursor por encima
-            `${event.title} ${event.user_id} — ${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}`
-        }
-        eventPropGetter={(event) => {
-            const user = personas.find(u => u.id === event.user_id);
+        tooltipAccessor={(event) => {                   // Muestra "start - end" y otros al pasar el cursor por encima
+            const persona = personas.find(p => p.persona_Id === event.persona_Id);
+            const programa = programas.find(p => p.programa_Id === event.programa_Id);
+            // si ponemos persona?.name y no persona.name, en caso de que programa no exista, obtenemos un crash con error en ejecución
+            // Pero si ponemos persona?.name y no existe obtenemos un undefined y el programa sigue su curso
+            return `${persona?.name || 'Sin nombre'} - ${programa?.programa || 'Sin programa'}  — ${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}`;
+        }}
+
+        eventPropGetter={(event) => {                   // Estilo visual de cada evento
+            const user = personas.find(u => u.persona_Id === event.persona_Id);
             const backgroundColor = user?.color || '#BDBDBD';
             return {    // retornando un style por eso el return tiene {} en lugar de ()
                 style: {
@@ -419,67 +426,86 @@ const App = () => {
 
       <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeEs}>
         <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth>
-          {/* <DialogTitle>Agregar evento</DialogTitle> */}
           <DialogTitle>{!isEditing ? actionEventMessage[0] : actionEventMessage[1]} evento</DialogTitle>
-          <DialogContent>
-            {/* spacing 2 = 16px */}
-            <Stack spacing={1}> 
-                <TextField
-                    fullWidth
-                    label="Título"
-                    name="title"
-                    value={eventData.title}
-                    onChange={(e) => setEventData({ ...eventData, title: e.target.value })}
-                    margin="dense"
-                />
-                <TextField
-                    fullWidth
-                    label="Notas"
-                    name="notes"
-                    value={eventData.notes}
-                    onChange={(e) => setEventData({ ...eventData, notes: e.target.value })}
-                    margin="dense"
-                    multiline
-                    rows={3}
-                />
-                <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
-                    <DateTimePicker
-                        label="Inicio"
-                        value={eventData.start}
-                        onChange={(newValue) => setEventData({ ...eventData, start: newValue })}
-                        // renderInput={(params) => <TextField {...params} margin="dense" fullWidth />}
-                        slotProps={{ textField: { fullWidth: true, margin: 'dense' } }}
-                    />
-                    <DateTimePicker
-                        label="Fin"
-                        value={eventData.end}
-                        onChange={(newValue) => setEventData({ ...eventData, end: newValue })}
-                        // renderInput={(params) => <TextField {...params} margin="dense" fullWidth />}
-                        slotProps={{ textField: { fullWidth: true, margin: 'dense' } }}
+            <DialogContent>
+                <Stack spacing={1} mt={1}> 
+                    <FormControl fullWidth margin='dense'>
+                        <InputLabel id="select-label-persona_Id">Persona *</InputLabel>
+                        <Select
+                            // fullWidth
+                            labelId="select-label-persona_Id"
+                            id="select-persona_Id"
+                            label="Persona *"
+                            value={eventData.persona_Id}
+                            onChange={(e) => setEventData({ ...eventData, persona_Id: e.target.value})}
+                        >
+                            {personas.map((persona) => (
+                                <MenuItem key={persona.persona_Id} value={persona.persona_Id}>{persona.name}</MenuItem>
+
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <FormControl fullWidth margin='dense'>
+                        <InputLabel id="select-label-espacio_Id">Espacio</InputLabel>
+                        <Select
+                            // fullWidth
+                            labelId="select-label-espacio_Id"
+                            id="select-espacio_Id"
+                            label="Espacio"
+                            value={eventData.espacio_Id}
+                            onChange={(e) => setEventData({ ...eventData, espacio_Id: e.target.value})}
+                        >
+                            {espacios.map((espacio) => (
+                                <MenuItem key={espacio.espacio_Id} value={espacio.espacio_Id}>{espacio.espacio}</MenuItem>
+
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <FormControl fullWidth margin='dense'>
+                        <InputLabel id="select-label-programa_Id">Programa *</InputLabel>
+                        <Select
+                            // fullWidth // al ser un FormControl no es necesario
+                            labelId="select-label-programa_Id"
+                            id="select-programa_Id"
+                            label="Programa *"
+                            value={eventData.programa_Id}
+                            onChange={(e) => setEventData({ ...eventData, programa_Id: e.target.value})}
+                        >
+                            {programas.map((programa) => (
+                                <MenuItem key={programa.programa_Id} value={programa.programa_Id}>{programa.programa}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+                        <DateTimePicker
+                            label="Inicio *"
+                            value={eventData.start}
+                            onChange={(newValue) => setEventData({ ...eventData, start: newValue })}
+                            // renderInput={(params) => <TextField {...params} margin="dense" fullWidth />}
+                            slotProps={{ textField: { fullWidth: true, margin: 'dense' } }}
+                        />
+                        <DateTimePicker
+                            label="Fin *"
+                            value={eventData.end}
+                            onChange={(newValue) => setEventData({ ...eventData, end: newValue })}
+                            // renderInput={(params) => <TextField {...params} margin="dense" fullWidth />} // forma antigua
+                            slotProps={{ textField: { fullWidth: true, margin: 'dense' } }} // forma moderna y sin avisos en consola
+                        />
+                    </Stack>
+
+                    <TextField
+                        fullWidth
+                        label="Observaciones"
+                        name="observaciones"
+                        value={eventData.observaciones}
+                        onChange={(e) => setEventData({ ...eventData, observaciones: e.target.value })}
+                        margin="dense"
+                        multiline
+                        rows={3}
                     />
                 </Stack>
-                <FormControl fullWidth margin='dense'>
-                    <InputLabel id="select-label-user_id">User Id</InputLabel>
-                    <Select
-                        // fullWidth
-                        labelId="select-label-user_id"
-                        id="select-user_id"
-                        label="User Id"
-                        value={eventData.user_id}
-                        // label="User_id"
-                        onChange={(e) => setEventData({ ...eventData, user_id: e.target.value})}
-                    >
-                        {personas.map((user) => (
-                            <MenuItem key={user.id} value={user.id}>{user.name}</MenuItem>
-
-                        ))}
-                        {/* <MenuItem value={0}> </MenuItem>
-                        <MenuItem value={2}>Maria</MenuItem>
-                        <MenuItem value={3}>Juan</MenuItem> */}
-                    </Select>
-                </FormControl>
-            </Stack>
-          </DialogContent>
+            </DialogContent>
             <DialogActions>
                 {isEditing && (
                     <Button onClick={handleDeleteEvent} color="error">

@@ -1,9 +1,10 @@
 // TO DO
-// - drag and drop de eventos creados
 // - replantear espacios ya que contienen centro y espacio(despacho), crear tabla despachos
 
 import { useState } from 'react';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
+import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { es } from 'date-fns/locale';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
@@ -31,6 +32,7 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { es as localeEs } from 'date-fns/locale';
 
+const DnDCalendar = withDragAndDrop(Calendar);
 const locales = { es };
 const localizer = dateFnsLocalizer({
   format,
@@ -291,7 +293,7 @@ const App = () => {
             setErrorDialogOpen(true);
             return;
         }
-
+        debugger
         if (eventData.start < minTime || eventData.end > maxTime) {
             // setErrorDialogMessage('La hora del evento debe estar entre 07:00 y 21:00.');
             setErrorDialogMessage(`La hora del evento debe estar entre ${horaMinima.getHours()}hrs y ${horaMaxima.getHours()}hrs.`);
@@ -330,6 +332,23 @@ const App = () => {
         setConfirmDeleteOpen(true);
     };
 
+    // const handleEventDrop = ({ event, start, end, allDay }) => {
+    //     const updatedEvent = { ...event, start, end, allDay };
+    const handleEventDrop = ({ event, start, end }) => {
+        debugger
+        const day = start.getDay();
+        if (day === 0 || day === 6) {
+            setErrorDialogMessage('Solo se permiten eventos en días laborales.');
+            setErrorDialogOpen(true);
+            return;
+        }
+
+        const updatedEvent = { ...event, start, end };
+        setEvents(prevEvents =>
+            prevEvents.map(ev => (ev.event_id === event.event_id ? updatedEvent : ev))
+        );
+    };
+
     const confirmDelete = () => {
         if (!selectedEvent || !selectedEvent.event_id) {
             setErrorDialogMessage('No hay evento válido para eliminar.');
@@ -365,7 +384,8 @@ const App = () => {
   return (
     <div style={{ padding: 20 }}>
       <h2>Calendario con formulario MUI</h2>
-      <Calendar
+      {/* <Calendar */}
+      <DnDCalendar
         localizer={localizer}
         culture='es'                                    // días mes, semana, día en español
         events={events}                                 // Personalizando la visualizacion de eventos en el calendario
@@ -379,6 +399,11 @@ const App = () => {
         max={horaMaxima}                                // Limitacion hora máxima
         onSelectSlot={handleSelectSlot}                 // Crear nuevo evento
         onSelectEvent={handleSelectEvent}               // Editar evento existente
+        onEventDrop={handleEventDrop}                   // Permite hacer d&d con eventos, se ejecuta cuando arrastramos un evento y lo soltamos a otra posicion
+        draggableAccessor={() => true}                  // Indica si un evento puede ser movido mediante drag and drop.
+        // permitir si un evento se puede mover o no a conveniencia mediante una condición
+        // draggableAccessor={(event) => event.permiteMover === true}
+        resizable={false}                               // No permite ampliar/reducir eventos (su horario)
         style={{ height: 700 }}
         date={date}
         view={view}

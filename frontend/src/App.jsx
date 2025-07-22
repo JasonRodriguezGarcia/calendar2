@@ -357,7 +357,7 @@ const App = () => {
 
         return (
             <div>
-                <strong>{persona?.name || 'Sin nombre'}</strong> {programa?.programa || 'Sin nombre'}
+                <strong>{persona?.name || 'Sin nombre'}</strong> - {programa?.programa || 'Sin nombre'}
             </div>
         );
     };

@@ -5,7 +5,7 @@ const MainPage = () => {
     return (
         <div>
             <MainMenuComponent />
-            <h1 style={{paddingTop: "100px"}}>Bienvenido a Erroas Sartuk</h1>
+            <h1 style={{paddingTop: "100px"}}>Bienvenido a Erroak Sartu</h1>
         </div>
     )
 }

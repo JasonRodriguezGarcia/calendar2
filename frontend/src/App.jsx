@@ -5,7 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 // http://localhost:5000/api/v1/users?summary=count
 // import UsersPage from './pages/UsersPage';
 // import EventsPage from './pages/EventsPage';
-import EventsCalendarPage from './EventsCalendarPage';
+import EventsCalendarPage from './pages/EventsCalendarPage';
 import MainPage from './pages/MainPage';
 
 const App = () => {

@@ -26,3 +26,51 @@ npm install react-router-dom
 
 ***************
 
+abrir el contenedor de docker de nuestro compose.yml (que ya está configurado con postgres-db y pg_admin)
+    docker compose up -d
+
+Ya tenemos funcionando en segundo plano la bbdd postgresql y pg_admin para su administración
+Para abrir la administracion de la bbdd con pg_admin, abrir en navegador
+    http://localhost:5050/
+
+postgresql
+en navegador ponemos localhost:5050 y entramos en la interfaz de postgresql del fichero docker_composer
+OJO AL ENTRAR SELECCIONAR EN ESPAÑOL EN LA OPCION DE ABAJO
+entrar con
+    jasonrodriguezempleo@gmail.com
+    postgres  (contraseña del fichero docker_composer)
+
+dentro
+    boton derecho en servers (a la izq)
+    register - servidor
+    en pestaña general
+    nombre postgres
+    conexion
+    nombre postgres
+    usuario: postgres
+    contraseña : postgresj
+    boton SALVAR
+
+a la izq
+    servers
+        postgres
+            Bases de datos
+            Boton derecho en Bases de datos - crear - base de datos
+            nombre: demo
+            salvar
+a la izq
+dentro de SERVERS aparecerá un icono de POSTGRES y lo abrimos 
+bases de datos boton DERECHO - CREAR - BASE DE DATOS
+Base de datos pondremos: demo
+boton SALVAR
+
+
+***************
+fichero de mern_4 0leemeDia26Junio.txt con información de nginx
+
+directorio de mern_4 my-express-app con indicaciones para montar contenedor con express
+***************
+
+
+
+

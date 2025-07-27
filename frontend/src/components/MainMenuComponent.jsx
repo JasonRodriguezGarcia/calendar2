@@ -19,7 +19,7 @@ import { useScrollTrigger } from '@mui/material';
 import { useState } from 'react';
 
 const pages = ['Eventos', 'Vacaciones', 'About'];
-const settings = ['Modificar datos perfil', 'Account', 'Dashboard', 'Logout'];
+const settings = ['Datos perfil', 'Modificar Datos Perfil', 'Cerrar sesión'];
 
 function MainMenuComponent() {
     const navigate = useNavigate()
@@ -41,13 +41,13 @@ function MainMenuComponent() {
 
     const handleCloseUserMenu = (setting) => {
         switch (setting) {
-            // case "Modificar datos perfil":
+            // case "Datos perfil":
             //     navigate("/games");
             //     break;
-            // case "Account":
+            // case "Modificar datos perfil":
             //     navigate("/pricing");
             //     break;
-            case "Logout":
+            case "Cerrar sesión":
                 setLogged(false)
                 setUserNick('')
                 navigate("/");
@@ -199,7 +199,7 @@ function MainMenuComponent() {
                 </Box>
                 {/* USUARIO LOGEADO */}
                 <Box sx={{ flexGrow: 0, display: logged ? 'block' : 'none' }}>
-                    <Tooltip title="Open settings">
+                    <Tooltip title="Abrir configuración">
                         <Box sx={{ display: "flex", alignItems: "center"}}>
                             <Box sx={{mx: 2}}>
                                 {/* User */}
@@ -242,7 +242,7 @@ function MainMenuComponent() {
                 </Box>
 
           <Box sx={{ flexGrow: 0, display: logged ? 'none' : 'block'}}>
-            <Tooltip title="Sign up">
+            <Tooltip title="Darse de alta">
                 <Button
                     // onClick={handleSignUp}
                     onClick={()=> navigate('/signup')}
@@ -250,21 +250,21 @@ function MainMenuComponent() {
                     "&:selected": {backgroundColor: "grey"}
                     }}
                 >
-                    Sign Up
+                    Darse de alta
                 </Button>
 
             </Tooltip>
           </Box>
 
           <Box sx={{ flexGrow: 0, display: logged ? 'none' : 'block'}}>
-            <Tooltip title="Login">
+            <Tooltip title="Abrir sesión">
                 <Button
                     onClick={()=> navigate('/login')}
                     sx={{ m: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
                     "&:selected": {backgroundColor: "grey"}
                     }}
                 >
-                    Login
+                    Abrir sesión
                 </Button>
 
             </Tooltip>

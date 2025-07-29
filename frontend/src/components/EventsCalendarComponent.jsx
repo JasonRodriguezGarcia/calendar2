@@ -54,13 +54,6 @@ const EventsCalendarComponent = () => {
     const [events, setEvents] = useState([]);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [eventData, setEventData] = useState({
-        // event_id: Date.now(), 
-        // title: '',
-        // notes: '',
-        // start: new Date(),
-        // end: new Date(),
-        // user_id: '',
-        // chosenColor: 0
         event_id: Date.now(), 
         persona_Id: '',
         espacio_Id: '',
@@ -201,8 +194,6 @@ const EventsCalendarComponent = () => {
         setConfirmDeleteOpen(true);
     };
 
-    // const handleEventDrop = ({ event, start, end, allDay }) => {
-    //     const updatedEvent = { ...event, start, end, allDay };
     const handleEventDrop = ({ event, start, end }) => {
         debugger
         const day = start.getDay();

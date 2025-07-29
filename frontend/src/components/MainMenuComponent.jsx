@@ -156,7 +156,7 @@ function MainMenuComponent() {
                     </Menu>
                 </Box>
                 {/* LOGO MOVIL */}
-                <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+                {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} /> */}
                 <Typography
                     variant="h5"
                     noWrap
@@ -191,7 +191,9 @@ function MainMenuComponent() {
                     <Button
                         key={page}
                         onClick={()=> handleClickedPage(page)}
-                        sx={{ my: 2, color: 'white', display: 'block' }}
+                        // sx={{ my: 2, color: 'white', display: 'block' }}
+                        sx={{ my: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
+                            "&:selected": {backgroundColor: "grey"} }}
                     >
                         {page}
                     </Button>
@@ -242,7 +244,7 @@ function MainMenuComponent() {
                 </Box>
 
           <Box sx={{ flexGrow: 0, display: logged ? 'none' : 'block'}}>
-            <Tooltip title="Darse de alta">
+            <Tooltip title="Darse de alta" arrow>
                 <Button
                     // onClick={handleSignUp}
                     onClick={()=> navigate('/signup')}
@@ -257,11 +259,11 @@ function MainMenuComponent() {
           </Box>
 
           <Box sx={{ flexGrow: 0, display: logged ? 'none' : 'block'}}>
-            <Tooltip title="Abrir sesión">
+            <Tooltip title="Abrir sesión" arrow>
                 <Button
                     onClick={()=> navigate('/login')}
                     sx={{ m: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
-                    "&:selected": {backgroundColor: "grey"}
+                        "&:selected": {backgroundColor: "grey"}
                     }}
                 >
                     Abrir sesión

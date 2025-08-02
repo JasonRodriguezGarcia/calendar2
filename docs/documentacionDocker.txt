@@ -51,8 +51,6 @@ internos del motor de PostgreSQL, es decir, la base de datos completa en su form
 Montado en el contenedor en:
 
 bash
-Copiar
-Editar
 /var/lib/postgresql/data
 Incluye:
 
@@ -83,8 +81,6 @@ Editar
 Puedes saberlo con:
 
 bash
-Copiar
-Editar
 docker volume inspect postgres_data_erroak
 Busca el campo "Mountpoint", que te dirá dónde se almacena en tu sistema (algo como 
     /var/lib/docker/volumes/postgres_data_erroak/_data/).

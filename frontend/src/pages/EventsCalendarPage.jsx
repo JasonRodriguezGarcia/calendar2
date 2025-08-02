@@ -1,12 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import EventsCalendarComponent from '../components/EventsCalendarComponent';
 import MainMenuComponent from '../components/MainMenuComponent';
+import { useNavigate } from 'react-router-dom';
 
 const EventsCalendarPage = () =>{
+    const navigate = useNavigate();
+    const [logeado, setLogeado] = useState(false)
+    const [usuario, setUsuario] = useState('')
+
+    useEffect(()=> {
+        const checklogeado = () => {
+            const user = localStorage.getItem("user")
+            const password = localStorage.getItem("password")
+            console.log("Language localstorage: ", user, password)
+            debugger
+            if (user!== null && password!== null) {
+                // lo busca en backend y si todo ok
+                setLogeado(true)
+                setUsuario(user)
+            }
+            else {
+
+                setLogeado(false)
+                navigate(`/`);
+                // localStorage.setItem("user", "Pepe")
+                // localStorage.setItem("password", "paswol")
+            }
+        }
+
+        checklogeado()
+    }, [])
+
     return (
         <>
-            <MainMenuComponent />
-            <EventsCalendarComponent />
+            <MainMenuComponent logged={logeado} setLogged={setLogeado} />
+            <EventsCalendarComponent logged={logeado} setLogged={setLogeado} />
         </>
     )
 }

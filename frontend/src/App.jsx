@@ -7,13 +7,16 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 // import EventsPage from './pages/EventsPage';
 import EventsCalendarPage from './pages/EventsCalendarPage';
 import MainPage from './pages/MainPage';
+import LoginPage from './pages/LoginPage';
 
 const App = () => {
+
     return (
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<MainPage />} />
                 <Route path="/eventos" element={<EventsCalendarPage />} />
+                <Route path="/login" element={<LoginPage />} />
                 {/* <Route path="/" element={<DashboardPage />} />
                     <Route path="/descriptions/new" element={<DescriptionsFormInsertPage />} />
                     <Route path="/descriptions/view/:id" element={<DescriptionsView />} />

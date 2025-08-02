@@ -2,6 +2,7 @@
 // - replantear espacios ya que contienen centro y espacio(despacho), crear tabla despachos
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
@@ -49,8 +50,9 @@ const horaMinima = new Date(1970, 1, 1, 7, 0) // Limitación hora mínima
 const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
 // const eventColorPalette = ['#1976d2', '#899cafff', '#9c27b0', '#2e7d32', '#66514aff', '#d36900ff', '#009688', '#673ab7', '#3f51b5'];
 
-const EventsCalendarComponent = () => {
-
+const EventsCalendarComponent = ({ logged, setLogged } ) => {
+    const navigate = useNavigate();
+    
     const [events, setEvents] = useState([]);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [eventData, setEventData] = useState({
@@ -73,6 +75,10 @@ const EventsCalendarComponent = () => {
     const [errorDialogMessage, setErrorDialogMessage] = useState('');
     const [actionEventMessage, setActionEventMessage] = useState(['Agregar', 'Editar'])
     const [usedColors, setUsedColors] = useState([]); // backgroundColor del evento
+
+    // Si no está logeado se sale del componente
+    if (!logged) return null    // con esta opción ni siquiera se muestra brevevente EventsCalendarComponent
+        // navigate("/")        // con esta opción se muestra brevemente y luego pasa a "/"
 
     const handleNavigate = (newDate) => { // Permite desplazar de fecha del calendario
         setDate(newDate);

@@ -39,6 +39,6 @@ app.use('/api/v1/erroak', erroakRouter)
 // console.log(`Server running on http://localhost:${PORT} IP:${HOSTNAME}`);
 // });
 // Start Server
-app.listen(PORT, HOSTNAME, () => {
+app.listen(PORT, () => {
 console.log(`Server running on http://localhost:${PORT}`);
 });

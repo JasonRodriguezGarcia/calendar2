@@ -21,12 +21,12 @@ import { useState } from 'react';
 const pages = ['Eventos', 'Vacaciones', 'About'];
 const settings = ['Datos perfil', 'Modificar Datos Perfil', 'Cerrar sesión'];
 
-function MainMenuComponent({ logged, setLogged }) {
+function MainMenuComponent({ logged, setLogged, user, setUser }) {
     const navigate = useNavigate()
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
     // const [logged, setLogged] = useState(true)
-    const [userNick, setUserNick] = useState('Rosa')
+    // const [userNick, setUserNick] = useState('Rosa')
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -48,10 +48,10 @@ function MainMenuComponent({ logged, setLogged }) {
             //     navigate("/pricing");
             //     break;
             case "Cerrar sesión":
-                localStorage.removeItem("user", "Pepe")
-                localStorage.removeItem("password", "paswol")
+                localStorage.removeItem("user")
+                localStorage.removeItem("password")
                 setLogged(false)
-                setUserNick('')
+                setUser({})
                 navigate("/");
                 break;
             default:
@@ -214,11 +214,11 @@ function MainMenuComponent({ logged, setLogged }) {
                                         variant="body1"
                                         sx={{ mx: 2, color: 'white', fontWeight: 'bold', backgroundColor: '#1976d2', px: 1.5, py: 0.5, borderRadius: 1 }}
                                     >
-                                        User: {userNick}
+                                        User: {user.nombre_apellidos}
                                     </Typography>
                                 </Box>
                                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                    <Avatar alt={userNick} src="/static/images/avatar/2.jpg" />
+                                    <Avatar alt={user.nombre_apellidos} src="/static/images/avatar/2.jpg" />
                                 </IconButton>
                             </Box >
                         </Tooltip>

@@ -10,31 +10,29 @@ const EventsCalendarPage = () =>{
 
     useEffect(()=> {
         const checklogeado = () => {
-            const user = localStorage.getItem("user")
+            const nombre_apellidos = localStorage.getItem("user")
             const password = localStorage.getItem("password")
-            console.log("Language localstorage: ", user, password)
-            debugger
-            if (user!== null && password!== null) {
+            console.log("Language localstorage: ", nombre_apellidos, password)
+            // debugger
+            if (nombre_apellidos!== null && password!== null) {
                 // lo busca en backend y si todo ok
                 setLogeado(true)
-                setUsuario(user)
+                setUsuario({nombre_apellidos: nombre_apellidos, password: password})
             }
             else {
-
                 setLogeado(false)
                 navigate(`/`);
-                // localStorage.setItem("user", "Pepe")
-                // localStorage.setItem("password", "paswol")
             }
         }
 
         checklogeado()
     }, [])
 
+
     return (
         <>
-            <MainMenuComponent logged={logeado} setLogged={setLogeado} />
-            <EventsCalendarComponent logged={logeado} setLogged={setLogeado} />
+            <MainMenuComponent logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />
+            <EventsCalendarComponent logged={logeado} setLogged={setLogeado} user={usuario} />
         </>
     )
 }

@@ -31,11 +31,31 @@ const LoginPage = () =>{
 
     //     checklogeado()
     // }, [])
+    // useEffect(()=> {
+    //     const checklogeado = () => {
+    //         const nombre_apellidos = localStorage.getItem("user")
+    //         const password = localStorage.getItem("password")
+    //         console.log("Language localstorage: ", nombre_apellidos, password)
+    //         // debugger
+    //         if (nombre_apellidos!== null && password!== null) {
+    //             // lo busca en backend y si todo ok
+    //             setLogeado(true)
+    //             setUsuario({nombre_apellidos: nombre_apellidos, password: password})
+    //             console.log("Usuario: ", usuario.nombre_apellidos, usuario.password)
+    //         }
+    //         else {
+    //             setLogeado(false)
+    //             navigate(`/`);
+    //         }
+    //     }
+
+    //     checklogeado()
+    // }, [])
 
     return (
         <>
-            <MainMenuComponent logged={logeado} setLogged={setLogeado} />
-            <LoginComponent logged={logeado} setLogged={setLogeado} />
+            <MainMenuComponent logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />
+            <LoginComponent logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />
         </>
     )
 }

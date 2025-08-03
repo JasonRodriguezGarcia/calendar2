@@ -36,7 +36,7 @@ import {
 // import { grey } from "@mui/material/colors";
 // import { useEventCallback } from "@mui/material";
 
-const LoginComponent = ({ language }) => {
+const LoginComponent = ({ logged, setLogged }) => {
 
     // const [isValidToken, setIsValidToken] = useState(false)
     const [userName, setUserName] = useState("")
@@ -45,7 +45,7 @@ const LoginComponent = ({ language }) => {
     // const [userNickInput, setUserNickInput] = useState("")
     // const [userNick, setUserNick] = useState("")
     // const {logged, setLogged, userNick, setUserNick} = useContext(LoginContext)
-    const [logged, setLogged] = useState(false)
+    // const [logged, setLogged] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
     // const [languageSet, setLanguageSet] = useState("")
 
@@ -89,12 +89,22 @@ const LoginComponent = ({ language }) => {
     const handleLogin = async (e) => {
         e.preventDefault()
         // Borrar localstorage
-        localStorage.removeItem("user", "Pepe")
-        localStorage.removeItem("password", "paswol")
+        // localStorage.removeItem("user", "Pepe")
+        // localStorage.removeItem("password", "paswol")
 
         // const buttonSelected = e.nativeEvent.submitter.name
         // console.log("Pulsado: ", buttonSelected)
         // if (buttonSelected === "login") {
+        if (userEmail.length === 0) {
+            setErrorMessage("Introduzca email")
+            return
+        }
+        debugger
+        if (userPassword.length === 0) {
+            setErrorMessage("Introduzca contraseña")
+            return
+        }
+
             try {
                 const user = {
                     useremail: userEmail,
@@ -119,16 +129,19 @@ const LoginComponent = ({ language }) => {
                     // navigate('/')
                     return
                 } else {
+                    debugger
                     // Crear localStorage
-                    localStorage.setItem("user", data.nombre_apellidos)
-                    localStorage.setItem("password", userPassword)
-                    // console.log("Language localstorage: ", localStorage.getItem(user), localStorage.getItem(password))
-                }
+                    const resultado = data[0]
+                    localStorage.setItem("user", resultado.nombre_apellidos)
+                    localStorage.setItem("password", resultado.password)
+                    setLogged(true)
+                    navigate('/')
                     // setIsValidToken(true)
                     // setLogged(true)       
                     // setUserNick(data.nick)
+                    // console.log("Language localstorage: ", localStorage.getItem(user), localStorage.getItem(password))
+                }
                     
-                navigate('/')
 
                 // navigate(`/profile/${data.token}`);
             } catch (error) {
@@ -250,7 +263,7 @@ const LoginComponent = ({ language }) => {
                             autoComplete="password"
                             placeholder="(mín. 5 caracteres)"
                             fullWidth
-                            onChange={(e)=> setUserPassword(e.target.value)}
+                            onChange={(e)=> handleUserPassword(e)}
                         />
                     </Stack>
                 </FormControl>

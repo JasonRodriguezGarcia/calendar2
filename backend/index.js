@@ -17,7 +17,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const HOSTNAME = "127.0.0.1"
+// const HOSTNAME = "127.0.0.1"
 
 // Middleware
 // Servir archivos desde la carpeta 'public'

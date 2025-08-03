@@ -34,10 +34,11 @@ app.use(express.json());
 // Esto registra routers separados para manejar distintas partes del backend:
 app.use('/api/v1/erroak', erroakRouter)
 
+// // Start Server
+// app.listen(PORT, HOSTNAME, () => {
+// console.log(`Server running on http://localhost:${PORT} IP:${HOSTNAME}`);
+// });
 // Start Server
 app.listen(PORT, HOSTNAME, () => {
-console.log(`Server running on http://localhost:${PORT} IP:${HOSTNAME}`);
+console.log(`Server running on http://localhost:${PORT}`);
 });
-// // app.listen(PORT, () => {
-//   console.log(`Server running on http://localhost:${PORT}`);
-// });

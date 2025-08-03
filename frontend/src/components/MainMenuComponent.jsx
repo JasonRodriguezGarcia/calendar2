@@ -262,19 +262,18 @@ function MainMenuComponent({ logged, setLogged }) {
                             >
                                 Darse de alta
                             </Button>
-
                         </Tooltip>
                     </Box>
 
                     <Box sx={{ flexGrow: 0, display: logged ? 'none' : 'block'}}>
-                        <Tooltip title="Abrir sesión" arrow>
+                        <Tooltip title="Iniciar sesión" arrow>
                             <Button
                                 onClick={()=> navigate('/login')}
                                 sx={{ m: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
                                     "&:selected": {backgroundColor: "grey"}
                                 }}
                             >
-                                Abrir sesión
+                                Iniciar sesión
                             </Button>
 
                         </Tooltip>

@@ -185,15 +185,15 @@ const LoginComponent = ({ language }) => {
     return (
         <>
         <Box
-  sx={{
-    minHeight: 'calc(100vh - 64px)',  // resta la altura del menu
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-    px: 2,
-  }}
->
+            sx={{
+                minHeight: 'calc(100vh - 64px)',  // resta la altura del menu
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: '#f0f0f0',
+                px: 2,
+            }}
+        >
             {/* {isValidToken && isValidToken ? 
                 <h2 style = {{ color: "white"}}>Página de perfil /Profilepage (logged)</h2>
                 : <h2 style = {{ color: "white"}}>No logeado /Not logged in</h2>
@@ -209,44 +209,50 @@ const LoginComponent = ({ language }) => {
                 px: 2, // padding left & right
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'center', // alineado vertical
-                alignItems: 'center',
+                justifyContent: 'center',   // alineado vertical
+                alignItems: 'center',       // alineado horizontal
                 gap: 2,
                 border: "1px solid grey",
                 borderRadius: '10px',
                 boxShadow: '10px 10px 15px 5px grey',
                 // boxShadow: 5,
-                backgroundColor: "#339fff"
+                // backgroundColor: "#339fff"
                 }}
             >
                 <div>
-                    <Typography level="h4" component="h1" sx={{ color: "white"}}>
-                        <b>Welcome!</b>
+                    <Typography variant="h4" component="h3" sx={{ color: "black"}}>
+                        <b>Iniciar de sesión</b>
                         {/* <b>{loginText.loginWindow.headLine1}</b> */}
                     </Typography>
-                    <Typography sx={{ color: "white" }} level="body-sm">Login form</Typography>
+                    {/* <Typography sx={{ color: "black" }} level="body-sm">Login form</Typography> */}
                 </div>
                 <FormControl>
-                    <FormLabel sx={{ color: "white" }}>Email</FormLabel>
-                    <Input
-                        // html input attribute
-                        name="useemail"
-                        type="email"
-                        autoComplete="useremail"
-                        placeholder="Email usuario"
-                        onChange={(e)=> setUserEmail(e.target.value)}
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>Email</FormLabel>
+                        <Input
+                            id="useremail"
+                            name="useremail"
+                            type="email"
+                            autoComplete="email"
+                            placeholder="Email usuario"
+                            fullWidth
+                            onChange={(e)=> setUserEmail(e.target.value)}
                         />
+                    </Stack>
                 </FormControl>
                 <FormControl>
-                    <FormLabel sx={{ color: "white" }}>Contraseña</FormLabel>
-                    <Input
-                        // html input attribute
-                        name="userPassword"
-                        type="password"
-                        autoComplete="new-password"
-                        placeholder="(min. 5 caracteres)"
-                        onChange={(e)=> handleUserPassword(e)}
-                    />
+                    <Stack direction="row" spacing={2} justifyContent="left" alignItems="center">
+                        <FormLabel htmlFor="userpassword" sx={{ color: "black", minwidth: 100 }}>Contraseña</FormLabel>
+                        <Input
+                            id="userpassword"
+                            name="userpassword"
+                            type="password"
+                            autoComplete="password"
+                            placeholder="(mín. 5 caracteres)"
+                            fullWidth
+                            onChange={(e)=> setUserPassword(e.target.value)}
+                        />
+                    </Stack>
                 </FormControl>
 
                 <Button type="submit" id="boton1" name="login" sx={{ mt: 1 /* margin top */ }}>Login</Button>
@@ -265,7 +271,7 @@ const LoginComponent = ({ language }) => {
                 </Typography> */}
 
             </Box>
-</Box>
+        </Box>
         </>
     )
 }

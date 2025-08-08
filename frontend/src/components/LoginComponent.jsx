@@ -234,7 +234,7 @@ const LoginComponent = ({ logged, setLogged }) => {
             >
                 <div>
                     <Typography variant="h4" component="h3" sx={{ color: "black"}}>
-                        <b>Iniciar de sesión</b>
+                        <b>Inicio de sesión</b>
                         {/* <b>{loginText.loginWindow.headLine1}</b> */}
                     </Typography>
                     {/* <Typography sx={{ color: "black" }} level="body-sm">Login form</Typography> */}
@@ -268,7 +268,7 @@ const LoginComponent = ({ logged, setLogged }) => {
                     </Stack>
                 </FormControl>
 
-                <Button type="submit" id="boton1" name="login" sx={{ mt: 1 /* margin top */ }}>Login</Button>
+                <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 /* margin top */ }}>Iniciar sesión</Button>
                 {/* <Button type="submit" id="boton2" name="signup" sx={{ mt: 1 }}>SignUP</Button> */}
 
                 {errorMessage && 

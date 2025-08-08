@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import EventsCalendarPage from './pages/EventsCalendarPage';
 import MainPage from './pages/MainPage';
 import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
 
 const App = () => {
 
@@ -17,6 +18,7 @@ const App = () => {
                 <Route path="/" element={<MainPage />} />
                 <Route path="/eventos" element={<EventsCalendarPage />} />
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignUpPage />} />
                 {/* <Route path="/" element={<DashboardPage />} />
                     <Route path="/descriptions/new" element={<DescriptionsFormInsertPage />} />
                     <Route path="/descriptions/view/:id" element={<DescriptionsView />} />

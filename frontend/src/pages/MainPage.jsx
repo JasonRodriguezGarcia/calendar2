@@ -11,7 +11,7 @@ const MainPage = ({ logged }) => {
         const checklogeado = () => {
             const nombre_apellidos = localStorage.getItem("user")
             const password = localStorage.getItem("password")
-            console.log("Language localstorage: ", nombre_apellidos, password)
+            console.log("Language localstorage: ", nombre_apellidos, " - ", password)
             // debugger
             if (nombre_apellidos!== null && password!== null) {
                 // lo busca en backend y si todo ok

@@ -1,24 +1,34 @@
 import { Router} from 'express';
-// import dbsqlite from '../dbsqlite.js'; // importamos PouchDB
 // import { validateQuery, validateUserId } from '../middleware/users.js';
 // import { authenticateToken } from '../middleware/login.js';
 // import jwt from 'jsonwebtoken';
-import { getPersonas, postLogin, getVotos, getActuacionesRanking, sendVotos } from '../models/erroakModel.js';
+import { getPersonas, postLogin, sendPersonas } from '../models/erroakModel.js';
 
 const router = Router()
 
+// /api/v1/erroak/personas
 router.get('/personas', async(req, res) => {
     const personas = await getPersonas();
     console.log(personas);
     res.json (personas)
 })
 
+// /api/v1/erroak/login
 router.post('/login', async(req, res) => {
     const loginDetails = req.body
     console.log("loginDetails: ", loginDetails)
     const login = await postLogin(loginDetails);
     console.log(login);
     res.json (login)
+})
+
+// /api/v1/erroak/pesonas
+router.post('/signup', async(req, res) => {
+    const persona = req.body
+    console.log("Recibido en backend: ", persona)
+    const resultPersona = await sendPersonas(persona);
+    console.log(resultPersona);
+    res.json (resultPersona)
 })
 
 // router.get('/votos', async(req, res) => {

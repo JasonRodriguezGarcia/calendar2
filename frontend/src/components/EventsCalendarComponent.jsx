@@ -26,7 +26,8 @@ import {
   FormControl, 
   InputLabel,
   Select,
-  Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
+  Stack,
+  Toolbar, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -248,7 +249,9 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
     };
 
   return (
-    <div style={{ padding: 20 }}>
+    // <div style={{ padding: 20 }}>
+    <>
+        <Toolbar />
       <h2>Calendario con formulario MUI</h2>
       {/* <Calendar */}
       <DnDCalendar
@@ -427,7 +430,8 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
             </DialogActions>
         </Dialog>
       </LocalizationProvider>
-    </div>
+    {/* </div> */}
+    </>
   );
 }
 

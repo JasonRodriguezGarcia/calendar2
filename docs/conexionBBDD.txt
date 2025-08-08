@@ -5,3 +5,9 @@ DATABASE-HOST: aws-0-eu-west-3.pooler.supabase.com
 DATABASE_DATABASE: postgres
 DATABASE_PASSWORD: 1Jason2Rosita4
 DATABASE_PORT: 5432
+
+datos para abrir pgadmin
+http://localhost:5050/login?next=/
+jasonrodriguezempleo@gmail.com
+postgresj
+

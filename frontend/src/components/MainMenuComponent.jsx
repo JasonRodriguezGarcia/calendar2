@@ -260,7 +260,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                 "&:selected": {backgroundColor: "grey"}
                                 }}
                             >
-                                Darse de alta
+                                Crear usuario
                             </Button>
                         </Tooltip>
                     </Box>

@@ -1,39 +1,46 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate } from 'react-router-dom';
-import {createContext, useContext} from 'react';
-import LoginContext from '../context/LoginContext';
+// import {createContext, useContext} from 'react';
+// import LoginContext from '../context/LoginContext';
 import Box from '@mui/material/Box';
-import { CssVarsProvider, useColorScheme } from '@mui/joy/styles';
-import Sheet from '@mui/joy/Sheet';
-import CssBaseline from '@mui/joy/CssBaseline';
-import Typography from '@mui/joy/Typography';
-import FormControl from '@mui/joy/FormControl';
-import FormLabel from '@mui/joy/FormLabel';
-import Input from '@mui/joy/Input';
-import Button from '@mui/joy/Button';
-import Link from '@mui/joy/Link';
-import Select from '@mui/joy/Select';
-import Option from '@mui/joy/Option';
-import { grey } from "@mui/material/colors";
-import { useEventCallback } from "@mui/material";
+// MUI
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+  Button,
+  TextField,
+  MenuItem,
+  FormControl, 
+  FormLabel,
+  InputLabel,
+  Input,
+  Select,
+  Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 
-const SignUpComponent = ({ language }) => {
+} from '@mui/material';
 
-    const [isValidToken, setIsValidToken] = useState(false)
-    const [userName, setUserName] = useState("")
+const SignUpComponent = ({ logged, setLogged }) => {
+
+    // const [isValidToken, setIsValidToken] = useState(false)
+    // const [userName, setUserName] = useState("")
+    // const [userEmail, setUserEmail] = useState("")
+    // const [userPassword, setUserPassword] = useState("")
+    const [userEmail, setUserEmail] = useState("")
     const [userPassword, setUserPassword] = useState("")
-    const [userNickInput, setUserNickInput] = useState('')
-    const [userNick, setUserNick] = useState("")
-    const [logged, setLogged] = useState(false)
-    // const {logged, setLogged, userNick, setUserNick} = useContext(LoginContext)
+    const [userNombre_Apellidos, setUserNombre_Apellidos] = useState("")
+    const [userMovil, setUserMovil] = useState("")
+    const [userExtension, setUserExtension] = useState("")
+    const [userCentro, setUserCentro] = useState("")
+    const [userLlave, setUserLlave] = useState(false)
+    const [userAlarma, setUserAlarma] = useState(false)
+    const [userTurno, setUserTurno] = useState("")
+    
     const [errorMessage, setErrorMessage] = useState("")
     const navigate = useNavigate();
-    
-    // useEffect(()=> {
-    //     console.log("Idioma: ", language)
-    //     setLanguageSet(language)
-    //     i18n.changeLanguage(language)
-    // }, [language])
+    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
 
     useEffect(()=> {
         if (errorMessage) {
@@ -44,120 +51,117 @@ const SignUpComponent = ({ language }) => {
         }
     }, [errorMessage])
 
-    useEffect(() => {
-        const loggedUser = localStorage.getItem("logged")        
-        console.log("Language localstorage: ", logged)
-        if (loggedUser)
-            setLogged(loggedUser)
-        else
-            setLogged(false)
-            
-    }, [])
-
-    // const loginText = "Texto de Login"
-
     const handleUserPassword = (e) => {
-        if (e.target.value.length < 5)
+        if (e.target.value.length < 12)
             setErrorMessage("Contraseña demasiado corta")
         else
             setUserPassword(e.target.value)
     }
 
-    const handleUserNickInput = (e) => {
-    if (e.target.value.length < 5)
-        setErrorMessage("Nick demasiado corto")
-    else
-        setUserNickInput(e.target.value) 
-    }
+    // const handleUserNickInput = (e) => {
+    // if (e.target.value.length < 5)
+    //     setErrorMessage("Nick demasiado corto")
+    // else
+    //     setUserNickInput(e.target.value) 
+    // }
 
-    const handleLogin = async (e) => {
+
+    const handleSignUp = async (e) => {
         e.preventDefault()
-        const buttonSelected = e.nativeEvent.submitter.name
-        console.log("Pulsado: ", buttonSelected)
-        if (buttonSelected === "login") {
-            try {
-                const user = {
-                    username: userName,
-                    password: userPassword
-                }
-                // fetch validate
-                // const response = await fetch("http://localhost:5000/api/v1/playarena/login",
-                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/playarena/login`,
-                    {
-                        method: 'POST',
-                        headers: {'Content-type': 'application/json; charset=UTF-8'},
-                        body: JSON.stringify(user)
-                    }
-                )
-                const data = await response.json()
-                console.log("Respuesta backend: ", data)
-                if (data.message === "usuario o contraseña no válidos") {
-                    setErrorMessage("usuario o contraseña no válidos")
-                    setIsValidToken(false)
-                    return
-                }
-                setIsValidToken(true)
-                navigate(`/profile/${data.token}`);
-            } catch (error) {
-                // setError(error.message); // Handle errors
-                console.log(error.message)
-            } finally {
-                // setLoading(false); // Set loading to false once data is fetched or error occurs
-            }
+        // Borrar localstorage
+        // localStorage.removeItem("user", "Pepe")
+        // localStorage.removeItem("password", "paswol")
 
-        } else {
-            try {
-                const user = {
-                    username: userName,
-                    password: userPassword,
-                    nick: userNickInput
-                }
-                // fetch validate
-                // const response = await fetch("http://localhost:5000/api/v1/playarena/signup",
-                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/playarena/signup`,
-                    {
-                        method: 'POST',
-                        headers: {'Content-type': 'application/json; charset=UTF-8'},
-                        body: JSON.stringify(user)
-                    }
-                )
-                const data = await response.json()
-                console.log("Respuesta backend: ", data)
-                if (data.result === "YA EXISTE") {
-                    setErrorMessage("Usuario ya existente")
-                    setIsValidToken(false)
-                    return
-                }
-                setIsValidToken(true)
-                setLogged(true)       
-                setUserNick(userNickInput)
-                navigate('/')
-
-            } catch (error) {
-                // setError(error.message); // Handle errors
-                console.log(error.message)
-            } finally {
-                // setLoading(false); // Set loading to false once data is fetched or error occurs
-            }
+        // const buttonSelected = e.nativeEvent.submitter.name
+        // console.log("Pulsado: ", buttonSelected)
+        // if (buttonSelected === "login") {
+        if (userEmail.length < 6) {
+            setErrorMessage("Introduzca email correcto")
+            return
         }
-    }
-    
-    const handleSignUp = (e) => {
-        e.preventDefault()
-        console.log(userName, userPassword)
+        if (userPassword.length < 12) {
+            setErrorMessage("Introduzca contraseña más larga")
+            return
+        }
+
+        try {
+            const user = {
+                email: userEmail,
+                password: userPassword, // falta encriptar
+                nombre_apellidos: userNombre_Apellidos,
+                movil: userMovil,
+                extension: userExtension,
+                centro: userCentro,
+                llave: userLlave,
+                alarma: userAlarma,
+                turno: userTurno
+            }
+            console.log("user: ", user)
+            // fetch validate
+            const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/signup`,
+                {
+                    method: 'POST',
+                    headers: {'Content-type': 'application/json; charset=UTF-8'},
+                    body: JSON.stringify(user)
+                }
+            )
+            const data = await response.json()
+            debugger
+            console.log("Respuesta backend: ", data)
+            if (data.result === "Email ya existente") {
+                setErrorMessage("Email ya existente")
+                // setIsValidToken(false)
+                // setLogged(false)
+                // navigate('/')
+                return
+            }
+            if (data.result === "Nombre y apellidos ya existente") {
+                setErrorMessage("Nombre y apellidos ya existente")
+                // setIsValidToken(false)
+                // setLogged(false)
+                // navigate('/')
+                return
+            }
+            
+            // Crear localStorage
+            const resultado = data[0]
+            localStorage.setItem("user", userNombre_Apellidos)
+            localStorage.setItem("password", userPassword)
+            setLogged(true)
+            navigate('/')
+            // setIsValidToken(true)
+            // setLogged(true)       
+            // setUserNick(data.nick)
+            // console.log("Language localstorage: ", localStorage.getItem(user), localStorage.getItem(password))
+            // navigate(`/profile/${data.token}`);
+        } catch (error) {
+            // setError(error.message); // Handle errors
+            console.log(error.message)
+        } finally {
+            // setLoading(false); // Set loading to false once data is fetched or error occurs
+        }
     }
 
     return (
         <>
+        <Box
+            sx={{
+                minHeight: 'calc(100vh - 64px)',  // resta la altura del menu
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: '#f0f0f0',
+                px: 2,
+            }}
+        >
             {/* {isValidToken && isValidToken ? 
                 <h2 style = {{ color: "white"}}>Página de perfil /Profilepage (logged)</h2>
                 : <h2 style = {{ color: "white"}}>No logeado /Not logged in</h2>
-                // <h2>{loginText.loginStatusMessage.logged}</h2>
-                // : <h2>{loginText.loginStatusMessage.notLogged}</h2>
             } */}
             <Box component="form"
-                onSubmit={(e)=> handleLogin(e)}
+                onSubmit={(e)=> handleSignUp(e)}
                 sx={{
+                heigth: "100vh",
                 width: { xs: '90%', sm: 320 },
                 mx: 'auto', // margin left & right
                 my: 4, // margin top & bottom
@@ -165,57 +169,157 @@ const SignUpComponent = ({ language }) => {
                 px: 2, // padding left & right
                 display: 'flex',
                 flexDirection: 'column',
+                justifyContent: 'center',   // alineado vertical
+                alignItems: 'center',       // alineado horizontal
                 gap: 2,
                 border: "1px solid grey",
                 borderRadius: '10px',
                 boxShadow: '10px 10px 15px 5px grey',
                 // boxShadow: 5,
-                backgroundColor: "#339fff"
+                // backgroundColor: "#339fff"
                 }}
             >
                 <div>
-                    <Typography level="h4" component="h1" sx={{ color: "white"}}>
-                        <b>Welcome!</b>
-                        {/* <b>{loginText.loginWindow.headLine1}</b> */}
+                    <Typography variant="h4" component="h3" sx={{ color: "black"}}>
+                        <b>Alta usuario</b>
                     </Typography>
-                    <Typography sx={{ color: "white" }} level="body-sm">Registration Form</Typography>
                 </div>
                 <FormControl>
-                    <FormLabel sx={{ color: "white" }}>Nombre</FormLabel>
-                    <Input
-                        // html input attribute
-                        name="username"
-                        type="text"
-                        autoComplete="username"
-                        placeholder="nombre usuario"
-                        onChange={(e)=> setUserName(e.target.value)}
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>Email</FormLabel>
+                        <Input
+                            id="useremail"
+                            name="useremail"
+                            type="email"
+                            autoComplete="email"
+                            placeholder="Email usuario"
+                            required
+                            fullWidth
+                            onChange={(e)=> setUserEmail(e.target.value)}
                         />
+                    </Stack>
                 </FormControl>
                 <FormControl>
-                    <FormLabel sx={{ color: "white" }}>Contraseña</FormLabel>
-                    <Input
-                        // html input attribute
-                        name="userPassword"
-                        type="password"
-                        autoComplete="new-password"
-                        placeholder="(min. 5 caracteres)"
-                        onChange={(e)=> handleUserPassword(e)}
-                    />
+                    <Stack direction="row" spacing={2} justifyContent="left" alignItems="center">
+                        <FormLabel htmlFor="userpassword" sx={{ color: "black", minwidth: 100 }}>Contraseña</FormLabel>
+                        <Input
+                            id="userpassword"
+                            name="userpassword"
+                            type="password"
+                            autoComplete="password"
+                            placeholder="(mín. 12 caracteres)"
+                            required
+                            fullWidth
+                            onChange={(e)=> handleUserPassword(e)}
+                            />
+                    </Stack>
                 </FormControl>
                 <FormControl>
-                    <FormLabel sx={{ color: "white" }}>Nick</FormLabel>
-                    <Input
-                        // html input attribute
-                        name="userNickInput"
-                        type="text"
-                        autoComplete="nickInput"
-                        placeholder="(min. 5 caracteres)"
-                        onChange={(e)=> handleUserNickInput(e)}
-                    />
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <FormLabel htmlFor="usernombre_apellidos" sx={{ color: "black", minwidth: 100 }}>Nombre y apellidos:</FormLabel>
+                        <Input
+                            id="usernombre_apellidos"
+                            name="usernombre_apellidos"
+                            type="text"
+                            autoComplete="nombre_apellidos"
+                            placeholder="Nombre y apellidos"
+                            required
+                            fullWidth
+                            onChange={(e)=> setUserNombre_Apellidos(e.target.value)}
+                            />
+                    </Stack>
+                </FormControl>
+                <FormControl>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <FormLabel htmlFor="usermovil" sx={{ color: "black", minwidth: 100 }}>Movil</FormLabel>
+                        <Input
+                            id="usermovil"
+                            name="usermovil"
+                            type="text"
+                            autoComplete="movil"
+                            placeholder="Movil"
+                            // required
+                            fullWidth
+                            onChange={(e)=> setUserMovil(e.target.value)}
+                            />
+                    </Stack>
+                </FormControl>
+                <FormControl>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <FormLabel htmlFor="userextension" sx={{ color: "black", minwidth: 100 }}>Extension</FormLabel>
+                        <Input
+                            id="userextension"
+                            name="userextension"
+                            type="text"
+                            autoComplete="extension"
+                            placeholder="Extension"
+                            fullWidth
+                            onChange={(e)=> setUserExtension(e.target.value)}
+                            />
+                    </Stack>
+                </FormControl>
+                <FormControl>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <FormLabel htmlFor="usercentro" sx={{ color: "black", minwidth: 100 }}>Centro</FormLabel>
+                        <Input
+                            id="usercentro"
+                            name="usercentro"
+                            type="text"
+                            autoComplete="centro"
+                            placeholder="Centro"
+                            fullWidth
+                            onChange={(e)=> setUserCentro(e.target.value)}
+                            />
+                    </Stack>
+                </FormControl>
+                <FormControl>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <FormLabel htmlFor="userllave" sx={{ color: "black", minwidth: 100 }}>Llave</FormLabel>
+                        <Input
+                            id="userllave"
+                            name="userllave"
+                            type="text"
+                            autoComplete="llave"
+                            placeholder="Llave"
+                            defaultValue={false}
+                            fullWidth
+                            onChange={(e)=> setUserLlave(e.target.value)}
+                            />
+                    </Stack>
+                </FormControl>
+                            {/* // (persona_id, email, password, nombre_apellidos, movil, extension, centro, llave, alarma, turno) */}
+                <FormControl>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <FormLabel htmlFor="useralarma" sx={{ color: "black", minwidth: 100 }}>Alarma</FormLabel>
+                        <Input
+                            id="useralarma"
+                            name="useralarma"
+                            type="text"
+                            autoComplete="alarma"
+                            placeholder="Alarma"
+                            defaultValue={false}
+                            fullWidth
+                            onChange={(e)=> setUserAlarma(e.target.value)}
+                        />
+                    </Stack>
+                </FormControl>
+                <FormControl>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <FormLabel htmlFor="userturno" sx={{ color: "black", minwidth: 100 }}>Turno</FormLabel>
+                        <Input
+                            id="userturno"
+                            name="userturno"
+                            type="text"
+                            autoComplete="turno"
+                            placeholder="Turno"
+                            fullWidth
+                            onChange={(e)=> setUserTurno(e.target.value)}
+                        />
+                    </Stack>
                 </FormControl>
 
-                {/* <Button type="submit" id="boton1" name="login" sx={{ mt: 1 }}>Login</Button> */}
-                <Button type="submit" id="boton2" name="signup" sx={{ mt: 1 /* margin top */ }}>SignUP</Button>
+                <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 /* margin top */ }}>Crear usuario</Button>
+                {/* <Button type="submit" id="boton2" name="signup" sx={{ mt: 1 }}>SignUP</Button> */}
 
                 {errorMessage && 
                 
@@ -230,6 +334,7 @@ const SignUpComponent = ({ language }) => {
                 </Typography> */}
 
             </Box>
+        </Box>
         </>
     )
 }

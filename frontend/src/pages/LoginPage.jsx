@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import LoginComponent from '../components/LoginComponent';
 
 const LoginPage = () =>{
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const [logeado, setLogeado] = useState(false)
     const [usuario, setUsuario] = useState('')
 
@@ -55,7 +55,7 @@ const LoginPage = () =>{
     return (
         <>
             <MainMenuComponent logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />
-            <LoginComponent logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />
+            <LoginComponent logged={logeado} setLogged={setLogeado} /> {/* user={usuario} setUser={setUsuario} /> */}
         </>
     )
 }

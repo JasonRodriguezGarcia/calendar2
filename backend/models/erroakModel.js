@@ -53,6 +53,27 @@ export async function sendUsuarios(usuario) {
   }
 }
 
+export async function getSignUpFormData() {
+  try {
+    const centros = await pool.query(`SELECT * from erroak.centros ORDER BY centro`)
+    console.log("centros: ", centros.rows)
+    if (centros.length)
+        return {result: "Error. No hay datos en Centros"}
+    const turnos = await pool.query(`SELECT * from erroak.turnos ORDER BY turno`)
+    console.log("turnos: ", turnos.rows)
+    if (turnos.length)
+        return {result: "Error. No hay datos en Turnos"}
+
+    // return {success: true, message: "OK"}
+
+    return {centros: centros.rows, turnos: turnos.rows}
+
+  } catch (err) {
+    console.error('Error:', err.message);
+    throw err;
+  }
+}
+
 
 // *****************************************
 // export async function getVotos() {

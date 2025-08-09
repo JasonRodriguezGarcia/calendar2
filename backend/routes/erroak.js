@@ -2,7 +2,7 @@ import { Router} from 'express';
 // import { validateQuery, validateUserId } from '../middleware/users.js';
 // import { authenticateToken } from '../middleware/login.js';
 // import jwt from 'jsonwebtoken';
-import { getUsuarios, postLogin, sendUsuarios } from '../models/erroakModel.js';
+import { getUsuarios, postLogin, sendUsuarios, getSignUpFormData } from '../models/erroakModel.js';
 
 const router = Router()
 
@@ -29,6 +29,12 @@ router.post('/signup', async(req, res) => {
     const resultUsuario = await sendUsuarios(usuario);
     console.log(resultUsuario);
     res.json (resultUsuario)
+})
+
+router.get('/getSignUpFormData', async(req, res) => {
+    const result = await getSignUpFormData();
+    console.log(result);
+    res.json (result)
 })
 
 // router.get('/votos', async(req, res) => {

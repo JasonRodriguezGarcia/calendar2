@@ -122,9 +122,9 @@ export const programas = [
     { programa_Id: 8, programa: "EGUNEKO ZENTRO"},
 ]
 
-export const centros = [
-    { centro_Id: 1, centro: "AMARA"},
-    { centro_Id: 2, centro: "MARTUTENE 12"},
-    { centro_Id: 3, centro: "MARTUTENE 30"},
-    { centro_Id: 4, centro: "EXTERIOR"},
-]
+// export const centros = [
+//     { centro_Id: 1, centro: "AMARA"},
+//     { centro_Id: 2, centro: "MARTUTENE 12"},
+//     { centro_Id: 3, centro: "MARTUTENE 30"},
+//     { centro_Id: 4, centro: "EXTERIOR"},
+// ]

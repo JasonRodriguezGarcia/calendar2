@@ -5,20 +5,23 @@ import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 // MUI
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography,
-  Button,
-  TextField,
-  MenuItem,
-  FormControl, 
-  FormLabel,
-  InputLabel,
-  Input,
-  Select,
-  Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Typography,
+    Button,
+    TextField,
+    MenuItem,
+    FormControl, 
+    FormControlLabel, 
+    FormLabel,
+    InputLabel,
+    Input,
+    RadioGroup,
+    Radio,    
+    Select,
+    Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 
 } from '@mui/material';
 
@@ -37,10 +40,44 @@ const SignUpComponent = ({ logged, setLogged }) => {
     const [userLlave, setUserLlave] = useState(false)
     const [userAlarma, setUserAlarma] = useState(false)
     const [userTurno, setUserTurno] = useState("")
+    const [centros, setCentros] = useState([])
+    const [turnos, setTurnos] = useState([])
     
     const [errorMessage, setErrorMessage] = useState("")
     const navigate = useNavigate();
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
+
+    useEffect(()=> {
+        const getData = async ()=> {
+            try {
+                // fetch for getting data horarios & turnos
+                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getSignUpFormData`,
+                    {
+                        method: 'GET',
+                        headers: {'Content-type': 'application/json; charset=UTF-8'}
+                    }
+                )
+                const data = await response.json()
+                console.log("Respuesta backend: ", data)
+                debugger
+                if (data.result === "No encontrado") {
+                    setErrorMessage("usuario o contraseña no válidos")
+                    return
+                } else {
+                    setCentros(data.centros)
+                    setTurnos(data.turnos)
+                }
+                    
+            } catch (error) {
+                console.log(error.message)
+            } finally {
+                // setLoading(false); // Set loading to false once data is fetched or error occurs
+            }
+
+        }
+
+        getData()
+    }, [])
 
     useEffect(()=> {
         if (errorMessage) {
@@ -97,6 +134,7 @@ const SignUpComponent = ({ logged, setLogged }) => {
                 turno_id: userTurno
             }
             console.log("user: ", user)
+            debugger
             // fetch validate
             const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/signup`,
                 {
@@ -170,7 +208,7 @@ const SignUpComponent = ({ logged, setLogged }) => {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',   // alineado vertical
-                alignItems: 'center',       // alineado horizontal
+                alignItems: 'left',       // alineado horizontal
                 gap: 2,
                 border: "1px solid grey",
                 borderRadius: '10px',
@@ -261,7 +299,7 @@ const SignUpComponent = ({ logged, setLogged }) => {
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <FormLabel htmlFor="usercentro" sx={{ color: "black", minwidth: 100 }}>Centro</FormLabel>
-                        <Input
+                        {/* <Input
                             id="usercentro"
                             name="usercentro"
                             type="text"
@@ -269,13 +307,27 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             placeholder="Centro"
                             fullWidth
                             onChange={(e)=> setUserCentro(e.target.value)}
-                            />
+                            /> */}
+                        {/* <InputLabel id="select-label-centro">Centros *</InputLabel> */}
+                        <Select
+                            fullWidth
+                            labelId="select-label-centro"
+                            id="select-centro"
+                            // label="Centro *"
+                            value={userCentro}
+                            onChange={(e) => setUserCentro(e.target.value)}
+                        >
+                            {centros.map((centro) => (
+                                <MenuItem key={centro.centro_id} value={centro.centro_id}>{centro.centro}</MenuItem>
+
+                            ))}
+                        </Select>
                     </Stack>
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <FormLabel htmlFor="userllave" sx={{ color: "black", minwidth: 100 }}>Llave</FormLabel>
-                        <Input
+                        {/* <Input
                             id="userllave"
                             name="userllave"
                             type="text"
@@ -284,14 +336,25 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             defaultValue={false}
                             fullWidth
                             onChange={(e)=> setUserLlave(e.target.value)}
-                            />
+                            /> */}
+                        <RadioGroup
+                            row //  esto los pone en horizontal
+                            aria-labelledby="demo-radio-buttons-group-label-llave"
+                            defaultValue="false"
+                            name="radio-buttons-group-llave"
+                            value={userLlave}
+                            onChange={(e)=> setUserLlave(e.target.value)}
+                        >
+                            <FormControlLabel value="true" control={<Radio />} label="Si" />
+                            <FormControlLabel value="false" control={<Radio />} label="No"/>
+                        </RadioGroup>
                     </Stack>
                 </FormControl>
                             {/* // (persona_id, email, password, nombre_apellidos, movil, extension, centro, llave, alarma, turno) */}
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <FormLabel htmlFor="useralarma" sx={{ color: "black", minwidth: 100 }}>Alarma</FormLabel>
-                        <Input
+                        {/* <Input
                             id="useralarma"
                             name="useralarma"
                             type="text"
@@ -300,13 +363,24 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             defaultValue={false}
                             fullWidth
                             onChange={(e)=> setUserAlarma(e.target.value)}
-                        />
+                        /> */}
+                        <RadioGroup
+                            row //  esto los pone en horizontal
+                            aria-labelledby="demo-radio-buttons-group-label-alarma"
+                            defaultValue="false"
+                            name="radio-buttons-group-alarma"
+                            value={userAlarma}
+                            onChange={(e)=> setUserAlarma(e.target.value)}
+                        >
+                            <FormControlLabel value="true" control={<Radio />} label="Si" />
+                            <FormControlLabel value="false" control={<Radio />} label="No"/>
+                        </RadioGroup>
                     </Stack>
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <FormLabel htmlFor="userturno" sx={{ color: "black", minwidth: 100 }}>Turno</FormLabel>
-                        <Input
+                        {/* <Input
                             id="userturno"
                             name="userturno"
                             type="text"
@@ -314,7 +388,21 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             placeholder="Turno"
                             fullWidth
                             onChange={(e)=> setUserTurno(e.target.value)}
-                        />
+                        /> */}
+                        <Select
+                            fullWidth
+                            labelId="select-label-turno"
+                            id="select-turno"
+                            // label="Turno *"
+                            value={userTurno}
+                            onChange={(e) => setUserTurno(e.target.value)}
+                        >
+                            {turnos.map((turno) => (
+                                <MenuItem key={turno.turno_id} value={turno.turno_id}>{turno.turno} - {turno.horario}</MenuItem>
+
+                            ))}
+                        </Select>
+
                     </Stack>
                 </FormControl>
 

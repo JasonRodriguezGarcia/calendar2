@@ -2,15 +2,15 @@ import { Router} from 'express';
 // import { validateQuery, validateUserId } from '../middleware/users.js';
 // import { authenticateToken } from '../middleware/login.js';
 // import jwt from 'jsonwebtoken';
-import { getPersonas, postLogin, sendPersonas } from '../models/erroakModel.js';
+import { getUsuarios, postLogin, sendUsuarios } from '../models/erroakModel.js';
 
 const router = Router()
 
-// /api/v1/erroak/personas
-router.get('/personas', async(req, res) => {
-    const personas = await getPersonas();
-    console.log(personas);
-    res.json (personas)
+// /api/v1/erroak/usuarios
+router.get('/usuarios', async(req, res) => {
+    const usuarios = await getUsuarios();
+    console.log(usuarios);
+    res.json (usuarios)
 })
 
 // /api/v1/erroak/login
@@ -24,11 +24,11 @@ router.post('/login', async(req, res) => {
 
 // /api/v1/erroak/pesonas
 router.post('/signup', async(req, res) => {
-    const persona = req.body
-    console.log("Recibido en backend: ", persona)
-    const resultPersona = await sendPersonas(persona);
-    console.log(resultPersona);
-    res.json (resultPersona)
+    const usuario = req.body
+    console.log("Recibido en backend: ", usuario)
+    const resultUsuario = await sendUsuarios(usuario);
+    console.log(resultUsuario);
+    res.json (resultUsuario)
 })
 
 // router.get('/votos', async(req, res) => {

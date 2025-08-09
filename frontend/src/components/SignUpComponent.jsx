@@ -91,10 +91,10 @@ const SignUpComponent = ({ logged, setLogged }) => {
                 nombre_apellidos: userNombre_Apellidos,
                 movil: userMovil,
                 extension: userExtension,
-                centro: userCentro,
+                centro_id: userCentro,
                 llave: userLlave,
                 alarma: userAlarma,
-                turno: userTurno
+                turno_id: userTurno
             }
             console.log("user: ", user)
             // fetch validate

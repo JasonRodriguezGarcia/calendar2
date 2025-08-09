@@ -1,8 +1,8 @@
 import pool from '../db-pg.js';
 
-export async function getPersonas() {
+export async function getUsuarios() {
   try {
-    const result = await pool.query("SELECT * FROM erroak.personas;");
+    const result = await pool.query("SELECT * FROM erroak.usuarios;");
     return result.rows;
 
   } catch (err) {
@@ -15,7 +15,7 @@ export async function postLogin(loginDetails) {
   try {
     const { useremail , password } = loginDetails
     // habría que desencriptar password/token, esto para más adelante
-    const result = await pool.query("SELECT * FROM erroak.personas WHERE email = $1 AND password = $2;", [useremail, password]);
+    const result = await pool.query("SELECT * FROM erroak.usuarios WHERE email = $1 AND password = $2;", [useremail, password]);
     console.log("result: ", result)
     if (result.rows.length > 0) 
         return result.rows
@@ -28,23 +28,23 @@ export async function postLogin(loginDetails) {
   }
 }
 
-export async function sendPersonas(persona) {
+export async function sendUsuarios(usuario) {
   try {
-    const { email, password, nombre_apellidos, movil, extension, centro, llave, alarma, turno } = persona
-	const existsEmail = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.personas WHERE email = $1);`, [email])
+    const { email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id } = usuario
+	const existsEmail = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.usuarios WHERE email = $1);`, [email])
     console.log("imprimo exists: ", existsEmail.rows[0].exists)
     if (existsEmail.rows[0].exists)
         return {result: "Email ya existente"}
 
-    const existsNombre_Apellidos = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.personas WHERE nombre_apellidos = $1);`, [nombre_apellidos])
+    const existsNombre_Apellidos = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.usuarios WHERE nombre_apellidos = $1);`, [nombre_apellidos])
     console.log("imprimo exists: ", existsNombre_Apellidos.rows[0].exists)
     if (existsNombre_Apellidos.rows[0].exists)
         return {result: "Nombre y apellidos ya existente"}
 
-    const result = await pool.query(`INSERT INTO erroak.personas
-        (email, password, nombre_apellidos, movil, extension, centro, llave, alarma, turno)
+    const result = await pool.query(`INSERT INTO erroak.usuarios
+        (email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);`, 
-        [email, password, nombre_apellidos, movil, extension, centro, llave, alarma, turno])
+        [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id])
     return {success: true, message: "OK"}
 
   } catch (err) {

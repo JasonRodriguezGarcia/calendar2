@@ -11,3 +11,11 @@ http://localhost:5050/login?next=/
 jasonrodriguezempleo@gmail.com
 postgresj
 
+
+*******************
+Relacionando usuarios (varios) con centros (uno) a través del campo centro_id
+Añadir una columna centro_id a usuarios.
+Declárala como FOREIGN KEY apuntando a centros(id).
+Esto crea una relación de muchos (usuarios) a uno (centro).
+Podemos luego hacer joins para consultar los datos relacionados.
+

@@ -12,7 +12,7 @@ import parse from 'date-fns/parse';
 import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { personas, espacios, programas, centros } from "./Data"
+import { usuarios, espacios, programas, centros } from "./Data"
 
 // MUI
 import {
@@ -58,7 +58,7 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [eventData, setEventData] = useState({
         event_id: Date.now(), 
-        persona_Id: '',
+        usuario_Id: '',
         espacio_Id: '',
         programa_Id: '',
         start: new Date(),
@@ -118,7 +118,7 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
         // Generando el evento
         setEventData({
             event_id: newEventId, 
-            persona_Id: '',
+            usuario_Id: '',
             espacio_Id: '',
             programa_Id: '',
             start,
@@ -177,8 +177,8 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
             return;
         }
 
-        if (eventData.persona_Id < 1) {
-            setErrorDialogMessage('Seleccionar una Persona');
+        if (eventData.usuario_Id < 1) {
+            setErrorDialogMessage('Seleccionar un Usuario');
             setErrorDialogOpen(true);
             return;
         }
@@ -238,12 +238,12 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
 
     // Personalizando la visualizacion de eventos en el calendario, por defecto "start-end title"
     const CustomEvent = ({ event }) => {
-        const persona = personas.find(p => p.persona_Id === event.persona_Id);
+        const usuario = usuarios.find(p => p.usuario_Id === event.usuario_Id);
         const programa = programas.find(p => p.programa_Id === event.programa_Id);
 
         return (
             <div>
-                <strong>{persona?.name || 'Sin nombre'}</strong> - {programa?.programa || 'Sin nombre'}
+                <strong>{usuario?.name || 'Sin nombre'}</strong> - {programa?.programa || 'Sin nombre'}
             </div>
         );
     };
@@ -286,15 +286,15 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
             localizer.format(date, 'eeee', culture), // 'lunes', 'martes', etc.
         }}
         tooltipAccessor={(event) => {                   // Muestra "start - end" y otros al pasar el cursor por encima
-            const persona = personas.find(p => p.persona_Id === event.persona_Id);
+            const usuario = usuarios.find(p => p.usuario_Id === event.usuario_Id);
             const programa = programas.find(p => p.programa_Id === event.programa_Id);
-            // si ponemos persona?.name y no persona.name, en caso de que programa no exista, obtenemos un crash con error en ejecución
-            // Pero si ponemos persona?.name y no existe obtenemos un undefined y el programa sigue su curso
-            return `${persona?.name || 'Sin nombre'} - ${programa?.programa || 'Sin programa'}  — ${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}`;
+            // si ponemos usuario?.name y no usuario.name, en caso de que programa no exista, obtenemos un crash con error en ejecución
+            // Pero si ponemos usuario?.name y no existe obtenemos un undefined y el programa sigue su curso
+            return `${usuario?.name || 'Sin nombre'} - ${programa?.programa || 'Sin programa'}  — ${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}`;
         }}
 
         eventPropGetter={(event) => {                   // Estilo visual de cada evento
-            const user = personas.find(u => u.persona_Id === event.persona_Id);
+            const user = usuarios.find(u => u.usuario_Id === event.usuario_Id);
             const backgroundColor = user?.color || '#BDBDBD';
             return {    // retornando un style por eso el return tiene {} en lugar de ()
                 style: {
@@ -324,17 +324,17 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
             <DialogContent>
                 <Stack spacing={1} mt={1}> 
                     <FormControl fullWidth margin='dense'>
-                        <InputLabel id="select-label-persona_Id">Persona *</InputLabel>
+                        <InputLabel id="select-label-usuario_Id">Usuario *</InputLabel>
                         <Select
                             // fullWidth
-                            labelId="select-label-persona_Id"
-                            id="select-persona_Id"
-                            label="Persona *"
-                            value={eventData.persona_Id}
-                            onChange={(e) => setEventData({ ...eventData, persona_Id: e.target.value})}
+                            labelId="select-label-usuario_Id"
+                            id="select-usuario_Id"
+                            label="Usuario *"
+                            value={eventData.usuario_Id}
+                            onChange={(e) => setEventData({ ...eventData, usuario_Id: e.target.value})}
                         >
-                            {personas.map((persona) => (
-                                <MenuItem key={persona.persona_Id} value={persona.persona_Id}>{persona.name}</MenuItem>
+                            {usuarios.map((usuario) => (
+                                <MenuItem key={usuario.usuario_Id} value={usuario.usuario_Id}>{usuario.name}</MenuItem>
 
                             ))}
                         </Select>

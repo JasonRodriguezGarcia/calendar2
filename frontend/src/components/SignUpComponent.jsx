@@ -42,6 +42,7 @@ const SignUpComponent = ({ logged, setLogged }) => {
     const [userTurno, setUserTurno] = useState("")
     const [centros, setCentros] = useState([])
     const [turnos, setTurnos] = useState([])
+    const [passwordLength, setPasswordLength] = useState(10) // Longitud contraseña
     
     const [errorMessage, setErrorMessage] = useState("")
     const navigate = useNavigate();
@@ -59,7 +60,6 @@ const SignUpComponent = ({ logged, setLogged }) => {
                 )
                 const data = await response.json()
                 console.log("Respuesta backend: ", data)
-                debugger
                 if (data.result === "No encontrado") {
                     setErrorMessage("usuario o contraseña no válidos")
                     return
@@ -89,7 +89,7 @@ const SignUpComponent = ({ logged, setLogged }) => {
     }, [errorMessage])
 
     const handleUserPassword = (e) => {
-        if (e.target.value.length < 12)
+        if (e.target.value.length < passwordLength)
             setErrorMessage("Contraseña demasiado corta")
         else
             setUserPassword(e.target.value)
@@ -102,6 +102,24 @@ const SignUpComponent = ({ logged, setLogged }) => {
     //     setUserNickInput(e.target.value) 
     // }
 
+    const isValidMovil = (movil) => {
+        const regex = /^\d{3}-\d{6}$/;
+        return regex.test(movil);
+    };
+
+    const handleUserMovil = (e) => {
+       let numbersOnly = e.target.value.replace(/\D/g, '').slice(0, 9); // solo 9 números
+       debugger
+       console.log("numbersOnly: ", numbersOnly)
+        if (numbersOnly.length > 9) return;
+        if (numbersOnly.length <= 3) {
+            setUserMovil(numbersOnly);
+        } else {
+            const formatted = `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3)}`;
+            setUserMovil(formatted);
+        }
+    }
+    
 
     const handleSignUp = async (e) => {
         e.preventDefault()
@@ -112,15 +130,18 @@ const SignUpComponent = ({ logged, setLogged }) => {
         // const buttonSelected = e.nativeEvent.submitter.name
         // console.log("Pulsado: ", buttonSelected)
         // if (buttonSelected === "login") {
-        if (userEmail.length < 6) {
+        if (userEmail.length < 7) {
             setErrorMessage("Introduzca email correcto")
             return
         }
-        if (userPassword.length < 12) {
+        if (userPassword.length < passwordLength) {
             setErrorMessage("Introduzca contraseña más larga")
             return
         }
-
+        if (!isValidMovil(userMovil)) {
+            setErrorMessage("El móvil debe tener formato 999-999999");
+            return;
+        }
         try {
             const user = {
                 email: userEmail,
@@ -134,7 +155,6 @@ const SignUpComponent = ({ logged, setLogged }) => {
                 turno_id: userTurno
             }
             console.log("user: ", user)
-            debugger
             // fetch validate
             const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/signup`,
                 {
@@ -144,7 +164,6 @@ const SignUpComponent = ({ logged, setLogged }) => {
                 }
             )
             const data = await response.json()
-            debugger
             console.log("Respuesta backend: ", data)
             if (data.result === "Email ya existente") {
                 setErrorMessage("Email ya existente")
@@ -245,11 +264,11 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             name="userpassword"
                             type="password"
                             autoComplete="password"
-                            placeholder="(mín. 12 caracteres)"
+                            placeholder={`(mín. ${passwordLength} caracteres)`}
                             required
                             fullWidth
                             onChange={(e)=> handleUserPassword(e)}
-                            />
+                        />
                     </Stack>
                 </FormControl>
                 <FormControl>
@@ -264,7 +283,7 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             required
                             fullWidth
                             onChange={(e)=> setUserNombre_Apellidos(e.target.value)}
-                            />
+                        />
                     </Stack>
                 </FormControl>
                 <FormControl>
@@ -275,11 +294,12 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             name="usermovil"
                             type="text"
                             autoComplete="movil"
-                            placeholder="Movil"
-                            // required
+                            placeholder="Ej.: 699-616161 (9 dígitos)"
                             fullWidth
-                            onChange={(e)=> setUserMovil(e.target.value)}
-                            />
+                            value={userMovil}  // esta línea es esencial para poder usarse en la funcion handleUserMovil
+                            // onChange={(e)=> setUserMovil(e.target.value)}
+                            onChange={(e)=> handleUserMovil(e)}
+                        />
                     </Stack>
                 </FormControl>
                 <FormControl>
@@ -293,7 +313,7 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             placeholder="Extension"
                             fullWidth
                             onChange={(e)=> setUserExtension(e.target.value)}
-                            />
+                        />
                     </Stack>
                 </FormControl>
                 <FormControl>
@@ -316,6 +336,7 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             // label="Centro *"
                             value={userCentro}
                             onChange={(e) => setUserCentro(e.target.value)}
+                            required
                         >
                             {centros.map((centro) => (
                                 <MenuItem key={centro.centro_id} value={centro.centro_id}>{centro.centro}</MenuItem>
@@ -396,6 +417,7 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             // label="Turno *"
                             value={userTurno}
                             onChange={(e) => setUserTurno(e.target.value)}
+                            required
                         >
                             {turnos.map((turno) => (
                                 <MenuItem key={turno.turno_id} value={turno.turno_id}>{turno.turno} - {turno.horario}</MenuItem>

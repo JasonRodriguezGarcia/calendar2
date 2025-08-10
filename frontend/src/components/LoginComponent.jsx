@@ -48,6 +48,7 @@ const LoginComponent = ({ logged, setLogged }) => {
     // const [logged, setLogged] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
     // const [languageSet, setLanguageSet] = useState("")
+    const [passwordLength, setPasswordLength] = useState(10) // Longitud contraseña
 
     // const { t, i18n } = useTranslation();
     const navigate = useNavigate();
@@ -72,7 +73,7 @@ const LoginComponent = ({ logged, setLogged }) => {
     // const loginText = "Texto de Login"
 
     const handleUserPassword = (e) => {
-        if (e.target.value.length < 5)
+        if (e.target.value.length < passwordLength)
             setErrorMessage("Contraseña demasiado corta")
         else
             setUserPassword(e.target.value)
@@ -261,7 +262,7 @@ const LoginComponent = ({ logged, setLogged }) => {
                             name="userpassword"
                             type="password"
                             autoComplete="password"
-                            placeholder="(mín. 5 caracteres)"
+                            placeholder={`(mín. ${passwordLength} caracteres)`}
                             fullWidth
                             onChange={(e)=> handleUserPassword(e)}
                         />

@@ -42,14 +42,14 @@ const SignUpComponent = ({ logged, setLogged }) => {
     const [userTurno, setUserTurno] = useState("")
     const [centros, setCentros] = useState([])
     const [turnos, setTurnos] = useState([])
-    const [passwordLength, setPasswordLength] = useState(10) // Longitud contraseña
+    const [minPasswordLength, setMinPasswordLength] = useState(10) // Longitud contraseña
     
     const [errorMessage, setErrorMessage] = useState("")
     const navigate = useNavigate();
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
 
-    useEffect(()=> {
-        const getData = async ()=> {
+    useEffect(() => {
+        const getData = async () => {
             try {
                 // fetch for getting data horarios & turnos
                 const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getSignUpFormData`,
@@ -79,7 +79,7 @@ const SignUpComponent = ({ logged, setLogged }) => {
         getData()
     }, [])
 
-    useEffect(()=> {
+    useEffect(() => {
         if (errorMessage) {
             const intervalo = setTimeout(() => {
                 setErrorMessage("")
@@ -88,13 +88,32 @@ const SignUpComponent = ({ logged, setLogged }) => {
         }
     }, [errorMessage])
 
-    const handleUserPassword = (e) => {
-        if (e.target.value.length < passwordLength)
-            setErrorMessage("Contraseña demasiado corta")
+    const handleUserEmail = (e) => {
+        if (e.target.value.length > 50) return;
+        setUserEmail(e.target.value)
+        if (e.target.value.length < 7)
+            setErrorMessage("Email demasiado corto")
         else
-            setUserPassword(e.target.value)
+            setErrorMessage(""); // Limpia el error si ya es válido
     }
 
+    const handleUserPassword = (e) => {
+        if (e.target.value.length > 15) return;
+        setUserPassword(e.target.value)
+        if (e.target.value.length < minPasswordLength)
+            setErrorMessage("Contraseña demasiado corta")
+        else
+            setErrorMessage(""); // Limpia el error si ya es válido
+    }
+
+    const handleUserNombre_Apellidos = (e) => {
+        if (e.target.value.length > 50) return;
+        setUserNombre_Apellidos(e.target.value)
+        if (e.target.value.length < 7)
+            setErrorMessage("Nombre y Apellidos demasiado cortos")
+        else
+            setErrorMessage(""); // Limpia el error si ya es válido
+    }
     // const handleUserNickInput = (e) => {
     // if (e.target.value.length < 5)
     //     setErrorMessage("Nick demasiado corto")
@@ -109,9 +128,8 @@ const SignUpComponent = ({ logged, setLogged }) => {
 
     const handleUserMovil = (e) => {
        let numbersOnly = e.target.value.replace(/\D/g, '').slice(0, 9); // solo 9 números
-       debugger
        console.log("numbersOnly: ", numbersOnly)
-        if (numbersOnly.length > 9) return;
+        // if (numbersOnly.length > 9) return;
         if (numbersOnly.length <= 3) {
             setUserMovil(numbersOnly);
         } else {
@@ -119,7 +137,16 @@ const SignUpComponent = ({ logged, setLogged }) => {
             setUserMovil(formatted);
         }
     }
-    
+
+    const handleUserExtension = (e) => {
+        let numbersOnly = e.target.value.replace(/\D/g, '').slice(0, 3); // solo 3 números
+        setUserExtension(numbersOnly)
+        if (e.target.value > 3) {
+            setErrorMessage("Máx. caracteres alcanzado")
+            return
+        }
+        setErrorMessage("")
+    }
 
     const handleSignUp = async (e) => {
         e.preventDefault()
@@ -134,8 +161,12 @@ const SignUpComponent = ({ logged, setLogged }) => {
             setErrorMessage("Introduzca email correcto")
             return
         }
-        if (userPassword.length < passwordLength) {
+        if (userPassword.length < minPasswordLength) {
             setErrorMessage("Introduzca contraseña más larga")
+            return
+        }
+        if (userNombre_Apellidos.length < 8) {
+            setErrorMessage("Nombre y Apellidos más largo")
             return
         }
         if (!isValidMovil(userMovil)) {
@@ -249,10 +280,12 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             name="useremail"
                             type="email"
                             autoComplete="email"
-                            placeholder="Email usuario"
+                            placeholder="(min 7 - max. 50 car.)"
                             required
                             fullWidth
-                            onChange={(e)=> setUserEmail(e.target.value)}
+                            value={userEmail}
+                            // onChange={(e)=> setUserEmail(e.target.value)}
+                            onChange={(e)=> handleUserEmail(e)}
                         />
                     </Stack>
                 </FormControl>
@@ -264,9 +297,10 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             name="userpassword"
                             type="password"
                             autoComplete="password"
-                            placeholder={`(mín. ${passwordLength} caracteres)`}
+                            placeholder={`(mín. ${minPasswordLength} - máx. 15 car.)`}
                             required
                             fullWidth
+                            value={userPassword}
                             onChange={(e)=> handleUserPassword(e)}
                         />
                     </Stack>
@@ -279,10 +313,12 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             name="usernombre_apellidos"
                             type="text"
                             autoComplete="nombre_apellidos"
-                            placeholder="Nombre y apellidos"
+                            placeholder="(mín. 7 - máx. 50 car.)"
                             required
                             fullWidth
-                            onChange={(e)=> setUserNombre_Apellidos(e.target.value)}
+                            value={userNombre_Apellidos}
+                            // onChange={(e)=> setUserNombre_Apellidos(e.target.value)}
+                            onChange={(e)=> handleUserNombre_Apellidos(e)}
                         />
                     </Stack>
                 </FormControl>
@@ -294,7 +330,7 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             name="usermovil"
                             type="text"
                             autoComplete="movil"
-                            placeholder="Ej.: 699-616161 (9 dígitos)"
+                            placeholder="Ej.: 699616161 (9 dígitos)"
                             fullWidth
                             value={userMovil}  // esta línea es esencial para poder usarse en la funcion handleUserMovil
                             // onChange={(e)=> setUserMovil(e.target.value)}
@@ -310,9 +346,11 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             name="userextension"
                             type="text"
                             autoComplete="extension"
-                            placeholder="Extension"
+                            placeholder="(máx. 3 car.)"
                             fullWidth
-                            onChange={(e)=> setUserExtension(e.target.value)}
+                            value={userExtension}
+                            // onChange={(e)=> setUserExtension(e.target.value)}
+                            onChange={(e)=> handleUserExtension(e)}
                         />
                     </Stack>
                 </FormControl>

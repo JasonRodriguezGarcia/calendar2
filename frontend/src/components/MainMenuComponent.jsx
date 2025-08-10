@@ -165,8 +165,10 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                     <Typography
                         variant="h5"
                         noWrap
-                        component="a"
-                        href="#app-bar-with-responsive-menu"
+                        // component="a"
+                        // href="#app-bar-with-responsive-menu"
+                        component = {Link} // Usar link en lugar de "a" y "href" para no rerenderizar
+                        to="/"
                         sx={{
                             mr: 2,
                             display: { xs: 'flex', md: 'none' },

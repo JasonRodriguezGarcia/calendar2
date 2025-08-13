@@ -7,14 +7,15 @@ import { Toolbar } from '@mui/material';
 
 const SignUpPage = () =>{
     const [logeado, setLogeado] = useState(false)
-    const [usuario, setUsuario] = useState('')
+    const [usuario, setUsuario] = useState({})
 
     return (
         <>
             <MainMenuComponent logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />
             {/* <div style={{ padding: 20 }}> */}
             <Toolbar /> {/* Añadiendo Toolbar vacío justo después, para que actúe como "espaciador" */}
-            <SignUpComponent logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />
+            {/* <SignUpComponent logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} /> */}
+            <SignUpComponent logged={logeado} setLogged={setLogeado} action="create" />
             {/* </div> */}
         </>
     )

@@ -57,11 +57,11 @@ export async function getSignUpFormData() {
   try {
     const centros = await pool.query(`SELECT * from erroak.centros ORDER BY centro`)
     console.log("centros: ", centros.rows)
-    if (centros.length)
+    if (!centros.rows.length)
         return {result: "Error. No hay datos en Centros"}
     const turnos = await pool.query(`SELECT * from erroak.turnos ORDER BY turno`)
     console.log("turnos: ", turnos.rows)
-    if (turnos.length)
+    if (!turnos.rows.length)
         return {result: "Error. No hay datos en Turnos"}
 
     // return {success: true, message: "OK"}
@@ -72,6 +72,72 @@ export async function getSignUpFormData() {
     console.error('Error:', err.message);
     throw err;
   }
+}
+
+export async function getUsuario(id) {
+  try {
+    // habría que desencriptar password/token, esto para más adelante
+    //
+    // hay que cambiar esto para cuando se pase también el usuario ID en los parámetros
+    const result = await pool.query("SELECT * FROM erroak.usuarios WHERE nombre_apellidos = $1", [id]);
+    console.log("result: ", result)
+    if (result.rows.length > 0) {
+        console.log("Usuario encontrado: ", result.rows[0])
+        return result.rows
+        // return result.rows[0]
+    }
+    else
+        return ({result: "No encontrado"})
+
+  } catch (err) {
+    console.error('Error en getUsuario:', err.message);
+    throw err;
+  }
+
+}
+
+export async function putUsuario(id, updatedUser) {
+  try {
+    // habría que desencriptar password/token, esto para más adelante
+    //
+    // hay que cambiar esto para cuando se pase también el usuario ID en los parámetros
+    // UPDATE erroak.usuarios set activo=true WHERE email = 'pepe2@pepe.com'
+    const {
+        email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id
+    } = updatedUser
+
+	const existsEmail = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.usuarios WHERE email = $1);`, [id])
+    console.log("imprimo exists1: ", existsEmail.rows[0].exists)
+    if (existsEmail.rows[0].exists)
+        return {result: "Email ya existente"}
+
+    // const existsNombre_Apellidos = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.usuarios WHERE nombre_apellidos = $1);`, [nombre_apellidos])
+    // console.log("imprimo exists2: ", existsNombre_Apellidos.rows[0].exists)
+    // if (existsNombre_Apellidos.rows[0].exists)
+    //     return {result: "Nombre y apellidos ya existente"}
+
+    const result = await pool.query(
+        `UPDATE erroak.usuarios SET
+            email = $1, password = $2, nombre_apellidos = $3, movil = $4, extension = $5, centro_id = $6,
+            llave = $7, alarma = $8, turno_id = $9
+        WHERE nombre_apellidos = $10
+        RETURNING *`,
+        [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, id]
+    )
+    console.log("result: ", result)
+    if (result.rows.length > 0) {
+        console.log("Usuario encontrado y actualizado: ", result.rows[0])
+        // return result.rows
+        return result.rows[0]  // retornamos el usuario actualizado
+    }
+    else
+        return ({result: "No encontrado"})
+
+  } catch (err) {
+    console.error('Error en getUsuario:', err.message);
+    throw err;
+  }
+
 }
 
 

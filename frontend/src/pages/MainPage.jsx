@@ -20,7 +20,7 @@ const MainPage = ({ logged }) => {
             }
             else {
                 setLogeado(false)
-                navigate(`/`);
+                navigate(`/`, { replace: true }); // evita que el usuario regrese con back
             }
         }
 

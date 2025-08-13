@@ -19,7 +19,7 @@ import { useScrollTrigger } from '@mui/material';
 import { useState } from 'react';
 
 const pages = ['Eventos', 'Vacaciones', 'About'];
-const settings = ['Datos perfil', 'Modificar Datos Perfil', 'Cerrar sesión'];
+const settings = ['Ver perfil', 'Modificar perfil', 'Cerrar sesión'];
 
 function MainMenuComponent({ logged, setLogged, user, setUser }) {
     const navigate = useNavigate()
@@ -40,13 +40,14 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
     };
 
     const handleCloseUserMenu = (setting) => {
+        debugger
         switch (setting) {
-            // case "Datos perfil":
-            //     navigate("/games");
-            //     break;
-            // case "Modificar datos perfil":
-            //     navigate("/pricing");
-            //     break;
+            case "Ver perfil":
+                navigate("/profile");
+                break;
+            case "Modificar perfil":
+                navigate("/editprofile");
+                break;
             case "Cerrar sesión":
                 localStorage.removeItem("user")
                 localStorage.removeItem("password")
@@ -262,7 +263,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                 "&:selected": {backgroundColor: "grey"}
                                 }}
                             >
-                                Crear usuario
+                                Alta usuari@
                             </Button>
                         </Tooltip>
                     </Box>

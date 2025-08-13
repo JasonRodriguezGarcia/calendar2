@@ -9,6 +9,8 @@ import EventsCalendarPage from './pages/EventsCalendarPage';
 import MainPage from './pages/MainPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
+import ProfilePage from './pages/ProfilePage';
+import EditProfilePage from './pages/EditProfilePage';
 
 const App = () => {
 
@@ -19,6 +21,9 @@ const App = () => {
                 <Route path="/eventos" element={<EventsCalendarPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/editprofile" element={<EditProfilePage />} />
+                
                 {/* <Route path="/" element={<DashboardPage />} />
                     <Route path="/descriptions/new" element={<DescriptionsFormInsertPage />} />
                     <Route path="/descriptions/view/:id" element={<DescriptionsView />} />

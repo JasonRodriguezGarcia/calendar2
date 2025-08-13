@@ -7,7 +7,7 @@ import LoginComponent from '../components/LoginComponent';
 const LoginPage = () =>{
     // const navigate = useNavigate();
     const [logeado, setLogeado] = useState(false)
-    const [usuario, setUsuario] = useState('')
+    const [usuario, setUsuario] = useState({})
 
     // useEffect(()=> {
     //     const checklogeado = () => {

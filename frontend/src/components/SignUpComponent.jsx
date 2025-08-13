@@ -25,7 +25,7 @@ import {
 
 } from '@mui/material';
 
-const SignUpComponent = ({ logged, setLogged }) => {
+const SignUpComponent = ({ logged, setLogged, user, action }) => {
 
     // const [isValidToken, setIsValidToken] = useState(false)
     // const [userName, setUserName] = useState("")
@@ -37,21 +37,27 @@ const SignUpComponent = ({ logged, setLogged }) => {
     const [userMovil, setUserMovil] = useState("")
     const [userExtension, setUserExtension] = useState("")
     const [userCentro, setUserCentro] = useState("")
-    const [userLlave, setUserLlave] = useState(false)
-    const [userAlarma, setUserAlarma] = useState(false)
+    const [userLlave, setUserLlave] = useState("false")
+    const [userAlarma, setUserAlarma] = useState("false")
     const [userTurno, setUserTurno] = useState("")
     const [centros, setCentros] = useState([])
     const [turnos, setTurnos] = useState([])
     const [minPasswordLength, setMinPasswordLength] = useState(10) // Longitud contraseña
+    const [formTitle, setFormTitle] = useState('')
+    const [formReadOnly, setFormReadOnly] = useState(false)
+    // const [api, setApi] = useState('')
+    // const [method, setMethod] = useState('')
     
     const [errorMessage, setErrorMessage] = useState("")
     const navigate = useNavigate();
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
 
+    console.log("prop usuario: ", user)
+
     useEffect(() => {
         const getData = async () => {
             try {
-                // fetch for getting data horarios & turnos
+                // fetch for getting horarios & turnos data
                 const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getSignUpFormData`,
                     {
                         method: 'GET',
@@ -73,11 +79,59 @@ const SignUpComponent = ({ logged, setLogged }) => {
             } finally {
                 // setLoading(false); // Set loading to false once data is fetched or error occurs
             }
+            // Esperara a que user esté definido
+            // if ((action === "read" || action === "update") && user?.nombre_apellidos) {
+            debugger
+            if (action === "read" || action === "update")  {
+                const endPoint= `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario/${user.nombre_apellidos}`
+                try {
+                    // fetch for getting usuario data
+                    const responseUser = await fetch(endPoint,
+                        {
+                            method: "GET",
+                            headers: {'Content-type': 'application/json; charset=UTF-8'}
+                        }
+                    )
+                    const dataResponseUser = await responseUser.json()
+                    const dataUser = dataResponseUser[0]
+                    console.log("Respuesta backend: ", dataUser)
+    // si ponemos dataUser?.result y no dataUser.menu, en caso de que programa no exista, obtenemos un crash con error en ejecución
+    // Pero si ponemos dataUser?.name y no existe obtenemos un undefined y el programa sigue su curso
+                    if (dataUser?.result === "No encontrado") {
+                        setErrorMessage("usuario no válido")
+                        return
+                    } else {
+                        setUserEmail(dataUser.email)
+                        setUserPassword(dataUser.password)
+                        setUserNombre_Apellidos(dataUser.nombre_apellidos)
+                        const movil = dataUser.movil.slice(0, 3) + "-" + dataUser.movil.slice(3)
+                        setUserMovil(movil)
+                        setUserExtension(dataUser.extension)
+                        setUserCentro(dataUser.centro_id)
+                        setUserLlave(dataUser.llave)
+                        setUserAlarma(dataUser.alarma)
+                        setUserTurno(dataUser.turno_id)
+                        const title = action === "read" ? "Ver perfil" : "Modificar perfil"
+                        setFormTitle(title)
+                        // const readOnly = action === "read" ? true : false
+                        setFormReadOnly(action === "read")
+                    }
 
+                } catch (error) {
+                    console.log(error.message)
+                } finally {
+                    // setLoading(false); // Set loading to false once data is fetched or error occurs
+                }
+            } else {
+                setFormTitle('Alta usuari@')
+                setFormReadOnly(false)
+            }
         }
 
         getData()
-    }, [])
+    }, [action, user]) // Importante para tener dependencias actualizadas
+    // Así nos aseguramos de que cuando user cambie desde '' a { nombre_apellidos, password }, el useEffect se dispare de nuevo 
+    // y haga el fetch correctamente.
 
     useEffect(() => {
         if (errorMessage) {
@@ -157,6 +211,10 @@ const SignUpComponent = ({ logged, setLogged }) => {
         // const buttonSelected = e.nativeEvent.submitter.name
         // console.log("Pulsado: ", buttonSelected)
         // if (buttonSelected === "login") {
+        if (action === "read") {
+            navigate(`/`);
+            return
+        }
         if (userEmail.length < 7) {
             setErrorMessage("Introduzca email correcto")
             return
@@ -178,18 +236,24 @@ const SignUpComponent = ({ logged, setLogged }) => {
                 email: userEmail,
                 password: userPassword, // falta encriptar
                 nombre_apellidos: userNombre_Apellidos,
-                movil: userMovil,
+                movil: userMovil.replace('-', ''),
                 extension: userExtension,
                 centro_id: userCentro,
-                llave: userLlave,
-                alarma: userAlarma,
+                llave: userLlave === "true",
+                alarma: userAlarma === "true",
                 turno_id: userTurno
             }
+            debugger
             console.log("user: ", user)
+            const endPoint= action === "create"
+                ? `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/signup`
+                : `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario/${user.nombre_apellidos}`
+            const method = action === "create" ? "POST" : "PUT"
+
             // fetch validate
-            const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/signup`,
+            const response = await fetch(endPoint,
                 {
-                    method: 'POST',
+                    method: method,
                     headers: {'Content-type': 'application/json; charset=UTF-8'},
                     body: JSON.stringify(user)
                 }
@@ -210,18 +274,19 @@ const SignUpComponent = ({ logged, setLogged }) => {
                 // navigate('/')
                 return
             }
-            
-            // Crear localStorage
-            const resultado = data[0]
-            localStorage.setItem("user", userNombre_Apellidos)
-            localStorage.setItem("password", userPassword)
-            setLogged(true)
+            if (action === "create") {
+                // Crear localStorage
+                const resultado = data[0]
+                localStorage.setItem("user", userNombre_Apellidos)
+                localStorage.setItem("password", userPassword)
+                setLogged(true)
+            }
             navigate('/')
-            // setIsValidToken(true)
-            // setLogged(true)       
-            // setUserNick(data.nick)
-            // console.log("Language localstorage: ", localStorage.getItem(user), localStorage.getItem(password))
-            // navigate(`/profile/${data.token}`);
+                // setIsValidToken(true)
+                // setLogged(true)       
+                // setUserNick(data.nick)
+                // console.log("Language localstorage: ", localStorage.getItem(user), localStorage.getItem(password))
+                // navigate(`/profile/${data.token}`);
         } catch (error) {
             // setError(error.message); // Handle errors
             console.log(error.message)
@@ -269,7 +334,8 @@ const SignUpComponent = ({ logged, setLogged }) => {
             >
                 <div>
                     <Typography variant="h4" component="h3" sx={{ color: "black"}}>
-                        <b>Alta usuario</b>
+                        {/* <b>Alta usuario</b> */}
+                        <b>{formTitle}</b>
                     </Typography>
                 </div>
                 <FormControl>
@@ -284,6 +350,7 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             required
                             fullWidth
                             value={userEmail}
+                            disabled={formReadOnly}
                             // onChange={(e)=> setUserEmail(e.target.value)}
                             onChange={(e)=> handleUserEmail(e)}
                         />
@@ -301,6 +368,7 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             required
                             fullWidth
                             value={userPassword}
+                            disabled={formReadOnly}
                             onChange={(e)=> handleUserPassword(e)}
                         />
                     </Stack>
@@ -317,6 +385,7 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             required
                             fullWidth
                             value={userNombre_Apellidos}
+                            disabled={formReadOnly}
                             // onChange={(e)=> setUserNombre_Apellidos(e.target.value)}
                             onChange={(e)=> handleUserNombre_Apellidos(e)}
                         />
@@ -333,6 +402,8 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             placeholder="Ej.: 699616161 (9 dígitos)"
                             fullWidth
                             value={userMovil}  // esta línea es esencial para poder usarse en la funcion handleUserMovil
+                            disabled={formReadOnly}
+                            // disabled
                             // onChange={(e)=> setUserMovil(e.target.value)}
                             onChange={(e)=> handleUserMovil(e)}
                         />
@@ -349,6 +420,7 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             placeholder="(máx. 3 car.)"
                             fullWidth
                             value={userExtension}
+                            disabled={formReadOnly}
                             // onChange={(e)=> setUserExtension(e.target.value)}
                             onChange={(e)=> handleUserExtension(e)}
                         />
@@ -357,22 +429,13 @@ const SignUpComponent = ({ logged, setLogged }) => {
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <FormLabel htmlFor="usercentro" sx={{ color: "black", minwidth: 100 }}>Centro</FormLabel>
-                        {/* <Input
-                            id="usercentro"
-                            name="usercentro"
-                            type="text"
-                            autoComplete="centro"
-                            placeholder="Centro"
-                            fullWidth
-                            onChange={(e)=> setUserCentro(e.target.value)}
-                            /> */}
-                        {/* <InputLabel id="select-label-centro">Centros *</InputLabel> */}
                         <Select
                             fullWidth
                             labelId="select-label-centro"
                             id="select-centro"
                             // label="Centro *"
                             value={userCentro}
+                            disabled={formReadOnly}
                             onChange={(e) => setUserCentro(e.target.value)}
                             required
                         >
@@ -386,16 +449,6 @@ const SignUpComponent = ({ logged, setLogged }) => {
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <FormLabel htmlFor="userllave" sx={{ color: "black", minwidth: 100 }}>Llave</FormLabel>
-                        {/* <Input
-                            id="userllave"
-                            name="userllave"
-                            type="text"
-                            autoComplete="llave"
-                            placeholder="Llave"
-                            defaultValue={false}
-                            fullWidth
-                            onChange={(e)=> setUserLlave(e.target.value)}
-                            /> */}
                         <RadioGroup
                             row //  esto los pone en horizontal
                             aria-labelledby="demo-radio-buttons-group-label-llave"
@@ -404,8 +457,8 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             value={userLlave}
                             onChange={(e)=> setUserLlave(e.target.value)}
                         >
-                            <FormControlLabel value="true" control={<Radio />} label="Si" />
-                            <FormControlLabel value="false" control={<Radio />} label="No"/>
+                            <FormControlLabel value="true" control={<Radio />} label="Si" disabled={formReadOnly}/>
+                            <FormControlLabel value="false" control={<Radio />} label="No" disabled={formReadOnly}/>
                         </RadioGroup>
                     </Stack>
                 </FormControl>
@@ -413,16 +466,6 @@ const SignUpComponent = ({ logged, setLogged }) => {
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <FormLabel htmlFor="useralarma" sx={{ color: "black", minwidth: 100 }}>Alarma</FormLabel>
-                        {/* <Input
-                            id="useralarma"
-                            name="useralarma"
-                            type="text"
-                            autoComplete="alarma"
-                            placeholder="Alarma"
-                            defaultValue={false}
-                            fullWidth
-                            onChange={(e)=> setUserAlarma(e.target.value)}
-                        /> */}
                         <RadioGroup
                             row //  esto los pone en horizontal
                             aria-labelledby="demo-radio-buttons-group-label-alarma"
@@ -431,29 +474,21 @@ const SignUpComponent = ({ logged, setLogged }) => {
                             value={userAlarma}
                             onChange={(e)=> setUserAlarma(e.target.value)}
                         >
-                            <FormControlLabel value="true" control={<Radio />} label="Si" />
-                            <FormControlLabel value="false" control={<Radio />} label="No"/>
+                            <FormControlLabel value="true" control={<Radio />} label="Si" disabled={formReadOnly}/>
+                            <FormControlLabel value="false" control={<Radio />} label="No"disabled={formReadOnly}/>
                         </RadioGroup>
                     </Stack>
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <FormLabel htmlFor="userturno" sx={{ color: "black", minwidth: 100 }}>Turno</FormLabel>
-                        {/* <Input
-                            id="userturno"
-                            name="userturno"
-                            type="text"
-                            autoComplete="turno"
-                            placeholder="Turno"
-                            fullWidth
-                            onChange={(e)=> setUserTurno(e.target.value)}
-                        /> */}
                         <Select
                             fullWidth
                             labelId="select-label-turno"
                             id="select-turno"
                             // label="Turno *"
                             value={userTurno}
+                            disabled={formReadOnly}
                             onChange={(e) => setUserTurno(e.target.value)}
                             required
                         >
@@ -462,25 +497,26 @@ const SignUpComponent = ({ logged, setLogged }) => {
 
                             ))}
                         </Select>
-
                     </Stack>
                 </FormControl>
 
-                <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 /* margin top */ }}>Crear usuario</Button>
+                {/* <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 }}>Crear usuario</Button> */}
                 {/* <Button type="submit" id="boton2" name="signup" sx={{ mt: 1 }}>SignUP</Button> */}
+                <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 }}>
+                    {/* Crear usuario */}
+                    {action === "create" 
+                        ?"Crear"
+                        :  action == "read" 
+                            ? "Cerrar" 
+                            : "Guardar"
+
+                    }
+                </Button>
 
                 {errorMessage && 
                 
                 <Typography level="body-sm" color="danger" fontWeight="bold" fontSize="1em">{errorMessage}</Typography>
                 }
-                {/* <Typography
-                    endDecorator={<Link href="/sign-up">Sign up</Link>}
-                    sx={{ fontSize: 'sm', alignSelf: 'center' }}
-                    onClick={handleSignUp}
-                    >
-                    Don&apos;t have an account?
-                </Typography> */}
-
             </Box>
         </Box>
         </>

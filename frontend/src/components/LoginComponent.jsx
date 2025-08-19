@@ -100,7 +100,6 @@ const LoginComponent = ({ logged, setLogged }) => {
             setErrorMessage("Introduzca email")
             return
         }
-        debugger
         if (userPassword.length === 0) {
             setErrorMessage("Introduzca contraseña")
             return
@@ -108,6 +107,7 @@ const LoginComponent = ({ logged, setLogged }) => {
 
             try {
                 const user = {
+                    id: userName,
                     useremail: userEmail,
                     password: userPassword // falta encriptar
                 }
@@ -121,7 +121,6 @@ const LoginComponent = ({ logged, setLogged }) => {
                     }
                 )
                 const data = await response.json()
-                debugger
                 console.log("Respuesta backend: ", data)
                 if (data.result === "No encontrado") {
                     setErrorMessage("usuario o contraseña no válidos")
@@ -130,9 +129,9 @@ const LoginComponent = ({ logged, setLogged }) => {
                     // navigate('/')
                     return
                 } else {
-                    debugger
                     // Crear localStorage
                     const resultado = data[0]
+                    localStorage.setItem("id", resultado.usuario_id)
                     localStorage.setItem("user", resultado.nombre_apellidos)
                     localStorage.setItem("password", resultado.password)
                     setLogged(true)
@@ -142,7 +141,6 @@ const LoginComponent = ({ logged, setLogged }) => {
                     // setUserNick(data.nick)
                     // console.log("Language localstorage: ", localStorage.getItem(user), localStorage.getItem(password))
                 }
-                    
 
                 // navigate(`/profile/${data.token}`);
             } catch (error) {

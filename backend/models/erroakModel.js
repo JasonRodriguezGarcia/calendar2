@@ -28,7 +28,7 @@ export async function postLogin(loginDetails) {
   }
 }
 
-export async function sendUsuarios(usuario) {
+export async function postUsuario(usuario) {
   try {
     const { email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id } = usuario
 	const existsEmail = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.usuarios WHERE email = $1);`, [email])
@@ -43,9 +43,11 @@ export async function sendUsuarios(usuario) {
 
     const result = await pool.query(`INSERT INTO erroak.usuarios
         (email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);`, 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        RETURNING usuario_id;`, 
         [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id])
-    return {success: true, message: "OK"}
+    console.log("usuario creado: ", result)
+    return {success: true, message: "OK", id: result.rows[0].usuario_id}
 
   } catch (err) {
     console.error('Error:', err.message);
@@ -79,10 +81,10 @@ export async function getUsuario(id) {
     // habría que desencriptar password/token, esto para más adelante
     //
     // hay que cambiar esto para cuando se pase también el usuario ID en los parámetros
-    const result = await pool.query("SELECT * FROM erroak.usuarios WHERE nombre_apellidos = $1", [id]);
-    console.log("result: ", result)
+    const result = await pool.query("SELECT * FROM erroak.usuarios WHERE usuario_id = $1", [id]);
+    console.log("result getUsuario: ", result)
     if (result.rows.length > 0) {
-        console.log("Usuario encontrado: ", result.rows[0])
+        console.log("Usuario encontrado en getUsuario: ", result.rows[0])
         return result.rows
         // return result.rows[0]
     }
@@ -106,7 +108,7 @@ export async function putUsuario(id, updatedUser) {
         email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id
     } = updatedUser
 
-	const existsEmail = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.usuarios WHERE email = $1);`, [id])
+	const existsEmail = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.usuarios WHERE email = $1 AND usuario_id != $2);`, [email, id])
     console.log("imprimo exists1: ", existsEmail.rows[0].exists)
     if (existsEmail.rows[0].exists)
         return {result: "Email ya existente"}
@@ -120,11 +122,11 @@ export async function putUsuario(id, updatedUser) {
         `UPDATE erroak.usuarios SET
             email = $1, password = $2, nombre_apellidos = $3, movil = $4, extension = $5, centro_id = $6,
             llave = $7, alarma = $8, turno_id = $9
-        WHERE nombre_apellidos = $10
+        WHERE usuario_id = $10
         RETURNING *`,
-        [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, id]
+        [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, parseInt(id)]
     )
-    console.log("result: ", result)
+    console.log("result: ", result.command)
     if (result.rows.length > 0) {
         console.log("Usuario encontrado y actualizado: ", result.rows[0])
         // return result.rows

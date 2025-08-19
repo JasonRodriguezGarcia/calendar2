@@ -40,7 +40,6 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
     };
 
     const handleCloseUserMenu = (setting) => {
-        debugger
         switch (setting) {
             case "Ver perfil":
                 navigate("/profile");
@@ -49,6 +48,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                 navigate("/editprofile");
                 break;
             case "Cerrar sesión":
+                localStorage.removeItem("id")
                 localStorage.removeItem("user")
                 localStorage.removeItem("password")
                 setLogged(false)

@@ -13,14 +13,15 @@ const ProfilePage = () =>{
 
     useEffect(()=> {
         const checklogeado = () => {
+            const usuario_id = parseInt(localStorage.getItem("id"))
             const nombre_apellidos = localStorage.getItem("user")
             const password = localStorage.getItem("password")
-            console.log("Language localstorage: ", nombre_apellidos, password)
+            console.log("Language localstorage: ", usuario_id, "-", nombre_apellidos, "-", password)
             // debugger
             if (nombre_apellidos!== null && password!== null) {
                 // lo busca en backend y si todo ok
                 setLogeado(true)
-                setUsuario({nombre_apellidos: nombre_apellidos, password: password})
+                setUsuario({id: usuario_id, nombre_apellidos: nombre_apellidos, password: password})
             }
             else {
                 setLogeado(false)

@@ -31,6 +31,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
     // const [userName, setUserName] = useState("")
     // const [userEmail, setUserEmail] = useState("")
     // const [userPassword, setUserPassword] = useState("")
+    const [userId, setUserId] = useState("")
     const [userEmail, setUserEmail] = useState("")
     const [userPassword, setUserPassword] = useState("")
     const [userNombre_Apellidos, setUserNombre_Apellidos] = useState("")
@@ -81,9 +82,10 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
             }
             // Esperara a que user esté definido
             // if ((action === "read" || action === "update") && user?.nombre_apellidos) {
-            debugger
+            // debugger
+            // console.log("imprimo user.id: ", user.id)
             if (action === "read" || action === "update")  {
-                const endPoint= `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario/${user.nombre_apellidos}`
+                const endPoint= `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario/${user.id}`
                 try {
                     // fetch for getting usuario data
                     const responseUser = await fetch(endPoint,
@@ -101,6 +103,8 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                         setErrorMessage("usuario no válido")
                         return
                     } else {
+                        // debugger
+                        // setUserId(dataUser.usuario_id)
                         setUserEmail(dataUser.email)
                         setUserPassword(dataUser.password)
                         setUserNombre_Apellidos(dataUser.nombre_apellidos)
@@ -127,6 +131,25 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                 setFormReadOnly(false)
             }
         }
+
+
+        // Solo continuar si user.id es válido, ya que se llama 2 veces a user
+        // 1. user inicia como {} (estado vacío)
+        // const [usuario, setUsuario] = useState({})
+        // 2. Después, se actualiza con datos reales desde el localStorage en EditProfilePage
+        // setUsuario({ id: usuario_id, nombre_apellidos, password })
+        // Ese cambio dispara nuevamente el useEffect de SignUpComponent, ya que user cambió. Así:
+        // Primera ejecución de useEffect: user.id es undefined → no se hace fetch, pero ya se ejecutó.
+        // Segunda ejecución: user.id ya tiene valor → se hace el fetch.
+        // ¿Qué hace esta condición?
+            // Parte	¿Qué verifica?	                ¿Cuándo es verdadera?
+            // !user	¿user es null/undefined/etc?	Cuando user = null, undefined, etc.
+            // !user.id	¿id está ausente o es falsy?	Cuando user = {} o user = { id: undefined }
+        if ((action === "read" || action === "update") && (!user || !user.id)) {
+            console.warn("getData() abortado porque user.id es undefined");
+            return;
+        }
+
 
         getData()
     }, [action, user]) // Importante para tener dependencias actualizadas
@@ -232,7 +255,10 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
             return;
         }
         try {
-            const user = {
+                    console.log("paso por hadleSignUp")
+
+            const userTmp = {
+                // id: user.id,
                 email: userEmail,
                 password: userPassword, // falta encriptar
                 nombre_apellidos: userNombre_Apellidos,
@@ -244,10 +270,11 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                 turno_id: userTurno
             }
             debugger
-            console.log("user: ", user)
+            console.log("user: ", userTmp)
             const endPoint= action === "create"
-                ? `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/signup`
-                : `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario/${user.nombre_apellidos}`
+                ? `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario`
+                // : `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario/${user.nombre_apellidos}`
+                : `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario/${user.id}`
             const method = action === "create" ? "POST" : "PUT"
 
             // fetch validate
@@ -255,7 +282,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                 {
                     method: method,
                     headers: {'Content-type': 'application/json; charset=UTF-8'},
-                    body: JSON.stringify(user)
+                    body: JSON.stringify(userTmp)
                 }
             )
             const data = await response.json()
@@ -274,13 +301,14 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                 // navigate('/')
                 return
             }
+            debugger
             if (action === "create") {
                 // Crear localStorage
-                const resultado = data[0]
-                localStorage.setItem("user", userNombre_Apellidos)
-                localStorage.setItem("password", userPassword)
-                setLogged(true)
+                localStorage.setItem("id", data.id)
             }
+            localStorage.setItem("user", userNombre_Apellidos)
+            localStorage.setItem("password", userPassword)
+            setLogged(true)
             navigate('/')
                 // setIsValidToken(true)
                 // setLogged(true)       

@@ -78,7 +78,7 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
     const [usedColors, setUsedColors] = useState([]); // backgroundColor del evento
 
     // Si no está logeado se sale del componente
-    if (!logged) return null    // con esta opción ni siquiera se muestra brevevente EventsCalendarComponent
+    if (!logged) return null    // con esta opción ni siquiera se muestra brevemente EventsCalendarComponent
         // navigate("/")        // con esta opción se muestra brevemente y luego pasa a "/"
 
     const handleNavigate = (newDate) => { // Permite desplazar de fecha del calendario
@@ -252,7 +252,7 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
     // <div style={{ padding: 20 }}>
     <>
         <Toolbar />
-      <h2>Calendario con formulario MUI</h2>
+      <h2>EVENTOS</h2>
       {/* <Calendar */}
       <DnDCalendar
         localizer={localizer}

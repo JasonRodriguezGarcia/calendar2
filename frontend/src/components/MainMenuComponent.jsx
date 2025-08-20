@@ -69,7 +69,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                 navigate("/eventos");
                 break;
             case "Vacaciones":
-                navigate("/vacaciones");
+                navigate("/holidays");
                 break;
             // case "About":
             //     navigate("/about");

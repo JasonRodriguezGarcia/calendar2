@@ -16,7 +16,7 @@ const EditProfilePage = () =>{
             const usuario_id = parseInt(localStorage.getItem("id"))
             const nombre_apellidos = localStorage.getItem("user")
             const password = localStorage.getItem("password")
-            console.log("Language localstorage: ", usuario_id, "-", nombre_apellidos, "-", password)
+            console.log("User localstorage: ", usuario_id, "-", nombre_apellidos, "-", password)
             // debugger
             if (nombre_apellidos!== null && password!== null) {
                 // lo busca en backend y si todo ok

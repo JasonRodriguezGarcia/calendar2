@@ -1,8 +1,8 @@
 // TO DO
 // - replantear espacios ya que contienen centro y espacio(despacho), crear tabla despachos
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { data, useNavigate } from 'react-router-dom';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 // import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
@@ -47,8 +47,10 @@ const localizer = dateFnsLocalizer({
 });
 
 const HolidaysComponent = ({ logged, setLogged, user } ) => {
+
     const navigate = useNavigate();
-    
+    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
+
     const [events, setEvents] = useState([]);
     const [eventData, setEventData] = useState({
         event_id: Date.now(), 
@@ -61,12 +63,96 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
     const [date, setDate] = useState(new Date());
     const [view, setView] = useState(Views.MONTH);      // POR DEFECTO VISTA SEMANA LABORAL
     const [selectedEvent, setSelectedEvent] = useState(null);
+    const [diasTotalVacaciones, setDiasTotalVacaciones] = useState(0)
+    const [diasUsadosVacaciones, setDiasUsadosVacaciones] = useState(0)
 
+
+    // useEffect(()=> {
+    //     if (!user || !user.id) {
+    //         console.warn("fetchEventos() abortado porque user.id es undefined");
+    //         return;
+    //     }
+    //     fetchCheckHolidays()
+    // }, [])
+
+    useEffect(()=> {
+        // Conseguimos la fecha cuando cambie de mes con los botones Mes Ant. y Mes Sig.
+        const month = date.getMonth() + 1; // 0 = Enero, así que +1
+        const year = date.getFullYear();
+
+        console.log("Cargando eventos para:", month, year);
+
+        // Simulación de llamada a API
+        const fetchEventos = async () => {
+            try {
+                // Aquí iría tu llamada real, como:
+                // const response = await fetch(`/api/eventos?mes=${month}&anio=${year}`);
+                // const data = await response.json();
+
+                // ⚠️ Simulamos delay y datos
+                await new Promise(resolve => setTimeout(resolve, 500)); // Simula delay de red
+
+                const data = [
+                    {
+                        event_id: Date.now(),
+                        start: new Date(year, month - 1, 5),
+                        end: new Date(year, month - 1, 5),
+                        cellActive: true,
+                        cellActiveColor: "red",
+                        usuario_Id: user.id
+                    },
+                    {
+                        event_id: Date.now() + 1,
+                        start: new Date(year, month - 1, 12),
+                        end: new Date(year, month - 1, 12),
+                        cellActive: true,
+                        cellActiveColor: "red",
+                        usuario_Id: user.id
+                    }
+                ];
+
+                setEvents(data);
+            } catch (error) {
+            console.error("Error cargando eventos:", error);
+            }
+        }
+
+    const fetchCheckHolidays = async () => {
+        // debugger
+        // Llamando a los datos de vacaciones del usuario
+        try {
+            const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/holidays/${user.id}/${new Date().getFullYear()}`,
+                {
+                    method: 'GET',
+                    headers: {'Content-type': 'application/json; charset=UTF-8'}
+                }
+            )
+            const dataHolidays = await response.json();
+            console.log("dataHolidays: ", dataHolidays)
+            debugger
+            // await new Promise(resolve => setTimeout(resolve, 500)); // Simula delay de red
+            
+            setDiasTotalVacaciones(dataHolidays.dias);
+        } catch (error) {
+            console.error("Error cargando usuariosvacaciones:", error);
+        }
+    }
+    
+        if (!user || !user.id) {
+            console.warn("fetchEventos() abortado porque user.id es undefined");
+            return;
+        }
+        fetchEventos();
+        fetchCheckHolidays();
+    }, [date, user])
+
+    // Esto se tiene que ejecutar detrás de los useEffect
     // Si no está logeado se sale del componente
     if (!logged) return null    // con esta opción ni siquiera se muestra brevemente EventsCalendarComponent
         // navigate("/")        // con esta opción se muestra brevemente y luego pasa a "/"
 
-    const handleNavigate = (newDate) => { // Permite desplazar de fecha del calendario
+    const handleNavigate = (newDate) => { // Permite desplazar de fecha del calendario, parámetro newDate que es la fecha a la que se desplaza
+        console.log("Navegando a nueva fecha:", newDate);
         setDate(newDate);
     };
 
@@ -108,7 +194,7 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
             cellActiveColor: "red",
             usuario_Id: user.id,
         };
-        debugger
+        // debugger
         setEventData(newEvento);
         setEvents([...events, newEvento]);
     };
@@ -132,7 +218,7 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
                     fontSize: '2.8rem',
             }}>
                 <strong>
-                    {event.cellActive ? "V" : null}
+                    {event.cellActive ? "Vacaciones" : null}
                 </strong>
             </div>
         );
@@ -142,9 +228,9 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
         // <div style={{ padding: 20 }}>
         <>
             <Toolbar />
-            <h2>VACACIONES (Dias restantes: 30 - En uso: 0)</h2>
+            <h2>VACACIONES (Dias restantes: {diasTotalVacaciones - diasUsadosVacaciones} - En uso: {diasUsadosVacaciones})</h2>
             {/* <DnDCalendar  // Permite D&D */} 
-            <div style={{ display: 'flex', gap: 20 }}>
+            {/* <div style={{ display: 'flex', gap: 20 }}> */}
 
             <Calendar
                 localizer={localizer}
@@ -154,11 +240,11 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
                 views={{month: true}}                           // Solo vista mensual permitida
                 onSelectSlot={handleSelectSlot}                 // Crear nuevo evento
                 onSelectEvent={handleSelectEvent}               // Editar evento existente
-                // style={{ height: 700 }}
-                style={{ height: 600, width: '33%' }}
+                style={{ height: 700 }}
+                // style={{ height: 600, width: '33%' }}
                 date={date}
                 view={view}
-                onNavigate={handleNavigate}
+                onNavigate={handleNavigate}                     // Cuando el usuario cambia de mes, Calendar ejecuta handleNavigate(newDate).
                 components={{
                     event: CustomEvent
                 }}
@@ -189,93 +275,7 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
                     //   agenda: 'Agenda',
                 }}
             />
-            <Calendar
-                localizer={localizer}
-                culture='es'                                    // días mes, semana, día en español
-                events={events}                                 // Personalizando la visualizacion de eventos en el calendario
-                selectable="single"                             // habilita la seleccion de celdas SOLO DE 1 EN 1, SIN RANGOS
-                views={{month: true}}                           // Solo vista mensual permitida
-                onSelectSlot={handleSelectSlot}                 // Crear nuevo evento
-                onSelectEvent={handleSelectEvent}               // Editar evento existente
-                // style={{ height: 700 }}
-                style={{ height: 600, width: '33%' }}
-                date={addMonths(date, 1)}
-                view={view}
-                onNavigate={handleNavigate}
-                components={{
-                    event: CustomEvent
-                }}
-                formats={{
-                    eventTimeRangeFormat: () => '',             // Oculta el "start - end" de la visualizacion de eventos que aparece por defecto
-                    weekdayFormat: (date, culture, localizer) =>
-                    localizer.format(date, 'eeee', culture), // 'lunes', 'martes', etc.
-                }}
-
-                eventPropGetter={(event) => {                   // Estilo visual de cada evento
-                    const backgroundColor = event?.cellActiveColor || '#BDBDBD';
-                    return {    // retornando un style por eso el return tiene {} en lugar de ()
-                        style: {
-                            backgroundColor,
-                            color: 'white',
-                            fontWeight: 'bold',
-                        }
-                    }
-                }}
-                messages={{
-                    next: 'Mes Sig.',
-                    previous: 'Mes Ant.',
-                    today: 'Hoy',
-                    month: 'Mes',
-                    //   week: 'Semana',                        // No se usa porque usamos work_week
-                    //   work_week: "Semana",                   // ponemos el texto Semana para work_week, sino aparecería "Work week"
-                    //   day: 'Día',
-                    //   agenda: 'Agenda',
-                }}
-            />
-            <Calendar
-                localizer={localizer}
-                culture='es'                                    // días mes, semana, día en español
-                events={events}                                 // Personalizando la visualizacion de eventos en el calendario
-                selectable="single"                             // habilita la seleccion de celdas SOLO DE 1 EN 1, SIN RANGOS
-                views={{month: true}}                           // Solo vista mensual permitida
-                onSelectSlot={handleSelectSlot}                 // Crear nuevo evento
-                onSelectEvent={handleSelectEvent}               // Editar evento existente
-                // style={{ height: 700 }}
-                style={{ height: 600, width: '33%' }}
-                date={addMonths(date, 2)}
-                view={view}
-                onNavigate={handleNavigate}
-                components={{
-                    event: CustomEvent
-                }}
-                formats={{
-                    eventTimeRangeFormat: () => '',             // Oculta el "start - end" de la visualizacion de eventos que aparece por defecto
-                    weekdayFormat: (date, culture, localizer) =>
-                    localizer.format(date, 'eeee', culture), // 'lunes', 'martes', etc.
-                }}
-
-                eventPropGetter={(event) => {                   // Estilo visual de cada evento
-                    const backgroundColor = event?.cellActiveColor || '#BDBDBD';
-                    return {    // retornando un style por eso el return tiene {} en lugar de ()
-                        style: {
-                            backgroundColor,
-                            color: 'white',
-                            fontWeight: 'bold',
-                        }
-                    }
-                }}
-                messages={{
-                    next: 'Mes Sig.',
-                    previous: 'Mes Ant.',
-                    today: 'Hoy',
-                    month: 'Mes',
-                    //   week: 'Semana',                        // No se usa porque usamos work_week
-                    //   work_week: "Semana",                   // ponemos el texto Semana para work_week, sino aparecería "Work week"
-                    //   day: 'Día',
-                    //   agenda: 'Agenda',
-                }}
-            />
-        </div>
+        {/* </div> */}
         </>
     );
 }

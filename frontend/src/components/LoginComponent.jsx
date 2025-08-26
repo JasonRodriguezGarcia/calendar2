@@ -54,13 +54,6 @@ const LoginComponent = ({ logged, setLogged }) => {
     const navigate = useNavigate();
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
 
-    
-    // useEffect(()=> {
-    //     console.log("Idioma: ", language)
-    //     setLanguageSet(language)
-    //     i18n.changeLanguage(language)
-    // }, [language])
-
     useEffect(()=> {
         if (errorMessage) {
             const intervalo = setTimeout(() => {

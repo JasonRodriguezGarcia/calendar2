@@ -2,7 +2,7 @@ import { Router} from 'express';
 // import { validateQuery, validateUserId } from '../middleware/users.js';
 // import { authenticateToken } from '../middleware/login.js';
 // import jwt from 'jsonwebtoken';
-import { getUsuarios, postLogin, postUsuario, getSignUpFormData, getUsuario, putUsuario } from '../models/erroakModel.js';
+import { getUsuarios, postLogin, postUsuario, getSignUpFormData, getUsuario, putUsuario, getHolidays } from '../models/erroakModel.js';
 
 const router = Router()
 
@@ -55,6 +55,15 @@ router.put('/usuario/:id', async(req, res) => {
     const resultUsuario = await putUsuario(id, updatedUser);
     res.json (resultUsuario)
 })
+
+router.get('/holidays/:id/:ano', async(req, res) => {
+    const {id, ano} = req.params
+    console.log("imprimo id - ano en /holidays: ", id, "-", ano)
+    const resultHolidays = await getHolidays(id, ano);
+    res.json (resultHolidays)
+})
+
+
 
 export default router
 // router.get('/votos', async(req, res) => {

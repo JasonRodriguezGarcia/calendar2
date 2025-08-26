@@ -95,7 +95,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                         }
                     )
                     const dataResponseUser = await responseUser.json()
-                    const dataUser = dataResponseUser[0]
+                    const dataUser = dataResponseUser
                     console.log("Respuesta backend: ", dataUser)
     // si ponemos dataUser?.result y no dataUser.menu, en caso de que programa no exista, obtenemos un crash con error en ejecución
     // Pero si ponemos dataUser?.name y no existe obtenemos un undefined y el programa sigue su curso
@@ -149,7 +149,6 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
             console.warn("getData() abortado porque user.id es undefined");
             return;
         }
-
 
         getData()
     }, [action, user]) // Importante para tener dependencias actualizadas

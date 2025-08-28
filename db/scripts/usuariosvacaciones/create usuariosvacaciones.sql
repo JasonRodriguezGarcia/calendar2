@@ -7,7 +7,12 @@ CREATE TABLE IF NOT EXISTS erroak.usuariosvacaciones
     usuario_id integer NOT NULL,
     ano integer NOT NULL,
     dias integer NOT NULL,
-    CONSTRAINT usuariosvacaciones_pkey PRIMARY KEY (usuario_id, ano)
+    CONSTRAINT usuariosvacaciones_pkey PRIMARY KEY (usuario_id, ano),
+    CONSTRAINT usuario_id_fk FOREIGN KEY (usuario_id)
+        REFERENCES erroak.usuarios (usuario_id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        NOT VALID
 )
 
 TABLESPACE pg_default;

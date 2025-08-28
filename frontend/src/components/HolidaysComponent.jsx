@@ -89,27 +89,27 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
                 // const response = await fetch(`/api/eventos?mes=${month}&anio=${year}`);
                 // const data = await response.json();
 
+                const data = []
                 // ⚠️ Simulamos delay y datos
-                await new Promise(resolve => setTimeout(resolve, 500)); // Simula delay de red
-
-                const data = [
-                    {
-                        event_id: Date.now(),
-                        start: new Date(year, month - 1, 5),
-                        end: new Date(year, month - 1, 5),
-                        cellActive: true,
-                        cellActiveColor: "red",
-                        usuario_Id: user.id
-                    },
-                    {
-                        event_id: Date.now() + 1,
-                        start: new Date(year, month - 1, 12),
-                        end: new Date(year, month - 1, 12),
-                        cellActive: true,
-                        cellActiveColor: "red",
-                        usuario_Id: user.id
-                    }
-                ];
+                // await new Promise(resolve => setTimeout(resolve, 500)); // Simula delay de red
+                // const data = [
+                //     {
+                //         event_id: Date.now(),
+                //         start: new Date(year, month - 1, 5),
+                //         end: new Date(year, month - 1, 5),
+                //         // cellActive: true,
+                //         cellActiveColor: "red",
+                //         usuario_Id: user.id
+                //     },
+                //     {
+                //         event_id: Date.now() + 1,
+                //         start: new Date(year, month - 1, 12),
+                //         end: new Date(year, month - 1, 12),
+                //         // cellActive: true,
+                //         cellActiveColor: "red",
+                //         usuario_Id: user.id
+                //     }
+                // ];
 
                 setEvents(data);
             } catch (error) {
@@ -190,13 +190,19 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
             start,
             end,
             // end: new Date(start.getTime() + 60 * 60 * 1000), // 1 hora por defecto (¡importante!) TENER start y end
-            cellActive: true,
+            // cellActive: true,
             cellActiveColor: "red",
             usuario_Id: user.id,
         };
         // debugger
         setEventData(newEvento);
         setEvents([...events, newEvento]);
+// Ya que estamos comenzando y los campos start y end vienen de JavaScript, es recomiendable guardar las fechas en 
+// formato UTC (como .toISOString() en JS) y usar TIMESTAMPTZ en PostgreSQL.
+// Así evitaremos problemas futuros con zonas horarias.
+
+// añadir llamada a backend para guardar
+
     };
 
     // Editando un evento ya creado que en este caso lo borra
@@ -218,7 +224,8 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
                     fontSize: '2.8rem',
             }}>
                 <strong>
-                    {event.cellActive ? "Vacaciones" : null}
+                    {/* {event.cellActive ? "Vacaciones" : null} */}
+                    "Vacaciones"
                 </strong>
             </div>
         );

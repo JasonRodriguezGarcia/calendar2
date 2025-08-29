@@ -162,7 +162,7 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
             setErrorDialogOpen(true);
             return;
         }
-        debugger
+        // debugger
         if (eventData.start < minTime || eventData.end > maxTime) {
             // setErrorDialogMessage('La hora del evento debe estar entre 07:00 y 21:00.');
             setErrorDialogMessage(`La hora del evento debe estar entre ${horaMinima.getHours()}hrs y ${horaMaxima.getHours()}hrs.`);
@@ -202,7 +202,7 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
     };
 
     const handleEventDrop = ({ event, start, end }) => {
-        debugger
+        // debugger
         const day = start.getDay();
         if (day === 0 || day === 6) {
             setErrorDialogMessage('Solo se permiten eventos en días laborales.');

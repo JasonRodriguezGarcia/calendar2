@@ -2,7 +2,7 @@ import { Router} from 'express';
 // import { validateQuery, validateUserId } from '../middleware/users.js';
 // import { authenticateToken } from '../middleware/login.js';
 // import jwt from 'jsonwebtoken';
-import { getUsuarios, postLogin, postUsuario, getSignUpFormData, getUsuario, putUsuario, getHolidays } from '../models/erroakModel.js';
+import { getUsuarios, postLogin, postUsuario, getSignUpFormData, getUsuario, putUsuario, getHolidays } from '../models/usuariosModel.js';
 
 const router = Router()
 
@@ -29,7 +29,6 @@ router.get('/getSignUpFormData', async(req, res) => {
 })
 
 // /api/v1/erroak/usuario -- create usuarios
-// a /usuario y cambiar sendUsuarios por postUsuario
 router.post('/usuario', async(req, res) => {
     const usuario = req.body
     console.log("Recibido en backend: ", usuario)
@@ -63,9 +62,8 @@ router.get('/holidays/:id/:ano', async(req, res) => {
     res.json (resultHolidays)
 })
 
-
-
 export default router
+
 // router.get('/votos', async(req, res) => {
 //     const votos = await getVotos();
 //     console.log(votos);

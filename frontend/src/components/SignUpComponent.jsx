@@ -254,7 +254,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
             return;
         }
         try {
-                    console.log("paso por hadleSignUp")
+            console.log("paso por hadleSignUp")
 
             const userTmp = {
                 // id: user.id,

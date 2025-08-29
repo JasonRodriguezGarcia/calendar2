@@ -2,7 +2,7 @@
 // - replantear espacios ya que contienen centro y espacio(despacho), crear tabla despachos
 
 import { useEffect, useState } from 'react';
-import { data, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 // import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
@@ -10,7 +10,13 @@ import { es } from 'date-fns/locale';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 import addMonths from 'date-fns/addMonths';
-import startOfWeek from 'date-fns/startOfWeek';
+// import startOfWeek from 'date-fns/startOfWeek';
+import {
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+} from 'date-fns'; // necesario para calcular el rango visible del calendario y startOfWeek para indicar el día que comienza la semana
 import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { usuarios, espacios, programas } from "./Data"
@@ -53,27 +59,17 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
 
     const [events, setEvents] = useState([]);
     const [eventData, setEventData] = useState({
-        event_id: Date.now(), 
-        start: new Date(),
-        end: new Date(),
-        // end: new Date(start.getTime() + 60 * 60 * 1000), // 1 hora por defecto (¡importante!) TENER start y end        cellActive: false,
-        cellActiveColor: "red",
-        usuario_Id: '',
+        // event_id: Date.now(), 
+        // start: new Date(),
+        // end: new Date(),
+        // cellColor: "red",
+        // usuario_id: '',
     });
     const [date, setDate] = useState(new Date());
     const [view, setView] = useState(Views.MONTH);      // POR DEFECTO VISTA SEMANA LABORAL
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [diasTotalVacaciones, setDiasTotalVacaciones] = useState(0)
     const [diasUsadosVacaciones, setDiasUsadosVacaciones] = useState(0)
-
-
-    // useEffect(()=> {
-    //     if (!user || !user.id) {
-    //         console.warn("fetchEventos() abortado porque user.id es undefined");
-    //         return;
-    //     }
-    //     fetchCheckHolidays()
-    // }, [])
 
     useEffect(()=> {
         // Conseguimos la fecha cuando cambie de mes con los botones Mes Ant. y Mes Sig.
@@ -82,61 +78,55 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
 
         console.log("Cargando eventos para:", month, year);
 
-        // Simulación de llamada a API
+        const getVisibleRange = (date) => {         // Para conseguir el rango visible del calendario
+            const start = startOfWeek(startOfMonth(date), { weekStartsOn: 1 });
+            const end = endOfWeek(endOfMonth(date), { weekStartsOn: 1 });
+            return { start, end };
+        };
+
         const fetchEventos = async () => {
+// Esta línea llama a una función getVisibleRange(date) que devuelve el inicio y fin visibles del calendario para el mes actual (date).
+//  start: normalmente será el lunes anterior al primer día del mes.
+//  end: normalmente el domingo posterior al último día del mes.
+// Esto asegura que el calendario muestra todos los días visibles, incluso si no pertenecen al mes exacto (como el 1 de agosto que 
+//      aparece en julio).
+            const { start, end } = getVisibleRange(date);
+            // Llamando a backend para presentar los datos
             try {
-                // Aquí iría tu llamada real, como:
-                // const response = await fetch(`/api/eventos?mes=${month}&anio=${year}`);
-                // const data = await response.json();
-
-                const data = []
-                // ⚠️ Simulamos delay y datos
-                // await new Promise(resolve => setTimeout(resolve, 500)); // Simula delay de red
-                // const data = [
-                //     {
-                //         event_id: Date.now(),
-                //         start: new Date(year, month - 1, 5),
-                //         end: new Date(year, month - 1, 5),
-                //         // cellActive: true,
-                //         cellActiveColor: "red",
-                //         usuario_Id: user.id
-                //     },
-                //     {
-                //         event_id: Date.now() + 1,
-                //         start: new Date(year, month - 1, 12),
-                //         end: new Date(year, month - 1, 12),
-                //         // cellActive: true,
-                //         cellActiveColor: "red",
-                //         usuario_Id: user.id
-                //     }
-                // ];
-
-                setEvents(data);
+                const response = await fetch(
+                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${user.id}/${start.toISOString()}/${end.toISOString()}`
+                );
+                const data = await response.json();
+                const vacacionesData = data.map(vacacion => ({
+                    ...vacacion,
+                    start: new Date(vacacion.start),
+                    end: new Date(vacacion.end),
+                    cellColor: vacacion.cell_color,
+                }));
+                console.log("imprimo vacacionesData: ", vacacionesData)
+                setEvents(vacacionesData);
             } catch (error) {
-            console.error("Error cargando eventos:", error);
+                console.error("Error cargando eventos:", error);
             }
         }
 
-    const fetchCheckHolidays = async () => {
-        // debugger
-        // Llamando a los datos de vacaciones del usuario
-        try {
-            const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/holidays/${user.id}/${new Date().getFullYear()}`,
-                {
-                    method: 'GET',
-                    headers: {'Content-type': 'application/json; charset=UTF-8'}
-                }
-            )
-            const dataHolidays = await response.json();
-            console.log("dataHolidays: ", dataHolidays)
-            debugger
-            // await new Promise(resolve => setTimeout(resolve, 500)); // Simula delay de red
-            
-            setDiasTotalVacaciones(dataHolidays.dias);
-        } catch (error) {
-            console.error("Error cargando usuariosvacaciones:", error);
+        const fetchCheckHolidays = async () => {
+            // Llamando a los datos de vacaciones del usuario
+            try {
+                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/holidays/${user.id}/${new Date().getFullYear()}`,
+                    {
+                        method: 'GET',
+                        headers: {'Content-type': 'application/json; charset=UTF-8'}
+                    }
+                )
+                const dataHolidays = await response.json();
+                console.log("dataHolidays: ", dataHolidays)
+                
+                setDiasTotalVacaciones(dataHolidays.dias);
+            } catch (error) {
+                console.error("Error cargando usuariosvacaciones:", error);
+            }
         }
-    }
     
         if (!user || !user.id) {
             console.warn("fetchEventos() abortado porque user.id es undefined");
@@ -158,13 +148,15 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
 
     // Creando un nuevo evento
     // Activando la celda clickada
-    const handleSelectSlot = (slotInfo) => {
-        // let { start, end } = slotInfo;
-        // Forzar que el evento solo dure 1 día (ignora end del rango)
+    const handleSelectSlot = async (slotInfo) => {
         // Esto ayuda a que el evento no se "expanda" a otras celdas y se mantenga en la celda seleccionada.
         const start = new Date(slotInfo.start)
         const end = new Date(start); // mismo día
         const day = start.getDay(); // 0 = domingo, 6 = sábado
+
+        // Evitar que zona horaria te reste un día por la diferencia horaria
+        start.setHours(12, 0, 0, 0);
+        end.setHours(12, 0, 0, 0);
 
         // No permitir seleccionar sábados ni domingos
         if (day === 0 || day === 6) return;
@@ -185,37 +177,80 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
             return
 
         // Generando el evento
-        const newEvento = {
+        const newVacacion = {
             event_id: newEventId, 
             start,
             end,
-            // end: new Date(start.getTime() + 60 * 60 * 1000), // 1 hora por defecto (¡importante!) TENER start y end
-            // cellActive: true,
-            cellActiveColor: "red",
-            usuario_Id: user.id,
-        };
+            cellColor: "red",
+            usuario_id: user.id
+        }
+        const backendVacation = {...newVacacion}
+        backendVacation.start = start.toISOString()
+        backendVacation.end = end.toISOString()
+        console.log("newVacacion: ", newVacacion)
         // debugger
-        setEventData(newEvento);
-        setEvents([...events, newEvento]);
+        setEventData(newVacacion);
+        setEvents([...events, newVacacion]);
 // Ya que estamos comenzando y los campos start y end vienen de JavaScript, es recomiendable guardar las fechas en 
 // formato UTC (como .toISOString() en JS) y usar TIMESTAMPTZ en PostgreSQL.
 // Así evitaremos problemas futuros con zonas horarias.
 
-// añadir llamada a backend para guardar
-
-    };
+// Llamada a backend para guardar
+        try {
+            // fetch vacaciones
+            const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacacion`,
+                {
+                    method: "POST",
+                    headers: {'Content-type': 'application/json; charset=UTF-8'},
+                    body: JSON.stringify(newVacacion)
+                }
+            )
+            const data = await response.json()
+            console.log("Respuesta backend vacacion post: ", data)
+            if (data.result === "Vacacion ya existente") {
+                setErrorMessage("Email ya existente")
+                return
+            }
+        } catch (error) {
+            // setError(error.message); // Handle errors
+            console.log(error.message)
+        } finally {
+            // setLoading(false); // Set loading to false once data is fetched or error occurs
+        }
+    }
 
     // Editando un evento ya creado que en este caso lo borra
-    const handleSelectEvent = (event) => {
+    const handleSelectEvent = async (event) => {
         const filtered = events.filter(evento => evento.event_id != event.event_id)
         setEvents(filtered)
-    };
+    // Llama a backend para borrar
+        try {
+            // fetch vacaciones
+            const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacacion/${event.event_id}`,
+                {
+                    method: "DELETE",
+                    headers: {'Content-type': 'application/json; charset=UTF-8'},
+                    // body: JSON.stringify(newVacacion)
+                }
+            )
+            const data = await response.json()
+            console.log("Respuesta backend vacacion delete: ", data)
+            if (data.result === "Vacacion event_id NO existente") {
+                setErrorMessage("Vacacion event_id NO existente")
+                return
+            }
+        } catch (error) {
+            // setError(error.message); // Handle errors
+            console.log(error.message)
+        } finally {
+            // setLoading(false); // Set loading to false once data is fetched or error occurs
+        }
+    }
     
     // Personalizando la visualizacion de eventos en el calendario, por defecto "start-end title"
     const CustomEvent = ({ event }) => {
         return (
             <div style={{
-                // color: event.cellActiveColor
                     width: '100%',
                     height: '100%',
                     display: 'flex',
@@ -228,8 +263,8 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
                     "Vacaciones"
                 </strong>
             </div>
-        );
-    };
+        )
+    }
 
     return (
         // <div style={{ padding: 20 }}>
@@ -262,7 +297,7 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
                 }}
 
                 eventPropGetter={(event) => {                   // Estilo visual de cada evento
-                    const backgroundColor = event?.cellActiveColor || '#BDBDBD';
+                    const backgroundColor = event?.cellColor || '#BDBDBD';
                     return {    // retornando un style por eso el return tiene {} en lugar de ()
                         style: {
                             backgroundColor,

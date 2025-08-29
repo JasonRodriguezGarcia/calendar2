@@ -3,7 +3,8 @@ import express from "express";
 import path from "path";
 import cors from 'cors';
 import { fileURLToPath } from "url";
-import erroakRouter from './routes/erroak.js'
+import usuariosRouter from './routes/usuarios.js'
+import vacacionesRouter from './routes/vacaciones.js'
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -32,7 +33,8 @@ app.use(express.json());
 
 // app.use(logger); // adding middleware to show some logs
 // Esto registra routers separados para manejar distintas partes del backend:
-app.use('/api/v1/erroak', erroakRouter)
+app.use('/api/v1/erroak', usuariosRouter)
+app.use('/api/v1/erroak', vacacionesRouter)
 
 // // Start Server
 // app.listen(PORT, HOSTNAME, () => {

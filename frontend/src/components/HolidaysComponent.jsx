@@ -68,8 +68,44 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
     const [date, setDate] = useState(new Date());
     const [view, setView] = useState(Views.MONTH);      // POR DEFECTO VISTA SEMANA LABORAL
     const [selectedEvent, setSelectedEvent] = useState(null);
-    const [diasTotalVacaciones, setDiasTotalVacaciones] = useState(0)
+    // const [diasTotalVacaciones, setDiasTotalVacaciones] = useState(0)
     const [diasUsadosVacaciones, setDiasUsadosVacaciones] = useState(0)
+
+        const fetchCheckHolidays = async () => {
+            // Llamada a la cuenta del año en curso de las vacaciones acumuladas
+            try {
+                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/count/${user.id}/${date.getFullYear()}`,
+                    {
+                        method: 'GET',
+                        headers: {'Content-type': 'application/json; charset=UTF-8'}
+                    }
+                )
+                const dataHolidaysCount = await response.json();
+                console.log("dataHolidaysCount: ", dataHolidaysCount)
+                
+                setDiasUsadosVacaciones(parseInt(dataHolidaysCount.count));
+            } catch (error) {
+                console.error("Error cargando vacaciones/count:", error);
+            }
+
+            // A BORRAR MÁS ADELANTE ¿?
+            // Llamando a los datos de vacaciones del usuario del usuario según su perfil 
+            // try {
+            //     const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/holidays/${user.id}/${new Date().getFullYear()}`,
+            //         {
+            //             method: 'GET',
+            //             headers: {'Content-type': 'application/json; charset=UTF-8'}
+            //         }
+            //     )
+            //     const dataHolidays = await response.json();
+            //     console.log("dataHolidays: ", dataHolidays)
+                
+            //     setDiasTotalVacaciones(dataHolidays.dias);
+            // } catch (error) {
+            //     console.error("Error cargando usuariosvacaciones:", error);
+            // }
+        }
+
 
     useEffect(()=> {
         // Conseguimos la fecha cuando cambie de mes con los botones Mes Ant. y Mes Sig.
@@ -110,23 +146,6 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
             }
         }
 
-        const fetchCheckHolidays = async () => {
-            // Llamando a los datos de vacaciones del usuario
-            try {
-                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/holidays/${user.id}/${new Date().getFullYear()}`,
-                    {
-                        method: 'GET',
-                        headers: {'Content-type': 'application/json; charset=UTF-8'}
-                    }
-                )
-                const dataHolidays = await response.json();
-                console.log("dataHolidays: ", dataHolidays)
-                
-                setDiasTotalVacaciones(dataHolidays.dias);
-            } catch (error) {
-                console.error("Error cargando usuariosvacaciones:", error);
-            }
-        }
     
         if (!user || !user.id) {
             console.warn("fetchEventos() abortado porque user.id es undefined");
@@ -217,6 +236,9 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
         } finally {
             // setLoading(false); // Set loading to false once data is fetched or error occurs
         }
+
+        fetchCheckHolidays();
+
     }
 
     // Editando un evento ya creado que en este caso lo borra
@@ -245,6 +267,9 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
         } finally {
             // setLoading(false); // Set loading to false once data is fetched or error occurs
         }
+
+        fetchCheckHolidays();
+
     }
     
     // Personalizando la visualizacion de eventos en el calendario, por defecto "start-end title"
@@ -270,7 +295,8 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
         // <div style={{ padding: 20 }}>
         <>
             <Toolbar />
-            <h2>VACACIONES (Dias restantes: {diasTotalVacaciones - diasUsadosVacaciones} - En uso: {diasUsadosVacaciones})</h2>
+            <h2>VACACIONES AÑO: {date.getFullYear()} (Dias de vac. en uso: {diasUsadosVacaciones})</h2>
+            {/* <h2>VACACIONES (Dias restantes: {diasTotalVacaciones - diasUsadosVacaciones} - En uso: {diasUsadosVacaciones})</h2> */}
             {/* <DnDCalendar  // Permite D&D */} 
             {/* <div style={{ display: 'flex', gap: 20 }}> */}
 

@@ -133,27 +133,28 @@ export async function putUsuario(id, updatedUser) {
     }
 }
 
-export async function getHolidays(id, ano) {
-    try {
-        // habría que desencriptar password/token, esto para más adelante
-        //
-        const result = await pool.query("SELECT * FROM erroak.usuariosvacaciones WHERE usuario_id = $1 AND ano = $2", [id, ano]);
-        console.log("result getHolidays: ", result)
+// ANULADO NO USAR
+// export async function getHolidays(id, ano) {
+//     try {
+//         // habría que desencriptar password/token, esto para más adelante
+//         //
+//         const result = await pool.query("SELECT * FROM erroak.usuariosvacaciones WHERE usuario_id = $1 AND ano = $2", [id, ano]);
+//         console.log("result getHolidays: ", result)
 
-        // hay que devolver los días de vacaciones y la cuenta de días de vacaciones usados
-        if (result.rows.length > 0) {
-            console.log("Usuario encontrado en getHolidays: ", result.rows[0])
-            return result.rows[0]
-            // return result.rows[0]
-        }
-        else
-            return ({result: "No encontrado"})
+//         // hay que devolver los días de vacaciones y la cuenta de días de vacaciones usados
+//         if (result.rows.length > 0) {
+//             console.log("Usuario encontrado en getHolidays: ", result.rows[0])
+//             return result.rows[0]
+//             // return result.rows[0]
+//         }
+//         else
+//             return ({result: "No encontrado"})
 
-  } catch (err) {
-    console.error('Error en getHolidays:', err.message);
-    throw err;
-  }
-}
+//   } catch (err) {
+//     console.error('Error en getHolidays:', err.message);
+//     throw err;
+//   }
+// }
 
 
 

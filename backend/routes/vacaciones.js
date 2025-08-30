@@ -3,20 +3,13 @@ import { Router} from 'express';
 // import { authenticateToken } from '../middleware/login.js';
 // import jwt from 'jsonwebtoken';
 // import { getUsuarios, postLogin, postUsuario, getSignUpFormData, getUsuario, putUsuario, getHolidays } from '../models/usuariosModel.js';
-import { getVacaciones, postVacacion, deleteVacacion } from '../models/vacacionesModel.js';
+import { getVacaciones, postVacacion, deleteVacacion, getVacacionesCount } from '../models/vacacionesModel.js';
 
 const router = Router()
 
-// /api/v1/erroak/vacaciones
-// router.get('/vacaciones/:date1/:date2', async(req, res) => {
-//     const {date1, date2} = req.params
-//     const vacaciones = await getVacaciones(date1, date2);
-//     console.log(vacaciones);
-//     res.json (vacaciones)
-// })
 
-
-// /api/v1/erroak/vacacion -- create vacaciones
+// /api/v1/erroak/vacacion 
+// Crear vacaciones
 router.post('/vacacion', async(req, res) => {
     const vacacion = req.body
     console.log("Recibido en backend vacacion post: ", vacacion)
@@ -25,7 +18,8 @@ router.post('/vacacion', async(req, res) => {
     res.json (resultVacacion)
 })
 
-// POST /api/v1/erroak/vacacion/:id
+// DELETE /api/v1/erroak/vacacion/:id
+// BORRAR UN EVENTO EN VACACIONES
 router.delete('/vacacion/:event_id', async (req, res) => {
     const {event_id} = req.params
     console.log("Recibido en backend vacacion delete: ", event_id)
@@ -34,7 +28,20 @@ router.delete('/vacacion/:event_id', async (req, res) => {
     res.json (resultVacacion)
 });
 
+// Cuenta vacaciones de un usuario en un año -- TIENE QUE ESTAR ANTES QUE /vacaciones/:user/:anio/:mes que es más específica
+// Orden de las rutas en Express importa: Las rutas más generales deben estar después de las rutas más específicas.
+// GET /api/v1/erroak/vacaciones/count/:user/:year
+// Cuenta las vacaciones que tiene un usuario en un año
+router.get('/vacaciones/count/:user/:anio', async(req, res) => {
+    const {user, anio} = req.params
+    console.log("imprimo en vacacionesCount user-anio-mes: user, anio, mes")
+    const vacacionesCount = await getVacacionesCount(user, anio);
+    console.log(vacacionesCount);
+    res.json (vacacionesCount)
+})
+
 // GET /api/v1/erroak/vacaciones/:user/:year/:month
+// Devuelve los datos de las vacaciones de un usuario en un año y mes
 router.get('/vacaciones/:user/:anio/:mes', async(req, res) => {
     const {user, anio, mes} = req.params
     const vacaciones = await getVacaciones(user, anio, mes);

@@ -2,7 +2,7 @@ import { Router} from 'express';
 // import { validateQuery, validateUserId } from '../middleware/users.js';
 // import { authenticateToken } from '../middleware/login.js';
 // import jwt from 'jsonwebtoken';
-import { getUsuarios, postLogin, postUsuario, getSignUpFormData, getUsuario, putUsuario, getHolidays } from '../models/usuariosModel.js';
+import { getUsuarios, postLogin, postUsuario, getSignUpFormData, getUsuario, putUsuario } from '../models/usuariosModel.js';
 
 const router = Router()
 
@@ -55,12 +55,15 @@ router.put('/usuario/:id', async(req, res) => {
     res.json (resultUsuario)
 })
 
-router.get('/holidays/:id/:ano', async(req, res) => {
-    const {id, ano} = req.params
-    console.log("imprimo id - ano en /holidays: ", id, "-", ano)
-    const resultHolidays = await getHolidays(id, ano);
-    res.json (resultHolidays)
-})
+// ANULADO NO USAR, BUSCABA VACACIONES EN LA TABLA USUARIOSVACACIONES PARA CONSEGUIR LAS VACACIONES ASIGNADA DE UN USUARIO EN UN AÑO
+// FUNCIONABA MAL¿?
+// // /api/v1/erroak/holidays/:id/:ano
+// router.get('/holidays/:id/:ano', async(req, res) => {
+//     const {id, ano} = req.params
+//     console.log("imprimo id - ano en /holidays: ", id, "-", ano)
+//     const resultHolidays = await getHolidays(id, ano);
+//     res.json (resultHolidays)
+// })
 
 export default router
 

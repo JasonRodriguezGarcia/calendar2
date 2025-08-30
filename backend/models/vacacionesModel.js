@@ -1,24 +1,5 @@
 import pool from '../db-pg.js';
 
-export async function getVacaciones(user, year, month) {
-    console.log("imprimo user-year-month: ", user, year, month)
-    try {
-        const result = await pool.query(`
-            SELECT * FROM erroak.vacaciones
-            WHERE usuario_id = $1 
-            AND start >= $2
-            AND start <= $3
-            ORDER BY start ASC;`, 
-            [user, year, month])
-        console.log("imprimo result getVacaciones: ", result)
-        return result.rows;
-
-    } catch (err) {
-        console.error('Error al obtener vacaciones:', err.message);
-        throw err;
-    }
-}
-
 export async function postVacacion(vacacion) {
     console.log("imprimo vacacion: ", vacacion)
     try {
@@ -60,6 +41,43 @@ export async function deleteVacacion(event_id) {
 
     } catch (err) {
         console.error('Error:', err.message);
+        throw err;
+    }
+}
+
+
+export async function getVacaciones(user, year, month) {
+    console.log("imprimo user-year-month: ", user, year, month)
+    try {
+        const result = await pool.query(`
+            SELECT * FROM erroak.vacaciones
+            WHERE usuario_id = $1 
+            AND start >= $2
+            AND start <= $3
+            ORDER BY start ASC;`, 
+            [user, year, month])
+        console.log("imprimo result getVacaciones: ", result)
+        return result.rows;
+
+    } catch (err) {
+        console.error('Error al obtener vacaciones:', err.message);
+        throw err;
+    }
+}
+
+export async function getVacacionesCount(user, year) {
+    console.log("imprimo getVacacionesCount user-year: ", user, year)
+    try {
+        const result = await pool.query(`
+            SELECT COUNT(*) FROM erroak.vacaciones
+            WHERE usuario_id = $1 
+            AND DATE_PART('year', start) = $2;`, 
+            [user, year])
+        console.log("imprimo result getVacacionesCount: ", result)
+        return result.rows[0];
+
+    } catch (err) {
+        console.error('Error al obtener vacacionesCunt:', err.message);
         throw err;
     }
 }

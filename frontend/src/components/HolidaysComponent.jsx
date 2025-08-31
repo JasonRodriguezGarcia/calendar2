@@ -1,6 +1,3 @@
-// TO DO
-// - replantear espacios ya que contienen centro y espacio(despacho), crear tabla despachos
-
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
@@ -10,7 +7,6 @@ import { es } from 'date-fns/locale';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 import addMonths from 'date-fns/addMonths';
-// import startOfWeek from 'date-fns/startOfWeek';
 import {
   startOfWeek,
   endOfWeek,
@@ -19,7 +15,6 @@ import {
 } from 'date-fns'; // necesario para calcular el rango visible del calendario y startOfWeek para indicar el día que comienza la semana
 import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { usuarios, espacios, programas } from "./Data"
 
 // MUI
 import {
@@ -59,11 +54,6 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
 
     const [events, setEvents] = useState([]);
     const [eventData, setEventData] = useState({
-        // event_id: Date.now(), 
-        // start: new Date(),
-        // end: new Date(),
-        // cellColor: "red",
-        // usuario_id: '',
     });
     const [date, setDate] = useState(new Date());
     const [view, setView] = useState(Views.MONTH);      // POR DEFECTO VISTA SEMANA LABORAL
@@ -71,40 +61,40 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
     // const [diasTotalVacaciones, setDiasTotalVacaciones] = useState(0)
     const [diasUsadosVacaciones, setDiasUsadosVacaciones] = useState(0)
 
-        const fetchCheckHolidays = async () => {
-            // Llamada a la cuenta del año en curso de las vacaciones acumuladas
-            try {
-                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/count/${user.id}/${date.getFullYear()}`,
-                    {
-                        method: 'GET',
-                        headers: {'Content-type': 'application/json; charset=UTF-8'}
-                    }
-                )
-                const dataHolidaysCount = await response.json();
-                console.log("dataHolidaysCount: ", dataHolidaysCount)
-                
-                setDiasUsadosVacaciones(parseInt(dataHolidaysCount.count));
-            } catch (error) {
-                console.error("Error cargando vacaciones/count:", error);
-            }
-
-            // A BORRAR MÁS ADELANTE ¿?
-            // Llamando a los datos de vacaciones del usuario del usuario según su perfil 
-            // try {
-            //     const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/holidays/${user.id}/${new Date().getFullYear()}`,
-            //         {
-            //             method: 'GET',
-            //             headers: {'Content-type': 'application/json; charset=UTF-8'}
-            //         }
-            //     )
-            //     const dataHolidays = await response.json();
-            //     console.log("dataHolidays: ", dataHolidays)
-                
-            //     setDiasTotalVacaciones(dataHolidays.dias);
-            // } catch (error) {
-            //     console.error("Error cargando usuariosvacaciones:", error);
-            // }
+    const fetchCheckHolidays = async () => {
+        // Llamada a la cuenta del año en curso de las vacaciones acumuladas
+        try {
+            const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/count/${user.id}/${date.getFullYear()}`,
+                {
+                    method: 'GET',
+                    headers: {'Content-type': 'application/json; charset=UTF-8'}
+                }
+            )
+            const dataHolidaysCount = await response.json();
+            console.log("dataHolidaysCount: ", dataHolidaysCount)
+            
+            setDiasUsadosVacaciones(parseInt(dataHolidaysCount.count));
+        } catch (error) {
+            console.error("Error cargando vacaciones/count:", error);
         }
+
+        // A BORRAR MÁS ADELANTE ¿?
+        // Llamando a los datos de vacaciones del usuario del usuario según datos en su perfil 
+        // try {
+        //     const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/holidays/${user.id}/${new Date().getFullYear()}`,
+        //         {
+        //             method: 'GET',
+        //             headers: {'Content-type': 'application/json; charset=UTF-8'}
+        //         }
+        //     )
+        //     const dataHolidays = await response.json();
+        //     console.log("dataHolidays: ", dataHolidays)
+            
+        //     setDiasTotalVacaciones(dataHolidays.dias);
+        // } catch (error) {
+        //     console.error("Error cargando usuariosvacaciones:", error);
+        // }
+    }
 
 
     useEffect(()=> {
@@ -146,7 +136,6 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
             }
         }
 
-    
         if (!user || !user.id) {
             console.warn("fetchEventos() abortado porque user.id es undefined");
             return;
@@ -207,7 +196,6 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
         backendVacation.start = start.toISOString()
         backendVacation.end = end.toISOString()
         console.log("newVacacion: ", newVacacion)
-        // debugger
         setEventData(newVacacion);
         setEvents([...events, newVacacion]);
 // Ya que estamos comenzando y los campos start y end vienen de JavaScript, es recomiendable guardar las fechas en 

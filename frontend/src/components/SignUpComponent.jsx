@@ -67,8 +67,11 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                 )
                 const data = await response.json()
                 console.log("Respuesta backend: ", data)
-                if (data.result === "No encontrado") {
-                    setErrorMessage("usuario o contraseña no válidos")
+                if (data.result === "Error. No hay datos en Turnos") {
+                    setErrorMessage("Faltan Datos en Turnos")
+                    return
+                } else if (data.result === "Error. No hay datos en Centros") {
+                    setErrorMessage("Faltan Datos en centros")
                     return
                 } else {
                     setCentros(data.centros)

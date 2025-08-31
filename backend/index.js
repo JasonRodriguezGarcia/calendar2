@@ -5,6 +5,7 @@ import cors from 'cors';
 import { fileURLToPath } from "url";
 import usuariosRouter from './routes/usuarios.js'
 import vacacionesRouter from './routes/vacaciones.js'
+import eventosRouter from './routes/eventos.js'
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use(express.json());
 // Esto registra routers separados para manejar distintas partes del backend:
 app.use('/api/v1/erroak', usuariosRouter)
 app.use('/api/v1/erroak', vacacionesRouter)
+app.use('/api/v1/erroak', eventosRouter)
 
 // // Start Server
 // app.listen(PORT, HOSTNAME, () => {

@@ -4,9 +4,14 @@ import { Router} from 'express';
 // import jwt from 'jsonwebtoken';
 import { getUsuarios, postLogin, postUsuario, getSignUpFormData, getUsuario, putUsuario } from '../models/usuariosModel.js';
 
+// TODO
+//  - SE SE PUEDAN USAR SOLO LOS USUARIOS ACTIVOS
+
+
 const router = Router()
 
 // /api/v1/erroak/usuarios
+// Conseguir los usuarios que hay en la bbdd
 router.get('/usuarios', async(req, res) => {
     const usuarios = await getUsuarios();
     console.log(usuarios);
@@ -14,6 +19,7 @@ router.get('/usuarios', async(req, res) => {
 })
 
 // /api/v1/erroak/login
+// Datos para hacer un login
 router.post('/login', async(req, res) => {
     const loginDetails = req.body
     console.log("loginDetails: ", loginDetails)
@@ -22,13 +28,16 @@ router.post('/login', async(req, res) => {
     res.json (login)
 })
 
+// /api/v1/erroak/login
+// Conseguir los datos de los select del formulario de alta de un usuario
 router.get('/getSignUpFormData', async(req, res) => {
     const result = await getSignUpFormData();
     console.log(result);
     res.json (result)
 })
 
-// /api/v1/erroak/usuario -- create usuarios
+// /api/v1/erroak/usuario 
+// Crear usuario
 router.post('/usuario', async(req, res) => {
     const usuario = req.body
     console.log("Recibido en backend: ", usuario)
@@ -46,6 +55,7 @@ router.get('/usuario/:id', async(req, res) => {
 })
 
 // /api/v1/erroak/usuario/:id
+// Modificar los datos de un usuario
 router.put('/usuario/:id', async(req, res) => {
     const {id} = req.params
     // const id_usuario = req.params.id

@@ -1,7 +1,4 @@
-// TO DO
-// - replantear espacios ya que contienen centro y espacio(despacho), crear tabla despachos
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
@@ -12,7 +9,6 @@ import parse from 'date-fns/parse';
 import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { usuarios, espacios, programas } from "./Data"
 
 // MUI
 import {
@@ -51,16 +47,15 @@ const horaMinima = new Date(1970, 1, 1, 7, 0) // Limitación hora mínima
 const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
 // const eventColorPalette = ['#1976d2', '#899cafff', '#9c27b0', '#2e7d32', '#66514aff', '#d36900ff', '#009688', '#673ab7', '#3f51b5'];
 
-const EventsCalendarComponent = ({ logged, setLogged } ) => {
-    const navigate = useNavigate();
+const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
     
     const [events, setEvents] = useState([]);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [eventData, setEventData] = useState({
         event_id: Date.now(), 
-        usuario_Id: '',
-        espacio_Id: '',
-        programa_Id: '',
+        usuario_id: '',
+        espacio_id: '',
+        programa_id: '',
         start: new Date(),
         end: new Date(),
         observaciones: '',
@@ -76,6 +71,66 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
     const [errorDialogMessage, setErrorDialogMessage] = useState('');
     const [actionEventMessage, setActionEventMessage] = useState(['Agregar', 'Editar'])
     const [usedColors, setUsedColors] = useState([]); // backgroundColor del evento
+    const [usuarios, setUsuarios] = useState([])
+    const [espacios, setEspacios] = useState([])
+    const [programas, setProgramas] = useState([])
+
+    const navigate = useNavigate();
+    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
+
+    // console.log("prop usuario: ", user)
+
+    useEffect(() => {
+        const getNewEventFormData = async () => {
+            try {
+                // fetch for getting horarios & turnos data
+                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getNewEventFormData`,
+                    {
+                        method: 'GET',
+                        headers: {'Content-type': 'application/json; charset=UTF-8'}
+                    }
+                )
+                const data = await response.json()
+                console.log("Respuesta backend: ", data)
+                if (data.result === "Error. No hay datos en Usuarios") {
+                    setErrorMessage("Faltan Datos en usuarios")
+                    return
+                } else {
+                    setUsuarios(data.usuarios)
+                    setEspacios(data.espacios)
+                    setProgramas(data.programas)
+                    // setCentros(data.centros)
+                    // setTurnos(data.turnos)
+                }
+                    
+            } catch (error) {
+                console.log(error.message)
+            } finally {
+                // setLoading(false); // Set loading to false once data is fetched or error occurs
+            }
+        }
+
+        // Solo continuar si user.id es válido, ya que se llama 2 veces a user
+        // 1. user inicia como {} (estado vacío)
+        // const [usuario, setUsuario] = useState({})
+        // 2. Después, se actualiza con datos reales desde el localStorage en EditProfilePage
+        // setUsuario({ id: usuario_id, nombre_apellidos, password })
+        // Ese cambio dispara nuevamente el useEffect de SignUpComponent, ya que user cambió. Así:
+        // Primera ejecución de useEffect: user.id es undefined → no se hace fetch, pero ya se ejecutó.
+        // Segunda ejecución: user.id ya tiene valor → se hace el fetch.
+        // ¿Qué hace esta condición?
+            // Parte	¿Qué verifica?	                ¿Cuándo es verdadera?
+            // !user	¿user es null/undefined/etc?	Cuando user = null, undefined, etc.
+            // !user.id	¿id está ausente o es falsy?	Cuando user = {} o user = { id: undefined }
+        if (!user || !user.id) {
+            console.warn("getData() abortado porque user.id es undefined");
+            return;
+        }
+
+        getNewEventFormData()
+    }, [user]) 
+
+
 
     // Si no está logeado se sale del componente
     if (!logged) return null    // con esta opción ni siquiera se muestra brevemente EventsCalendarComponent
@@ -118,9 +173,9 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
         // Generando el evento
         setEventData({
             event_id: newEventId, 
-            usuario_Id: '',
-            espacio_Id: '',
-            programa_Id: '',
+            usuario_id: '',
+            espacio_id: '',
+            programa_id: '',
             start,
             end,
             observaciones: '',
@@ -177,13 +232,13 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
             return;
         }
 
-        if (eventData.usuario_Id < 1) {
+        if (eventData.usuario_id < 1) {
             setErrorDialogMessage('Seleccionar un Usuario');
             setErrorDialogOpen(true);
             return;
         }
 
-        if (eventData.programa_Id < 1) {
+        if (eventData.programa_id < 1) {
             setErrorDialogMessage('Seleccionar un Programa');
             setErrorDialogOpen(true);
             return;
@@ -238,12 +293,12 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
 
     // Personalizando la visualizacion de eventos en el calendario, por defecto "start-end title"
     const CustomEvent = ({ event }) => {
-        const usuario = usuarios.find(p => p.usuario_Id === event.usuario_Id);
-        const programa = programas.find(p => p.programa_Id === event.programa_Id);
+        const usuario = usuarios.find(p => p.usuario_id === event.usuario_id);
+        const programa = programas.find(p => p.programa_id === event.programa_id);
 
         return (
             <div>
-                <strong>{usuario?.name || 'Sin nombre'}</strong> - {programa?.programa || 'Sin nombre'}
+                <strong>{usuario?.nombre_apellidos || 'Sin nombre'}</strong> - {programa?.programa || 'Sin nombre'}
             </div>
         );
     };
@@ -252,7 +307,7 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
     // <div style={{ padding: 20 }}>
     <>
         <Toolbar />
-      <h2>EVENTOS</h2>
+      <h2>EVENTOS AÑO: {date.getFullYear()}</h2>
       {/* <Calendar */}
       <DnDCalendar
         localizer={localizer}
@@ -286,15 +341,15 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
             localizer.format(date, 'eeee', culture), // 'lunes', 'martes', etc.
         }}
         tooltipAccessor={(event) => {                   // Muestra "start - end" y otros al pasar el cursor por encima
-            const usuario = usuarios.find(p => p.usuario_Id === event.usuario_Id);
-            const programa = programas.find(p => p.programa_Id === event.programa_Id);
-            // si ponemos usuario?.name y no usuario.name, en caso de que programa no exista, obtenemos un crash con error en ejecución
-            // Pero si ponemos usuario?.name y no existe obtenemos un undefined y el programa sigue su curso
-            return `${usuario?.name || 'Sin nombre'} - ${programa?.programa || 'Sin programa'}  — ${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}`;
+            const usuario = usuarios.find(p => p.usuario_id === event.usuario_id);
+            const programa = programas.find(p => p.programa_id === event.programa_id);
+            // si ponemos usuario?.nombre_apellidos y no usuario.nombre_apellidos, en caso de que programa no exista, obtenemos un crash con error en ejecución
+            // Pero si ponemos usuario?.nombre_apellidos y no existe obtenemos un undefined y el programa sigue su curso
+            return `${usuario?.nombre_apellidos || 'Sin nombre'} - ${programa?.programa || 'Sin programa'}  — ${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}`;
         }}
 
         eventPropGetter={(event) => {                   // Estilo visual de cada evento
-            const user = usuarios.find(u => u.usuario_Id === event.usuario_Id);
+            const user = usuarios.find(u => u.usuario_id === event.usuario_id);
             const backgroundColor = user?.color || '#BDBDBD';
             return {    // retornando un style por eso el return tiene {} en lugar de ()
                 style: {
@@ -324,49 +379,48 @@ const EventsCalendarComponent = ({ logged, setLogged } ) => {
             <DialogContent>
                 <Stack spacing={1} mt={1}> 
                     <FormControl fullWidth margin='dense'>
-                        <InputLabel id="select-label-usuario_Id">Usuario *</InputLabel>
+                        <InputLabel id="select-label-usuario_id">Usuario *</InputLabel>
                         <Select
                             // fullWidth
-                            labelId="select-label-usuario_Id"
-                            id="select-usuario_Id"
+                            labelId="select-label-usuario_id"
+                            id="select-usuario_id"
                             label="Usuario *"
-                            value={eventData.usuario_Id}
-                            onChange={(e) => setEventData({ ...eventData, usuario_Id: e.target.value})}
+                            value={eventData.usuario_id}
+                            onChange={(e) => setEventData({ ...eventData, usuario_id: e.target.value})}
                         >
                             {usuarios.map((usuario) => (
-                                <MenuItem key={usuario.usuario_Id} value={usuario.usuario_Id}>{usuario.name}</MenuItem>
-
+                                <MenuItem key={usuario.usuario_id} value={usuario.usuario_id}>{usuario.nombre_apellidos}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>
                     <FormControl fullWidth margin='dense'>
-                        <InputLabel id="select-label-espacio_Id">Espacio</InputLabel>
+                        <InputLabel id="select-label-espacio_id">Espacio</InputLabel>
                         <Select
                             // fullWidth
-                            labelId="select-label-espacio_Id"
-                            id="select-espacio_Id"
+                            labelId="select-label-espacio_id"
+                            id="select-espacio_id"
                             label="Espacio"
-                            value={eventData.espacio_Id}
-                            onChange={(e) => setEventData({ ...eventData, espacio_Id: e.target.value})}
+                            value={eventData.espacio_id}
+                            onChange={(e) => setEventData({ ...eventData, espacio_id: e.target.value})}
                         >
                             {espacios.map((espacio) => (
-                                <MenuItem key={espacio.espacio_Id} value={espacio.espacio_Id}>{espacio.espacio}</MenuItem>
+                                <MenuItem key={espacio.espacio_id} value={espacio.espacio_id}>{espacio.descripcion}</MenuItem>
 
                             ))}
                         </Select>
                     </FormControl>
                     <FormControl fullWidth margin='dense'>
-                        <InputLabel id="select-label-programa_Id">Programa *</InputLabel>
+                        <InputLabel id="select-label-programa_id">Programa *</InputLabel>
                         <Select
                             // fullWidth // al ser un FormControl no es necesario
-                            labelId="select-label-programa_Id"
-                            id="select-programa_Id"
+                            labelId="select-label-programa_id"
+                            id="select-programa_id"
                             label="Programa *"
-                            value={eventData.programa_Id}
-                            onChange={(e) => setEventData({ ...eventData, programa_Id: e.target.value})}
+                            value={eventData.programa_id}
+                            onChange={(e) => setEventData({ ...eventData, programa_id: e.target.value})}
                         >
                             {programas.map((programa) => (
-                                <MenuItem key={programa.programa_Id} value={programa.programa_Id}>{programa.programa}</MenuItem>
+                                <MenuItem key={programa.programa_id} value={programa.programa_id}>{programa.descripcion}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>

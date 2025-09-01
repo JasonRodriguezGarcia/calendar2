@@ -180,7 +180,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             end,
             observaciones: '',
             color: ''
-
         });
         setIsEditing(false);
         setSelectedEvent(null);
@@ -196,7 +195,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
     };
 
     // Guardando eventos creados / editados
-    const handleSaveEvent = () => { 
+    const handleSaveEvent = async () => { 
         // debugger
         // Validar que las horas estén dentro del rango permitido
         const minTime = new Date(eventData.start);
@@ -246,8 +245,40 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
 
         if (isEditing && selectedEvent) {
             setEvents(events.map(ev => ev.event_id === selectedEvent.event_id ? eventData : ev));
+            // Añadir aqui la llamada a backend para reemplazar evento 
         } else {
             setEvents([...events, eventData]);
+            // const backendEvent = {...eventData}
+            // backendEvent.start = start.toISOString()
+            // backendEvent.end = end.toISOString()
+            // console.log("eventVacacion: ", newVacacion)
+            // setEventData(newVacacion);
+            // setEvents([...events, newVacacion]);
+
+            // Añadir aqui la llamada a backend para guardar un evento nuevo - eventData
+            try {
+                // fetch eventos
+                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento`,
+                    {
+                        method: "POST",
+                        headers: {'Content-type': 'application/json; charset=UTF-8'},
+                        body: JSON.stringify(eventData)
+                    }
+                )
+                const data = await response.json()
+                console.log("Respuesta backend vacacion post: ", data)
+                if (data.result === "Evento ya existente") {
+                    setErrorMessage("Evento ya existente")
+                    return
+                }
+            } catch (error) {
+                // setError(error.message); // Handle errors
+                console.log(error.message)
+            } finally {
+                // setLoading(false); // Set loading to false once data is fetched or error occurs
+            }
+
+
         }
         handleCloseDialog();
     };

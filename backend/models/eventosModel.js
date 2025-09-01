@@ -25,6 +25,39 @@ export async function getNewEventFormData() {
     }
 }
 
+export async function postEvento(evento) {
+    console.log("imprimo evento: ", evento)
+    try {
+            // event_id: newEventId, 
+            // usuario_id: '',
+            // espacio_id: '',
+            // programa_id: '',
+            // start,
+            // end,
+            // observaciones: '',
+            // color: ''
+
+        const { event_id, usuario_id, espacio_id, programa_id, start, end, observaciones, color } = evento
+        const existsEvento = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.eventos WHERE event_id = $1);`, [event_id])
+        console.log("imprimo existsEvento en postEvento: ", existsEvento.rows[0].exists)
+        if (existsEvento.rows[0].exists)
+            return {result: "Evento ya existente"}
+
+        const result = await pool.query(`
+            INSERT INTO erroak.eventos
+            (event_id, usuario_id, espacio_id, programa_id, start, "end", observaciones, color)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            RETURNING event_id;`, 
+            [event_id, usuario_id, espacio_id, programa_id, start, end, observaciones, color])
+        console.log("Evento cread: ", result)
+        return {success: true, message: "OK", id: result.rows[0].event_id}
+
+    } catch (err) {
+        console.error('Error:', err.message);
+        throw err;
+    }
+}
+
 
 // export async function postVacacion(vacacion) {
 //     console.log("imprimo vacacion: ", vacacion)

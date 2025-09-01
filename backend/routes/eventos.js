@@ -4,7 +4,7 @@ import { Router} from 'express';
 // import jwt from 'jsonwebtoken';
 // import { getUsuarios, postLogin, postUsuario, getSignUpFormData, getUsuario, putUsuario, getHolidays } from '../models/usuariosModel.js';
 // import { getVacaciones, postVacacion, deleteVacacion, getVacacionesCount } from '../models/vacacionesModel.js';
-import { getNewEventFormData } from "../models/eventosModel.js"
+import { getNewEventFormData, postEvento } from "../models/eventosModel.js"
 
 const router = Router()
 
@@ -15,6 +15,16 @@ router.get('/getNewEventFormData', async(req, res) => {
     const result = await getNewEventFormData();
     console.log(result);
     res.json (result)
+})
+
+// /api/v1/erroak/evento
+// Crear eventos
+router.post('/evento', async(req, res) => {
+    const evento = req.body
+    console.log("Recibido en backend evento post: ", evento)
+    const resultEvento = await postEvento(evento);
+    console.log(resultEvento);
+    res.json (resultEvento)
 })
 
 

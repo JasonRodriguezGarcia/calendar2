@@ -192,12 +192,13 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
             cellColor: "red",
             usuario_id: user.id
         }
-        const backendVacation = {...newVacacion}
-        backendVacation.start = start.toISOString()
-        backendVacation.end = end.toISOString()
-        console.log("newVacacion: ", newVacacion)
-        setEventData(newVacacion);
-        setEvents([...events, newVacacion]);
+        // SOBRA? ¿?¿?¿?
+        // const backendVacation = {...newVacacion}
+        // backendVacation.start = start.toISOString()
+        // backendVacation.end = end.toISOString()
+        // console.log("newVacacion: ", newVacacion)
+        // setEventData(newVacacion);
+        // setEvents([...events, newVacacion]);
 // Ya que estamos comenzando y los campos start y end vienen de JavaScript, es recomiendable guardar las fechas en 
 // formato UTC (como .toISOString() en JS) y usar TIMESTAMPTZ en PostgreSQL.
 // Así evitaremos problemas futuros con zonas horarias.
@@ -273,7 +274,7 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
             }}>
                 <strong>
                     {/* {event.cellActive ? "Vacaciones" : null} */}
-                    "Vacaciones"
+                    Vacaciones
                 </strong>
             </div>
         )

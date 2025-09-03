@@ -6,7 +6,14 @@ import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { es } from 'date-fns/locale';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
-import startOfWeek from 'date-fns/startOfWeek';
+// import startOfWeek from 'date-fns/startOfWeek';
+import {
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+} from 'date-fns'; // necesario para calcular el rango visible del calendario y startOfWeek para indicar el día que comienza la semana
+
 import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
@@ -128,7 +135,60 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         }
 
         getNewEventFormData()
-    }, [user]) 
+    }, [date, user]) 
+
+    useEffect(() => {
+        console.log("Eventos: ", events)
+    }, [events])
+
+    useEffect(()=> {
+        // Conseguimos la fecha cuando cambie de mes con los botones Mes Ant. y Mes Sig.
+        const month = date.getMonth() + 1; // 0 = Enero, así que +1
+        const year = date.getFullYear();
+
+        console.log("Cargando eventos para:", month, year);
+
+        const getVisibleRange = (date) => {         // Para conseguir el rango visible del calendario
+            const start = startOfWeek(startOfMonth(date), { weekStartsOn: 1 });
+            const end = endOfWeek(endOfMonth(date), { weekStartsOn: 1 });
+            return { start, end };
+        };
+
+        const fetchEventos = async () => {
+// Esta línea llama a una función getVisibleRange(date) que devuelve el inicio y fin visibles del calendario para el mes actual (date).
+//  start: normalmente será el lunes anterior al primer día del mes.
+//  end: normalmente el domingo posterior al último día del mes.
+// Esto asegura que el calendario muestra todos los días visibles, incluso si no pertenecen al mes exacto (como el 1 de agosto que 
+//      aparece en julio).
+            const { start, end } = getVisibleRange(date);
+            // Llamando a backend para presentar los datos
+            try {
+                const response = await fetch(
+                //   `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${user.id}/${start.toISOString()}/${end.toISOString()}`
+                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${user.id}/${start.toISOString()}/${end.toISOString()}`
+                );
+                const data = await response.json();
+                const eventosData = data.map(evento => ({
+                    ...evento,
+                    start: new Date(evento.start),
+                    end: new Date(evento.end),
+                    // cellColor: vacacion.cell_color,
+                }));
+                console.log("imprimo eventosData: ", eventosData)
+                setEvents(eventosData);
+            } catch (error) {
+                console.error("Error cargando eventos:", error);
+            }
+        }
+
+        if (!user || !user.id) {
+            console.warn("fetchEventos() abortado porque user.id es undefined");
+            return;
+        }
+        fetchEventos();
+        // fetchCheckHolidays();
+    // }, [date, user])
+    }, [date, user])
 
 
 
@@ -173,7 +233,8 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         // Generando el evento
         setEventData({
             event_id: newEventId, 
-            usuario_id: '',
+            // usuario_id: '',
+            usuario_id: user.id,
             espacio_id: '',
             programa_id: '',
             start,
@@ -187,7 +248,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
     };
 
     // Editando un evento
-    const handleSelectEvent = (event) => {
+    const handleSelectEvent = async (event) => {
         setEventData({ ...event });
         setIsEditing(true);
         setSelectedEvent(event);
@@ -242,19 +303,37 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             setErrorDialogOpen(true);
             return;
         }
-
+        debugger
         if (isEditing && selectedEvent) {
+            // Busca en eventos el evento seleccionado y lo reemplaza por eventData
             setEvents(events.map(ev => ev.event_id === selectedEvent.event_id ? eventData : ev));
-            // Añadir aqui la llamada a backend para reemplazar evento 
+            // Añadir aqui la llamada a backend para reemplazar evento
+            // Añadir aqui la llamada a backend para modificar un evento nuevo - selectedEvent.event_id
+            try {
+                // fetch eventos
+                const responseEdit = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${selectedEvent.event_id}`,
+                    {
+                        method: "PUT",
+                        headers: {'Content-type': 'application/json; charset=UTF-8'},
+                        body: JSON.stringify(eventData)
+                    }
+                )
+                const data = await responseEdit.json()
+                console.log("Respuesta backend evento post: ", data)
+                if (data.result === "Evento ya existente") {
+                    setErrorMessage("Evento ya existente")
+                    return
+                }
+            } catch (error) {
+                // setError(error.message); // Handle errors
+                console.log(error.message)
+            } finally {
+                // setLoading(false); // Set loading to false once data is fetched or error occurs
+            }
+        
+
         } else {
             setEvents([...events, eventData]);
-            // const backendEvent = {...eventData}
-            // backendEvent.start = start.toISOString()
-            // backendEvent.end = end.toISOString()
-            // console.log("eventVacacion: ", newVacacion)
-            // setEventData(newVacacion);
-            // setEvents([...events, newVacacion]);
-
             // Añadir aqui la llamada a backend para guardar un evento nuevo - eventData
             try {
                 // fetch eventos
@@ -278,7 +357,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                 // setLoading(false); // Set loading to false once data is fetched or error occurs
             }
 
-
         }
         handleCloseDialog();
     };
@@ -287,7 +365,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         setConfirmDeleteOpen(true);
     };
 
-    const handleEventDrop = ({ event, start, end }) => {
+    const handleEventDrop = async ({ event, start, end }) => {
         // debugger
         const day = start.getDay();
         if (day === 0 || day === 6) {
@@ -300,9 +378,36 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         setEvents(prevEvents =>
             prevEvents.map(ev => (ev.event_id === event.event_id ? updatedEvent : ev))
         );
+
+        // la hora no se actualiza bien CORREGIR
+
+        try {
+            // fetch eventos
+            const responseEdit = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${event.event_id}`,
+                {
+                    method: "PUT",
+                    headers: {'Content-type': 'application/json; charset=UTF-8'},
+                    // body: JSON.stringify(eventData)
+                    body: JSON.stringify(updatedEvent)
+                }
+            )
+            const data = await responseEdit.json()
+            console.log("Respuesta backend vacacion post: ", data)
+            if (data.result === "Evento event_id NO existente") {
+                setErrorMessage("Evento event_id NO existente")
+                return
+            }
+        } catch (error) {
+            // setError(error.message); // Handle errors
+            console.log(error.message)
+        } finally {
+            // setLoading(false); // Set loading to false once data is fetched or error occurs
+        }
+    
+
     };
 
-    const confirmDelete = () => {
+    const confirmDelete = async () => {
         if (!selectedEvent || !selectedEvent.event_id) {
             setErrorDialogMessage('No hay evento válido para eliminar.');
             setErrorDialogOpen(true);
@@ -312,6 +417,30 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         setEvents(events.filter(ev => ev.event_id !== selectedEvent.event_id));
         setConfirmDeleteOpen(false);
         setDialogOpen(false);
+// Llamar a backend para borrar un evento - selectedEvent.event_id
+        try {
+            // fetch eventos
+            console.log("Evento a borrar: ", selectedEvent.event_id)
+            const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${selectedEvent.event_id}`,
+                {
+                    method: "DELETE",
+                    headers: {'Content-type': 'application/json; charset=UTF-8'},
+                    // body: JSON.stringify(eventData)
+                }
+            )
+            const data = await response.json()
+            console.log("Respuesta backend vacacion post: ", data)
+            if (data.result === "Evento event_id NO existente") {
+                setErrorMessage("Evento event_id NO existente")
+                return
+            }
+        } catch (error) {
+            // setError(error.message); // Handle errors
+            console.log(error.message)
+        } finally {
+            // setLoading(false); // Set loading to false once data is fetched or error occurs
+        }
+
     };
 
     const cancelDelete = () => {
@@ -329,7 +458,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
 
         return (
             <div>
-                <strong>{usuario?.nombre_apellidos || 'Sin nombre'}</strong> - {programa?.programa || 'Sin nombre'}
+                <strong>{usuario?.nombre_apellidos || 'Sin nombre'}</strong> - {programa?.descripcion || 'Sin nombre'}
             </div>
         );
     };
@@ -376,7 +505,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             const programa = programas.find(p => p.programa_id === event.programa_id);
             // si ponemos usuario?.nombre_apellidos y no usuario.nombre_apellidos, en caso de que programa no exista, obtenemos un crash con error en ejecución
             // Pero si ponemos usuario?.nombre_apellidos y no existe obtenemos un undefined y el programa sigue su curso
-            return `${usuario?.nombre_apellidos || 'Sin nombre'} - ${programa?.programa || 'Sin programa'}  — ${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}`;
+            return `${usuario?.nombre_apellidos || 'Sin nombre'} - ${programa?.descripcion || 'Sin programa'}  — ${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}`;
         }}
 
         eventPropGetter={(event) => {                   // Estilo visual de cada evento
@@ -418,6 +547,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                             label="Usuario *"
                             value={eventData.usuario_id}
                             onChange={(e) => setEventData({ ...eventData, usuario_id: e.target.value})}
+                            disabled
                         >
                             {usuarios.map((usuario) => (
                                 <MenuItem key={usuario.usuario_id} value={usuario.usuario_id}>{usuario.nombre_apellidos}</MenuItem>

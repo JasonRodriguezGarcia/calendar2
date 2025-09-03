@@ -4,7 +4,7 @@ import { Router} from 'express';
 // import jwt from 'jsonwebtoken';
 // import { getUsuarios, postLogin, postUsuario, getSignUpFormData, getUsuario, putUsuario, getHolidays } from '../models/usuariosModel.js';
 // import { getVacaciones, postVacacion, deleteVacacion, getVacacionesCount } from '../models/vacacionesModel.js';
-import { getNewEventFormData, postEvento } from "../models/eventosModel.js"
+import { getNewEventFormData, postEvento, deleteEvento, putEvento, getEventos } from "../models/eventosModel.js"
 
 const router = Router()
 
@@ -26,6 +26,39 @@ router.post('/evento', async(req, res) => {
     console.log(resultEvento);
     res.json (resultEvento)
 })
+
+// /api/v1/erroak/evento/:id
+// BORRAR UN EVENTO
+router.delete('/evento/:event_id', async (req, res) => {
+    const {event_id} = req.params
+    console.log("Recibido en backend evento delete: ", event_id)
+    const resultEvento = await deleteEvento(event_id);
+    console.log(resultEvento);
+    res.json (resultEvento)
+});
+
+//  /api/v1/erroak/evento/:id
+// MODIFICAR UN EVENTO
+router.put('/evento/:event_id', async (req, res) => {
+    console.log("request body: ", req.body)
+    const eventData = req.body
+    const {event_id} = req.params
+    console.log("Recibido en backend evento put: ", eventData)
+    const resultEvento = await putEvento(event_id, eventData);
+    console.log(resultEvento);
+    res.json (resultEvento)
+});
+
+// /api/v1/erroak/eventos/:user/:year/:month
+// Devuelve los datos de los eventos de un usuario en un año y mes
+router.get('/eventos/:user/:anio/:mes', async(req, res) => {
+    const {user, anio, mes} = req.params
+    const eventos = await getEventos(user, anio, mes);
+    console.log(eventos);
+    res.json (eventos)
+})
+
+
 
 
 export default router

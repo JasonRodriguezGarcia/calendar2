@@ -27,16 +27,8 @@ export async function getNewEventFormData() {
 
 export async function postEvento(evento) {
     console.log("imprimo evento: ", evento)
+    
     try {
-            // event_id: newEventId, 
-            // usuario_id: '',
-            // espacio_id: '',
-            // programa_id: '',
-            // start,
-            // end,
-            // observaciones: '',
-            // color: ''
-
         const { event_id, usuario_id, espacio_id, programa_id, start, end, observaciones, color } = evento
         const existsEvento = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.eventos WHERE event_id = $1);`, [event_id])
         console.log("imprimo existsEvento en postEvento: ", existsEvento.rows[0].exists)
@@ -54,6 +46,69 @@ export async function postEvento(evento) {
 
     } catch (err) {
         console.error('Error:', err.message);
+        throw err;
+    }
+}
+
+export async function deleteEvento(event_id) {
+    console.log("imprimo evento deleteEvento: ", event_id)
+    try {
+        const existsEvento = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.eventos WHERE event_id = $1);`, [event_id])
+        console.log("imprimo existsEvento deleteEvento: ", existsEvento.rows[0].exists)
+        if (!existsEvento.rows[0].exists)
+            return {result: "Evento event_id NO existente"}
+
+        const result = await pool.query(`
+            DELETE FROM erroak.eventos
+	        WHERE event_id = $1;`, 
+            [event_id])
+        console.log("Evento borrado: ", result)
+        return {success: true, message: "OK", id: event_id}
+
+    } catch (err) {
+        console.error('Error:', err.message);
+        throw err;
+    }
+}
+
+export async function putEvento(event_ID, event) {
+    const {event_id, usuario_id, espacio_id, programa_id, start, end, observaciones, color} = event
+    console.log("imprimo evento putEvento: ", event)
+    try {
+        const existsEvento = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.eventos WHERE event_id = $1);`, [event_ID])
+        console.log("imprimo existsEvento putEvento: ", existsEvento.rows[0].exists)
+        if (!existsEvento.rows[0].exists)
+            return {result: "Evento event_id NO existente"}
+
+        const result = await pool.query(`
+            UPDATE erroak.eventos
+            SET usuario_id = $1, espacio_id = $2, programa_id = $3, start = $4, "end" = $5, observaciones = $6, color = $7
+	        WHERE event_id = $8;`, 
+            [usuario_id, espacio_id, programa_id, start, end, observaciones, color, event_ID])
+        console.log("Evento modificado: ", result)
+        return {success: true, message: "OK", id: event_ID}
+
+    } catch (err) {
+        console.error('Error:', err.message);
+        throw err;
+    }
+}
+
+export async function getEventos(user, year, month) {
+    console.log("imprimo user-year-month: ", user, year, month)
+    try {
+        const result = await pool.query(`
+            SELECT * FROM erroak.eventos
+            WHERE usuario_id = $1 
+            AND start >= $2
+            AND start <= $3
+            ORDER BY start ASC;`, 
+            [user, year, month])
+        console.log("imprimo result getEventos: ", result)
+        return result.rows;
+
+    } catch (err) {
+        console.error('Error al obtener eventos:', err.message);
         throw err;
     }
 }

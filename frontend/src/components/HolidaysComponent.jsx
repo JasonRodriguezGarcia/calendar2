@@ -6,7 +6,7 @@ import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { es } from 'date-fns/locale';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
-import addMonths from 'date-fns/addMonths';
+// import addMonths from 'date-fns/addMonths';
 import {
   startOfWeek,
   endOfWeek,
@@ -132,7 +132,7 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
                 console.log("imprimo vacacionesData: ", vacacionesData)
                 setEvents(vacacionesData);
             } catch (error) {
-                console.error("Error cargando eventos:", error);
+                console.error("Error cargando vacaciones:", error);
             }
         }
 

@@ -18,7 +18,7 @@ router.post('/vacacion', async(req, res) => {
     res.json (resultVacacion)
 })
 
-// DELETE /api/v1/erroak/vacacion/:id
+// /api/v1/erroak/vacacion/:id
 // BORRAR UN EVENTO EN VACACIONES
 router.delete('/vacacion/:event_id', async (req, res) => {
     const {event_id} = req.params
@@ -30,7 +30,7 @@ router.delete('/vacacion/:event_id', async (req, res) => {
 
 // Cuenta vacaciones de un usuario en un año -- TIENE QUE ESTAR ANTES QUE /vacaciones/:user/:anio/:mes que es más específica
 // Orden de las rutas en Express importa: Las rutas más generales deben estar después de las rutas más específicas.
-// GET /api/v1/erroak/vacaciones/count/:user/:year
+// /api/v1/erroak/vacaciones/count/:user/:year
 // Cuenta las vacaciones que tiene un usuario en un año
 router.get('/vacaciones/count/:user/:anio', async(req, res) => {
     const {user, anio} = req.params
@@ -40,7 +40,7 @@ router.get('/vacaciones/count/:user/:anio', async(req, res) => {
     res.json (vacacionesCount)
 })
 
-// GET /api/v1/erroak/vacaciones/:user/:year/:month
+// /api/v1/erroak/vacaciones/:user/:year/:month
 // Devuelve los datos de las vacaciones de un usuario en un año y mes
 router.get('/vacaciones/:user/:anio/:mes', async(req, res) => {
     const {user, anio, mes} = req.params

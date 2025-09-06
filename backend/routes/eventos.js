@@ -50,10 +50,11 @@ router.put('/evento/:event_id', async (req, res) => {
 });
 
 // /api/v1/erroak/eventos/:user/:year/:month
-// Devuelve los datos de los eventos de un usuario en un año y mes
-router.get('/eventos/:user/:anio/:mes', async(req, res) => {
+// Devuelve los datos de los eventos de TODOS LOS USUARIO en un año y mes
+// router.get('/eventos/:user/:anio/:mes', async(req, res) => {
+router.get('/eventos/:anio/:mes', async(req, res) => {
     const {user, anio, mes} = req.params
-    const eventos = await getEventos(user, anio, mes);
+    const eventos = await getEventos(anio, mes);
     console.log(eventos);
     res.json (eventos)
 })

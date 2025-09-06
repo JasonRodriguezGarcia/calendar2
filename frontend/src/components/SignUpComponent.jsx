@@ -22,8 +22,28 @@ import {
     Radio,    
     Select,
     Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
-
 } from '@mui/material';
+import { red, pink, purple, deepPurple, indigo, blue, lightBlue, cyan, teal, green, lightGreen, lime, yellow, orange, deepOrange, brown, grey, blueGrey } from '@mui/material/colors';
+const colorOptions = {
+    red: red[500],
+    pink: pink[500],
+    purple: purple[500],
+    deepPurple: deepPurple[500],
+    indigo: indigo[500],
+    blue: blue[500],
+    lightBlue: lightBlue[500],
+    cyan: cyan[500],
+    teal: teal[500],
+    green: green[500],
+    lightGreen: lightGreen[500],
+    lime: lime[500],
+    yellow: yellow[500],
+    orange: orange[500],
+    deepOrange: deepOrange[500],
+    brown: brown[500],
+    grey: grey[500],
+    blueGrey: blueGrey[500],
+};
 
 const SignUpComponent = ({ logged, setLogged, user, action }) => {
 
@@ -31,6 +51,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
     // const [userName, setUserName] = useState("")
     // const [userEmail, setUserEmail] = useState("")
     // const [userPassword, setUserPassword] = useState("")
+    const [selectedColor, setSelectedColor] = useState('red');
     const [userId, setUserId] = useState("")
     const [userEmail, setUserEmail] = useState("")
     const [userPassword, setUserPassword] = useState("")
@@ -118,6 +139,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                         setUserLlave(dataUser.llave)
                         setUserAlarma(dataUser.alarma)
                         setUserTurno(dataUser.turno_id)
+                        setSelectedColor(dataUser.color)
                         const title = action === "read" ? "Ver perfil" : "Modificar perfil"
                         setFormTitle(title)
                         // const readOnly = action === "read" ? true : false
@@ -166,6 +188,10 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
             return () => clearTimeout(intervalo)
         }
     }, [errorMessage])
+
+    const handleChangeColor = (event) => {
+        setSelectedColor(event.target.value)
+    }
 
     const handleUserEmail = (e) => {
         if (e.target.value.length > 50) return;
@@ -258,7 +284,6 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
         }
         try {
             console.log("paso por hadleSignUp")
-
             const userTmp = {
                 // id: user.id,
                 email: userEmail,
@@ -269,9 +294,9 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                 centro_id: userCentro,
                 llave: userLlave === "true",
                 alarma: userAlarma === "true",
-                turno_id: userTurno
+                turno_id: userTurno,
+                color: selectedColor
             }
-            debugger
             console.log("user: ", userTmp)
             const endPoint= action === "create"
                 ? `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario`
@@ -303,7 +328,6 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                 // navigate('/')
                 return
             }
-            debugger
             if (action === "create") {
                 // Crear localStorage
                 localStorage.setItem("id", data.id)
@@ -528,6 +552,32 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                             ))}
                         </Select>
                     </Stack>
+                </FormControl>
+                <FormControl fullWidth margin="dense">
+                    <InputLabel id="color-select-label">Color</InputLabel>
+                    <Select
+                        labelId="color-select-label"
+                        value={selectedColor}
+                        disabled={formReadOnly}
+                        label="Color"
+                        onChange={handleChangeColor}
+                    >
+                        {Object.entries(colorOptions).map(([name, hex]) => (
+                            <MenuItem key={name} value={name}>
+                                <Box
+                                    sx={{
+                                        width: 20,
+                                        height: 20,
+                                        backgroundColor: hex,
+                                        display: 'inline-block',
+                                        borderRadius: '50%',
+                                        marginRight: 1,
+                                }}
+                            />
+                                {name}
+                            </MenuItem>
+                        ))}
+                    </Select>
                 </FormControl>
 
                 {/* <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 }}>Crear usuario</Button> */}

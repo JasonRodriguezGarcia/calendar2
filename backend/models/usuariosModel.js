@@ -30,7 +30,7 @@ export async function postLogin(loginDetails) {
 
 export async function postUsuario(usuario) {
     try {
-        const { email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id } = usuario
+        const { email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color } = usuario
         const existsEmail = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.usuarios WHERE email = $1);`, [email])
         console.log("imprimo exists: ", existsEmail.rows[0].exists)
         if (existsEmail.rows[0].exists)
@@ -42,10 +42,10 @@ export async function postUsuario(usuario) {
             return {result: "Nombre y apellidos ya existente"}
 
         const result = await pool.query(`INSERT INTO erroak.usuarios
-            (email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            (email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
             RETURNING usuario_id;`, 
-            [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id])
+            [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color])
         console.log("usuario creado: ", result)
         return {success: true, message: "OK", id: result.rows[0].usuario_id}
 
@@ -102,7 +102,7 @@ export async function putUsuario(id, updatedUser) {
         //
         // UPDATE erroak.usuarios set activo=true WHERE email = 'pepe2@pepe.com'
         const {
-            email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id
+            email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color
         } = updatedUser
 
         const existsEmail = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.usuarios WHERE email = $1 AND usuario_id != $2);`, [email, id])
@@ -113,10 +113,10 @@ export async function putUsuario(id, updatedUser) {
         const result = await pool.query(
             `UPDATE erroak.usuarios SET
                 email = $1, password = $2, nombre_apellidos = $3, movil = $4, extension = $5, centro_id = $6,
-                llave = $7, alarma = $8, turno_id = $9
-            WHERE usuario_id = $10
+                llave = $7, alarma = $8, turno_id = $9, color = $10
+            WHERE usuario_id = $11
             RETURNING *`,
-            [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, parseInt(id)]
+            [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, parseInt(id)]
         )
         console.log("result: ", result.command)
         if (result.rows.length > 0) {

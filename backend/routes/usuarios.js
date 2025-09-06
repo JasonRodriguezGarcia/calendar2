@@ -40,7 +40,7 @@ router.get('/getSignUpFormData', async(req, res) => {
 // Crear usuario
 router.post('/usuario', async(req, res) => {
     const usuario = req.body
-    console.log("Recibido en backend: ", usuario)
+    console.log("Recibido en backend post usuario: ", usuario)
     const resultUsuario = await postUsuario(usuario);
     console.log(resultUsuario);
     res.json (resultUsuario)
@@ -49,7 +49,7 @@ router.post('/usuario', async(req, res) => {
 // /api/v1/erroak/usuario/:id
 router.get('/usuario/:id', async(req, res) => {
     const {id} = req.params
-    console.log("imprimo id en /usuario: ", id)
+    console.log("imprimo id en get usuario: ", id)
     const resultUsuario = await getUsuario(id);
     res.json (resultUsuario)
 })
@@ -60,7 +60,7 @@ router.put('/usuario/:id', async(req, res) => {
     const {id} = req.params
     // const id_usuario = req.params.id
     const updatedUser = req.body
-    console.log("imprimo id en /usuario/:id : ", id)
+    console.log("imprimo id en put usuario/:id : ", id)
     const resultUsuario = await putUsuario(id, updatedUser);
     res.json (resultUsuario)
 })

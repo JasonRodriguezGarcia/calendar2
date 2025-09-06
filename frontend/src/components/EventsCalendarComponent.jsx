@@ -6,7 +6,6 @@ import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { es } from 'date-fns/locale';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
-// import startOfWeek from 'date-fns/startOfWeek';
 import {
   startOfWeek,
   endOfWeek,
@@ -19,19 +18,19 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 // MUI
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  MenuItem,
-  FormControl, 
-  InputLabel,
-  Select,
-  Stack,
-  Toolbar, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
-
+    Box,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    TextField,
+    MenuItem,
+    FormControl, 
+    InputLabel,
+    Select,
+    Stack,
+    Toolbar, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -52,24 +51,13 @@ const saltosTiempo = 15 // step={15}
 const saltosHora = 2 // timeslots={4}
 const horaMinima = new Date(1970, 1, 1, 7, 0) // Limitación hora mínima
 const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
-// const eventColorPalette = ['#1976d2', '#899cafff', '#9c27b0', '#2e7d32', '#66514aff', '#d36900ff', '#009688', '#673ab7', '#3f51b5'];
 
 const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
     
     const [events, setEvents] = useState([]);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [eventData, setEventData] = useState({
-        event_id: Date.now(), 
-        usuario_id: '',
-        espacio_id: '',
-        programa_id: '',
-        start: new Date(),
-        end: new Date(),
-        observaciones: '',
-        color: ''
-    });
+    const [eventData, setEventData] = useState({});
     const [date, setDate] = useState(new Date());
-    // const [view, setView] = useState(Views.WORK_WEEK);   // POR DEFECTO VISTA MES
     const [view, setView] = useState(Views.WORK_WEEK);      // POR DEFECTO VISTA SEMANA LABORAL
     const [isEditing, setIsEditing] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
@@ -106,8 +94,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                     setUsuarios(data.usuarios)
                     setEspacios(data.espacios)
                     setProgramas(data.programas)
-                    // setCentros(data.centros)
-                    // setTurnos(data.turnos)
                 }
                     
             } catch (error) {
@@ -164,15 +150,14 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             // Llamando a backend para presentar los datos
             try {
                 const response = await fetch(
-                //   `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${user.id}/${start.toISOString()}/${end.toISOString()}`
-                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${user.id}/${start.toISOString()}/${end.toISOString()}`
+                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${start.toISOString()}/${end.toISOString()}`
                 );
                 const data = await response.json();
                 const eventosData = data.map(evento => ({
                     ...evento,
                     start: new Date(evento.start),
                     end: new Date(evento.end),
-                    // cellColor: vacacion.cell_color,
+                    color: evento.color,
                 }));
                 console.log("imprimo eventosData: ", eventosData)
                 setEvents(eventosData);
@@ -186,11 +171,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             return;
         }
         fetchEventos();
-        // fetchCheckHolidays();
-    // }, [date, user])
     }, [date, user])
-
-
 
     // Si no está logeado se sale del componente
     if (!logged) return null    // con esta opción ni siquiera se muestra brevemente EventsCalendarComponent
@@ -202,38 +183,35 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
 
     const handleViewChange = (newView) => { // Permite cambiar la vista del calendario
         if (newView === 'week') {
-            setView('work_week'); // Forzamos semana laboral
+            setView('work_week') // Forzamos semana laboral
         } else {
-            setView(newView);
+            setView(newView)
         }
     };
 
     // Creando un nuevo evento
     const handleSelectSlot = (slotInfo) => {
-        // debugger
-        // const { start, end } = getDefaultTimes();
-        let { start, end } = slotInfo;
+        let { start, end } = slotInfo
 
         // Si es fin de semana, no permitir (opcional según el comentario)
-        const isWeekend = start.getDay() === 0 || start.getDay() === 6;
+        const isWeekend = start.getDay() === 0 || start.getDay() === 6
         if (isWeekend) {
-            setErrorDialogMessage('Solo se permiten eventos en días laborales.');
-            setErrorDialogOpen(true);
-            return;
+            setErrorDialogMessage('Solo se permiten eventos en días laborales.')
+            setErrorDialogOpen(true)
+            return
         }
 
         // ✅ Generar un ID único combinando timestamp + aleatorio
-        let newEventId = Date.now() + Math.floor(Math.random() * 100000);
+        let newEventId = Date.now() + Math.floor(Math.random() * 100000)
 
         // Asegurarse que no se repita ID
         while (events.some(e => e.event_id === newEventId)) {
-            newEventId = Date.now() + Math.floor(Math.random() * 100000);
+            newEventId = Date.now() + Math.floor(Math.random() * 100000)
         }
 
         // Generando el evento
         setEventData({
             event_id: newEventId, 
-            // usuario_id: '',
             usuario_id: user.id,
             espacio_id: '',
             programa_id: '',
@@ -241,23 +219,22 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             end,
             observaciones: '',
             color: ''
-        });
-        setIsEditing(false);
-        setSelectedEvent(null);
-        setDialogOpen(true);
+        })
+        setIsEditing(false)
+        setSelectedEvent(null)
+        setDialogOpen(true)
     };
 
     // Editando un evento
     const handleSelectEvent = async (event) => {
-        setEventData({ ...event });
-        setIsEditing(true);
-        setSelectedEvent(event);
-        setDialogOpen(true);
+        setEventData({ ...event })
+        setIsEditing(true)
+        setSelectedEvent(event)
+        setDialogOpen(true)
     };
 
     // Guardando eventos creados / editados
     const handleSaveEvent = async () => { 
-        // debugger
         // Validar que las horas estén dentro del rango permitido
         const minTime = new Date(eventData.start);
         minTime.setHours(horaMinima.getHours(), horaMinima.getMinutes());
@@ -277,9 +254,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             setErrorDialogOpen(true);
             return;
         }
-        // debugger
         if (eventData.start < minTime || eventData.end > maxTime) {
-            // setErrorDialogMessage('La hora del evento debe estar entre 07:00 y 21:00.');
             setErrorDialogMessage(`La hora del evento debe estar entre ${horaMinima.getHours()}hrs y ${horaMaxima.getHours()}hrs.`);
             setErrorDialogOpen(true);
             return;
@@ -303,7 +278,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             setErrorDialogOpen(true);
             return;
         }
-        debugger
         if (isEditing && selectedEvent) {
             // Busca en eventos el evento seleccionado y lo reemplaza por eventData
             setEvents(events.map(ev => ev.event_id === selectedEvent.event_id ? eventData : ev));
@@ -330,7 +304,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             } finally {
                 // setLoading(false); // Set loading to false once data is fetched or error occurs
             }
-        
 
         } else {
             setEvents([...events, eventData]);
@@ -366,7 +339,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
     };
 
     const handleEventDrop = async ({ event, start, end }) => {
-        // debugger
         const day = start.getDay();
         if (day === 0 || day === 6) {
             setErrorDialogMessage('Solo se permiten eventos en días laborales.');
@@ -379,7 +351,8 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             prevEvents.map(ev => (ev.event_id === event.event_id ? updatedEvent : ev))
         );
 
-        // la hora no se actualiza bien CORREGIR
+        // OJO !!! LA HORA ES UTC+2, EN BACKEND SE GUARDA -2HRS, PERO NO HAY PROBLEMA PORQUE AL 
+        // CARGARSE LOS DATOS LOS ATUALIZA A UTC+2
 
         try {
             // fetch eventos
@@ -387,7 +360,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                 {
                     method: "PUT",
                     headers: {'Content-type': 'application/json; charset=UTF-8'},
-                    // body: JSON.stringify(eventData)
                     body: JSON.stringify(updatedEvent)
                 }
             )
@@ -403,7 +375,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         } finally {
             // setLoading(false); // Set loading to false once data is fetched or error occurs
         }
-    
 
     };
 
@@ -425,7 +396,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                 {
                     method: "DELETE",
                     headers: {'Content-type': 'application/json; charset=UTF-8'},
-                    // body: JSON.stringify(eventData)
                 }
             )
             const data = await response.json()
@@ -591,14 +561,12 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                             label="Inicio *"
                             value={eventData.start}
                             onChange={(newValue) => setEventData({ ...eventData, start: newValue })}
-                            // renderInput={(params) => <TextField {...params} margin="dense" fullWidth />}
                             slotProps={{ textField: { fullWidth: true, margin: 'dense' } }}
                         />
                         <DateTimePicker
                             label="Fin *"
                             value={eventData.end}
                             onChange={(newValue) => setEventData({ ...eventData, end: newValue })}
-                            // renderInput={(params) => <TextField {...params} margin="dense" fullWidth />} // forma antigua
                             slotProps={{ textField: { fullWidth: true, margin: 'dense' } }} // forma moderna y sin avisos en consola
                         />
                     </Stack>
@@ -617,12 +585,10 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             </DialogContent>
             <DialogActions>
                 {isEditing && (
-                    <Button onClick={handleDeleteEvent} color="error">
-                    Eliminar
-                    </Button>
+                    <Button onClick={handleDeleteEvent} color="error" variant="contained">Eliminar</Button>
             )}
-                <Button onClick={handleCloseDialog}>Cancelar</Button>
                 <Button onClick={handleSaveEvent} variant="contained">Guardar</Button>
+                <Button onClick={handleCloseDialog} variant="contained">Cancelar</Button>
             </DialogActions>
         </Dialog>
         <Dialog open={confirmDeleteOpen} onClose={cancelDelete}>
@@ -631,8 +597,8 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                 ¿Estás seguro de que deseas eliminar el evento <strong>{selectedEvent?.title}</strong>?
             </DialogContent>
             <DialogActions>
-                <Button onClick={cancelDelete}>Cancelar</Button>
                 <Button onClick={confirmDelete} color="error" variant="contained">Eliminar</Button>
+                <Button onClick={cancelDelete} variant="contained">Cancelar</Button>
             </DialogActions>
         </Dialog>
         <Dialog open={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>

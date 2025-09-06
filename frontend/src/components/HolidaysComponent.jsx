@@ -196,8 +196,8 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
         // const backendVacation = {...newVacacion}
         // backendVacation.start = start.toISOString()
         // backendVacation.end = end.toISOString()
-        // console.log("newVacacion: ", newVacacion)
-        
+
+        console.log("newVacacion: ", newVacacion)
         setEventData(newVacacion);
         setEvents([...events, newVacacion]);
 // Ya que estamos comenzando y los campos start y end vienen de JavaScript, es recomiendable guardar las fechas en 

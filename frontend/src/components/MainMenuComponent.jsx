@@ -71,9 +71,9 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
             case "Vacaciones":
                 navigate("/holidays");
                 break;
-            // case "About":
-            //     navigate("/about");
-            //     break;
+            case "About":
+                navigate("/about");
+                break;
             default:
                 break;
         }
@@ -217,7 +217,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                         variant="body1"
                                         sx={{ mx: 2, color: 'white', fontWeight: 'bold', backgroundColor: '#1976d2', px: 1.5, py: 0.5, borderRadius: 1 }}
                                     >
-                                        User: {user.nombre_apellidos}
+                                        Usuario/a: {user.nombre_apellidos}
                                     </Typography>
                                 </Box>
                                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -263,7 +263,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                 "&:selected": {backgroundColor: "grey"}
                                 }}
                             >
-                                Alta usuari@
+                                Alta usuario/a
                             </Button>
                         </Tooltip>
                     </Box>

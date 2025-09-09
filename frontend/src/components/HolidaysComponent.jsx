@@ -8,29 +8,28 @@ import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 // import addMonths from 'date-fns/addMonths';
 import {
-  startOfWeek,
-  endOfWeek,
-  startOfMonth,
-  endOfMonth,
+    startOfWeek,
+    endOfWeek,
+    startOfMonth,
+    endOfMonth,
 } from 'date-fns'; // necesario para calcular el rango visible del calendario y startOfWeek para indicar el día que comienza la semana
 import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 // MUI
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  MenuItem,
-  FormControl, 
-  InputLabel,
-  Select,
-  Stack,
-  Toolbar, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
-
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    TextField,
+    MenuItem,
+    FormControl, 
+    InputLabel,
+    Select,
+    Stack,
+    Toolbar, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -40,11 +39,11 @@ import { es as localeEs } from 'date-fns/locale';
 // const DnDCalendar = withDragAndDrop(Calendar);
 const locales = { es };
 const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
-  getDay,
-  locales,
+    format,
+    parse,
+    startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
+    getDay,
+    locales,
 });
 
 const HolidaysComponent = ({ logged, setLogged, user } ) => {
@@ -53,8 +52,7 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
 
     const [events, setEvents] = useState([]);
-    const [eventData, setEventData] = useState({
-    });
+    const [eventData, setEventData] = useState({});
     const [date, setDate] = useState(new Date());
     const [view, setView] = useState(Views.MONTH);      // POR DEFECTO VISTA SEMANA LABORAL
     const [selectedEvent, setSelectedEvent] = useState(null);
@@ -120,7 +118,7 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
             // Llamando a backend para presentar los datos
             try {
                 const response = await fetch(
-                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${user.id}/${start.toISOString()}/${end.toISOString()}`
+                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${user.id}/${start.toISOString()}/${end.toISOString()}/uno`
                 );
                 const data = await response.json();
                 const vacacionesData = data.map(vacacion => ({
@@ -275,7 +273,7 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
             }}>
                 <strong>
                     {/* {event.cellActive ? "Vacaciones" : null} */}
-                    Vacaciones
+                    V
                 </strong>
             </div>
         )

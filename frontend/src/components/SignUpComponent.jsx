@@ -23,9 +23,9 @@ import {
     Select,
     Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 } from '@mui/material';
-import { red, pink, purple, deepPurple, indigo, blue, lightBlue, cyan, teal, green, lightGreen, lime, yellow, orange, deepOrange, brown, grey, blueGrey } from '@mui/material/colors';
+import { red, pink, purple, deepPurple, indigo, blue, lightBlue, cyan, teal, green, lightGreen, lime, yellow, amber, orange, deepOrange, brown, grey, blueGrey } from '@mui/material/colors';
 const colorOptions = {
-    red: red[500],
+    // red: red[500],
     pink: pink[500],
     purple: purple[500],
     deepPurple: deepPurple[500],
@@ -38,6 +38,7 @@ const colorOptions = {
     lightGreen: lightGreen[500],
     lime: lime[500],
     yellow: yellow[500],
+    amber: amber[500],
     orange: orange[500],
     deepOrange: deepOrange[500],
     brown: brown[500],
@@ -278,7 +279,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
             setErrorMessage("Nombre y Apellidos más largo")
             return
         }
-        if (!isValidMovil(userMovil)) {
+        if (userMovil.length !== 0 && !isValidMovil(userMovil)) {
             setErrorMessage("El móvil debe tener formato 999-999999");
             return;
         }

@@ -2,7 +2,7 @@ import pool from '../db-pg.js';
 
 export async function getUsuarios() {
     try {
-        const result = await pool.query("SELECT * FROM erroak.usuarios;");
+        const result = await pool.query("SELECT * FROM erroak.usuarios ORDER BY nombre_apellidos;");
         return result.rows;
 
     } catch (err) {

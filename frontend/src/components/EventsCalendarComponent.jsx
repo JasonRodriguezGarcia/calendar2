@@ -438,6 +438,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
     <>
         <Toolbar />
       <h2>EVENTOS AÑO: {date.getFullYear()}</h2>
+
       {/* <Calendar */}
       <DnDCalendar
         localizer={localizer}
@@ -458,13 +459,16 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         // permitir si un evento se puede mover o no a conveniencia mediante una condición
         // draggableAccessor={(event) => event.permiteMover === true}
         resizable={false}                               // No permite ampliar/reducir eventos (su horario)
-        style={{ height: 700 }}
+        // style={{ height: 700 }}
+        style={{ height: 1000 }} // cambiado a celdas más altas
+        // style={{ height: "125%" }} // cambiado a celdas más altas
         date={date}
         view={view}
         onNavigate={handleNavigate}
         components={{
             event: CustomEvent
         }}
+        popup
         formats={{
             eventTimeRangeFormat: () => '',             // Oculta el "start - end" de la visualizacion de eventos que aparece por defecto
             weekdayFormat: (date, culture, localizer) =>

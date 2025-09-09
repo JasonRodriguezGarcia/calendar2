@@ -46,16 +46,30 @@ export async function deleteVacacion(event_id) {
 }
 
 
-export async function getVacaciones(user, year, month) {
-    console.log("imprimo user-year-month: ", user, year, month)
+export async function getVacaciones(user, year, month, all) {
+    console.log("imprimo user-year-month: ", user, year, month, all)
     try {
-        const result = await pool.query(`
+        let query = ''
+        let fields = []
+        if (all === 'all') {
+            query =`
+            SELECT * FROM erroak.vacaciones
+            WHERE start >= $1
+            AND start <= $2
+            ORDER BY start ASC;`
+            fields.push(year, month)
+        } else {
+            query =`
             SELECT * FROM erroak.vacaciones
             WHERE usuario_id = $1 
             AND start >= $2
             AND start <= $3
-            ORDER BY start ASC;`, 
-            [user, year, month])
+            ORDER BY start ASC;`
+            fields.push(user, year, month)
+        }
+        const result = await pool.query(
+            query,
+            fields)
         console.log("imprimo result getVacaciones: ", result)
         return result.rows;
 

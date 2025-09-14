@@ -1,30 +1,23 @@
 import { useEffect, useState, useMemo } from 'react';
 import {
-  Box,
-  Stack,
-  Button,
-  Typography,
-  Toolbar,
-  Tooltip,
-  Table,
-  TableContainer,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  useTheme,
-  Paper, 
+    Box,
+    Stack,
+    Button,
+    Typography,
+    Toolbar,
+    Tooltip,
+    Table,
+    TableContainer,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    useTheme,
+    Paper, 
 } from '@mui/material';
-
-import { es } from 'date-fns/locale';
-import {
-  addDays,
-  format,
-  isSameDay,
-  startOfMonth,
-  endOfMonth,
-  differenceInCalendarDays,
-} from 'date-fns';
+import AlarmIcon from '@mui/icons-material/Alarm'; // despertador
+import VpnKeyIcon from '@mui/icons-material/VpnKey'; // llave
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive'; // sirena
 
 const ListingsWinterAfternoonsComponent = ({ logged, user }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER;
@@ -34,158 +27,78 @@ const ListingsWinterAfternoonsComponent = ({ logged, user }) => {
     const [usuarios, setUsuarios] = useState([])
     const [date, setDate] = useState(new Date())
     const [rows, setRows] = useState([])
+    const [headTableDays, setHeadTableDays] = useState([
+        "Lunes", "Martes", "Miércoles", "Jueves", "Viernes"
+    ])
     const [actualMonthDays, setActualMonthDays] = useState([])
-
-    const fetchEventos = async () => {
-        const start = startOfMonth(new Date(date.getFullYear(), date.getMonth() - 1))
-        const end = endOfMonth(new Date(date.getFullYear(), date.getMonth() + 1))
-        try {
-            const response = await fetch(
-            `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${user.id}/${start.toISOString()}/${end.toISOString()}/all`
-            )
-            const data = await response.json();
-            const formatted = data.map(vacacion => ({
-                ...vacacion,
-                start: new Date(vacacion.start),
-                end: new Date(vacacion.end),
-                cellColor: vacacion.cell_color,
-            }))
-            setEvents(formatted)
-        } catch (error) {
-            console.error("Error cargando vacaciones:", error)
-        }
-    };
 
     const fetchUsuarios = async () => {
         try {
             const response = await fetch(
-                `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuarios`)
-            const data = await response.json();
-            setUsuarios(data)
+                `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/listings/winterafternoons`,
+            )
+            const data = await response.json()
+        // Paso 1: Inicializar 5 columnas vacías (lunes a viernes)
+        const columnasPorDia = Array.from({ length: 5 }, () => [])
+
+        // Paso 2: Distribuir usuarios según su tarde_invierno
+        data.forEach(usuario => {
+            const dia = usuario.tarde_invierno; // 1 = lunes, 5 = viernes
+            if (dia >= 1 && dia <= 5) {
+                columnasPorDia[dia - 1].push(usuario)
+            }
+        })
+
+        // Paso 3: Calcular el máximo número de usuarios en un día
+        const maxUsuarios = Math.max(...columnasPorDia.map(col => col.length))
+
+        // Paso 4: Transponer la matriz para que cada fila tenga 5 columnas
+        const filas = [];
+        for (let i = 0; i < maxUsuarios; i++) {
+            const fila = []
+            for (let j = 0; j < 5; j++) {
+                fila.push(columnasPorDia[j][i] || null); // rellena con null si no hay usuario
+            }
+            filas.push(fila)
+        }
+            console.log("imprimo filas: ", filas)
+            setUsuarios(filas)
         } catch (error) {
-            console.error("Error cargando vacaciones:", error)
+            console.error("Error cargando listingsafternoons:", error)
         }
-    };
+    }
 
     useEffect(() => {
-        if (!user?.id) return;
-        fetchEventos();
+        if (!user?.id) return
         fetchUsuarios();
-        // Obtener fecha actual
-        const year = date.getFullYear();
-        const month = date.getMonth(); // OJO: 0 = Enero, 11 = Diciembre
-
-        // Obtener número de días del mes actual
-        // new Date(año, mes + 1, 0) = último día del mes actual
-        const daysMonth = new Date(year, month + 1, 0).getDate(); 
-        const tempMonth = []
-        for (let index = 0; index < daysMonth; index++) {
-            tempMonth.push(index+1);
-        }
-        setActualMonthDays([...tempMonth])
-    }, [date, user]);
-
-      // Construir filas cuando usuarios y eventos estén listos
-    useEffect(() => {
-        if (usuarios.length === 0 || events.length === 0) return;
-
-        const tempRows = usuarios.map(usuario => {
-            // debugger
-            // añadir filtro para que filtre también por la fecha del mes en uso en date
-            // events[0].start podría ser igual a "Fri Aug 01 2025 12:00:00 GMT+0200 (hora de verano de Europa central)"
-            // startOfMonth(date) podría ser igual a "Tue Sep 30 2025 23:59:59 GMT+0200 (hora de verano de Europa central)"
-            const eventosUsuario = events.filter(e => e.usuario_id === usuario.usuario_id && e.start >= startOfMonth(date) && e.start <= endOfMonth(date));
-
-            return {
-            id: usuario.usuario_id,
-            nombre_apellidos: usuario.nombre_apellidos.slice(0, 15),
-            fechas: eventosUsuario,
-            };
-        });
-        console.log("tempRows: ", tempRows)
-        setRows(tempRows);
-    }, [usuarios, events]);
+    }, [user])
 
     useEffect(() => {
-        console.log("eventos y usuarios: ", events, usuarios)
-        console.log("actualMonthDays: ", actualMonthDays)
-    }, [events, usuarios, actualMonthDays])
-    if (!logged) return null;
+        console.log("usuarios: ", events, usuarios)
+    }, [usuarios])
+
+    if (!logged) return null
 
     return (
     <>
         <Toolbar />
 
-        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
-            <Button variant="outlined" onClick={() => {
-                const newDate = new Date(date)
-                    newDate.setMonth(date.getMonth() - 1)
-                    setDate(newDate)
-                }}>
-                Mes Ant.
-            </Button>
-
+        <Stack direction="row" justifyContent="center" alignItems="center" mb={3}>
             <Typography variant="h6">
-                TARDES DE INVIERNO: {date.getFullYear()} - 
-                Mes: {date.toLocaleString('es-ES', { month: 'long' }).toUpperCase()}
+                TARDES DE INVIERNO
             </Typography>
 
-            <Button variant="outlined" onClick={() => {
-                const newDate = new Date(date)
-                    newDate.setMonth(date.getMonth() + 1)
-                    setDate(newDate)
-                }}>
-                Mes Sig.
-            </Button>
         </Stack>
         <Box sx={{ width: "100%", overflowY: "auto"}}>
             <TableContainer sx={{ width: "100%"}}>
-                <Table stickyHeader  sx={{ width: "100%", tableLayout: "fixed"}} aria-label="simple table">
+                {/* tableLayout: fixed - Esto garantiza que todas las celdas mantendrán su ancho de acuerdo al header. */}
+                <Table stickyHeader sx={{ width: "100%", tableLayout: "fixed"}} aria-label="simple table">
                     <TableHead>
                         <TableRow>
-                            <TableCell align="left" sx={
-                                // width: '150px', // Tamaño fijo para la columna de usuario
-                                (theme) => ({
-                                    width: {
-                                        xs: '20px',   // móviles
-                                        sm: '120px',  // tablets
-                                        md: '150px',  // escritorio
-                                    },
-                                    fontSize: {
-                                        xs: '6px',   // móviles
-                                        sm: '10px',  // tablets
-                                        md: '14px',  // escritorio
-                                    },
-                                borderRight: '1px solid rgba(0, 0, 0, 0.12)'
-                            })}>Usuario</TableCell>
-                            {actualMonthDays.map((actualMonthDay, index) => (
+                            {headTableDays.map((day, index) => (
                                 <TableCell key={index} align="center"
-                                /* si el día es domingo =0 o sabado = 6 */
-                                    sx= {{ 
-                                        // width: "100%", // esto es incorrecto
-                                        padding: '6px',
-                                        fontSize: '12px',
-                                        backgroundColor : 
-                                            (new Date(date.getFullYear(), date.getMonth(), actualMonthDay).getDay() === 0) ||
-                                            (new Date(date.getFullYear(), date.getMonth(), actualMonthDay).getDay() === 6)
-                                                ? "lightGrey"
-                                                : "none"
-                                    }}
-                                >
-                                {actualMonthDay}
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {rows.map((row, index) => (
-                            <TableRow
-                                key={index}
-                                // sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                            >
-                                <TableCell component="th" scope="row"  sx={ 
-                                    // width: '150px',
-                                    (theme) => ({
+                                    sx= {
+                                        (theme) => ({ 
                                         width: {
                                             xs: '20px',   // móviles
                                             sm: '120px',  // tablets
@@ -196,45 +109,54 @@ const ListingsWinterAfternoonsComponent = ({ logged, user }) => {
                                             sm: '10px',  // tablets
                                             md: '14px',  // escritorio
                                         },
-                                        whiteSpace: 'nowrap',
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        borderRight: '1px solid rgba(0, 0, 0, 0.12)'
-                                    })
-                                }>
-                                    {row.nombre_apellidos}
+                                        border: '1px solid rgba(224, 224, 224, 1)', // borde completo
+                                        padding: '8px',
+                                        fontWeight: 'bold',
+                                    })}
+                                >
+                                    {day}
                                 </TableCell>
-                                {actualMonthDays.map((day, dayIndex) => {
-                                    const currentDate = new Date(date.getFullYear(), date.getMonth(), day, 12, 0, 0)
-                                    const weekDay = new Date(date.getFullYear(), date.getMonth(), day).getDay()
-                                    console.log("currendDate: ", currentDate)
-                                    const tieneEvento = row.fechas.some(evento => {
-                                        const start = evento.start;
-                                        const end = evento.end;
-                                        console.log("start:", evento.start)
-                                        return currentDate >= start && currentDate <= end;
-                                    });
-
-                                    return (
-                                        <TableCell
-                                            key={dayIndex}
-                                            align="center"
-                                            sx={{
-                                                padding: '6px',
-                                                fontSize: '12px',
-                                                backgroundColor: tieneEvento ? 'red' : 
-                                                    weekDay === 0 ||
-                                                    weekDay === 6
-                                                        ? "lightGrey"
-                                                        : "none",
-                                                borderRight: '1px solid rgba(0, 0, 0, 0.12)',
-                                                color: "white"
-                                            }}
-                                        >
-                                            {tieneEvento ? "V" : ' '}
-                                        </TableCell>
-                                    );
-                                })}
+                            ))}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody
+                    >
+                        {usuarios.map((fila, indexDia) => (
+                            <TableRow key={indexDia}
+                            >
+                                {fila.map((el, index) => (
+                                    <TableCell key={index} sx={{
+                                        border: '1px solid rgba(224, 224, 224, 1)', // borde completo
+                                        padding: '8px',
+                                        fontSize: {
+                                        xs: '6px',
+                                        sm: '10px',
+                                        md: '14px',
+                                        },
+                                    }}
+                                    >
+                                        {el ? (
+                                            <>
+                                                <Box sx={{ display: "flex", flexDirection: "row", alignItems: "start" }}>
+                                                    {el.nombre_apellidos}
+                                                    {/* {el.alarma && <AlarmIcon sx={{ fontSize: 16, ml: 0.5 }} />} */}
+                                                    {el.alarma && (
+                                                        <Tooltip title="Tiene alarma" arrow>
+                                                            <NotificationsActiveIcon sx={{ fontSize: 16, ml: 0.5, color: "red" }} />
+                                                        </Tooltip>
+                                                    )}
+                                                    {el.llave && (
+                                                        <Tooltip title="Tiene llave" arrow>
+                                                            <VpnKeyIcon sx={{ fontSize: 16, ml: 0.5, color: "green" }} />
+                                                        </Tooltip>
+                                                    )}
+                                                    -{el.nombre_centro}
+                                                </Box>
+                                            </>
+                                            ) : ""
+                                        }
+                                    </TableCell>
+                                ))}
                             </TableRow>
                         ))}
                     </TableBody>

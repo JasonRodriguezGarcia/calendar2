@@ -19,7 +19,7 @@ import { useScrollTrigger } from '@mui/material';
 import { useState } from 'react';
 
 // const pages = ['Eventos', 'Vacaciones', 'About'];
-const pages = ['Reserva Espacio', 'Registra Vacaciones', 'Listados', 'About'];
+const pages = ['Eventos', 'Vacaciones', 'Listados', 'About'];
 // termiar con lists
 const lists = ['Vacaciones personal', 'Tardes invierno', 'Contactos', ]
 const settings = ['Ver perfil', 'Modificar perfil', 'Cerrar sesión'];
@@ -73,11 +73,11 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                 setAnchorElList(event.currentTarget);
             break;
                 // case "Eventos":
-            case "Reserva Espacio":
+            case "Eventos":
                 navigate("/eventos");
                 break;
             // case "Vacaciones":
-            case "Registra Vacaciones":
+            case "Vacaciones":
                 navigate("/holidays");
                 break;
             case "About":
@@ -93,6 +93,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
     const filteredPages = pages.filter(page => {
         if (page === "Eventos") return logged
         else if (page === "Vacaciones") return logged       
+        else if (page === "Listados") return logged       
         return true;
     });
     
@@ -132,7 +133,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                         />
                     </Typography>
     {/* menu mobil */}
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }}}>
                         <IconButton
                             size="large"
                             aria-label="account of current user"

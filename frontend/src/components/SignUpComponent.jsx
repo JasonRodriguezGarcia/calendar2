@@ -46,13 +46,21 @@ const colorOptions = {
     blueGrey: blueGrey[500],
 };
 
+const tardes_invierno = [
+    {tarde_id: 0, descripcion: "No"},
+    {tarde_id: 1, descripcion: "Lunes"},
+    {tarde_id: 2, descripcion: "Martes"},
+    {tarde_id: 3, descripcion: "Miércoles"},
+    {tarde_id: 4, descripcion: "Jueves"},
+    {tarde_id: 5, descripcion: "Viernes"},
+]
 const SignUpComponent = ({ logged, setLogged, user, action }) => {
 
     // const [isValidToken, setIsValidToken] = useState(false)
     // const [userName, setUserName] = useState("")
     // const [userEmail, setUserEmail] = useState("")
     // const [userPassword, setUserPassword] = useState("")
-    const [selectedColor, setSelectedColor] = useState('red');
+    const [selectedColor, setSelectedColor] = useState("")
     const [userId, setUserId] = useState("")
     const [userEmail, setUserEmail] = useState("")
     const [userPassword, setUserPassword] = useState("")
@@ -63,6 +71,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
     const [userLlave, setUserLlave] = useState("false")
     const [userAlarma, setUserAlarma] = useState("false")
     const [userTurno, setUserTurno] = useState("")
+    const [userTarde_Invierno, setUserTarde_Invierno] = useState("")
     const [centros, setCentros] = useState([])
     const [turnos, setTurnos] = useState([])
     const [minPasswordLength, setMinPasswordLength] = useState(10) // Longitud contraseña
@@ -141,6 +150,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                         setUserAlarma(dataUser.alarma)
                         setUserTurno(dataUser.turno_id)
                         setSelectedColor(dataUser.color)
+                        setUserTarde_Invierno(dataUser.tarde_invierno)
                         const title = action === "read" ? "Ver perfil" : "Modificar perfil"
                         setFormTitle(title)
                         // const readOnly = action === "read" ? true : false
@@ -296,7 +306,8 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                 llave: userLlave === "true",
                 alarma: userAlarma === "true",
                 turno_id: userTurno,
-                color: selectedColor
+                color: selectedColor,
+                tarde_invierno: userTarde_Invierno
             }
             console.log("user: ", userTmp)
             const endPoint= action === "create"
@@ -448,7 +459,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="usermovil" sx={{ color: "black", minwidth: 100 }}>Movil</FormLabel>
+                        <FormLabel htmlFor="usermovil" sx={{ color: "black", minwidth: 100 }}>Movil Empresa:</FormLabel>
                         <Input
                             id="usermovil"
                             name="usermovil"
@@ -496,7 +507,6 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                         >
                             {centros.map((centro) => (
                                 <MenuItem key={centro.centro_id} value={centro.centro_id}>{centro.centro}</MenuItem>
-
                             ))}
                         </Select>
                     </Stack>
@@ -515,10 +525,22 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                             <FormControlLabel value="true" control={<Radio />} label="Si" disabled={formReadOnly}/>
                             <FormControlLabel value="false" control={<Radio />} label="No" disabled={formReadOnly}/>
                         </RadioGroup>
+                                                <FormLabel htmlFor="useralarma" sx={{ color: "black", minwidth: 100 }}>Alarma</FormLabel>
+                        <RadioGroup
+                            row //  esto los pone en horizontal
+                            aria-labelledby="demo-radio-buttons-group-label-alarma"
+                            defaultValue="false"
+                            name="radio-buttons-group-alarma"
+                            value={userAlarma}
+                            onChange={(e)=> setUserAlarma(e.target.value)}
+                        >
+                            <FormControlLabel value="true" control={<Radio />} label="Si" disabled={formReadOnly}/>
+                            <FormControlLabel value="false" control={<Radio />} label="No"disabled={formReadOnly}/>
+                        </RadioGroup>
+
                     </Stack>
                 </FormControl>
-                            {/* // (persona_id, email, password, nombre_apellidos, movil, extension, centro, llave, alarma, turno) */}
-                <FormControl>
+                {/* <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <FormLabel htmlFor="useralarma" sx={{ color: "black", minwidth: 100 }}>Alarma</FormLabel>
                         <RadioGroup
@@ -533,7 +555,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                             <FormControlLabel value="false" control={<Radio />} label="No"disabled={formReadOnly}/>
                         </RadioGroup>
                     </Stack>
-                </FormControl>
+                </FormControl> */}
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <FormLabel htmlFor="userturno" sx={{ color: "black", minwidth: 100 }}>Turno</FormLabel>
@@ -548,8 +570,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                             required
                         >
                             {turnos.map((turno) => (
-                                <MenuItem key={turno.turno_id} value={turno.turno_id}>{turno.turno} - {turno.horario}</MenuItem>
-
+                                <MenuItem key={turno.turno_id} value={turno.turno_id}>{turno.turno}</MenuItem>
                             ))}
                         </Select>
                     </Stack>
@@ -580,9 +601,26 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                         ))}
                     </Select>
                 </FormControl>
+                <FormControl>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <FormLabel htmlFor="usertarde_invierno" sx={{ color: "black", minwidth: 100 }}>Tarde Invierno</FormLabel>
+                        <Select
+                            fullWidth
+                            labelId="select-label-tarde_invierno"
+                            id="select-tarde_invierno"
+                            // label="Turno *"
+                            value={userTarde_Invierno}
+                            disabled={formReadOnly}
+                            onChange={(e) => setUserTarde_Invierno(e.target.value)}
+                            required
+                        >
+                            {tardes_invierno.map((tarde) => (
+                                <MenuItem key={tarde.tarde_id} value={tarde.tarde_id}>{tarde.descripcion}</MenuItem>
 
-                {/* <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 }}>Crear usuario</Button> */}
-                {/* <Button type="submit" id="boton2" name="signup" sx={{ mt: 1 }}>SignUP</Button> */}
+                            ))}
+                        </Select>
+                    </Stack>
+                </FormControl>
                 <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 }}>
                     {/* Crear usuario */}
                     {action === "create" 
@@ -590,13 +628,11 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                         :  action == "read" 
                             ? "Cerrar" 
                             : "Guardar"
-
                     }
                 </Button>
 
-                {errorMessage && 
-                
-                <Typography level="body-sm" color="danger" fontWeight="bold" fontSize="1em">{errorMessage}</Typography>
+                {errorMessage &&                 
+                    <Typography level="body-sm" color="danger" fontWeight="bold" fontSize="1em">{errorMessage}</Typography>
                 }
             </Box>
         </Box>

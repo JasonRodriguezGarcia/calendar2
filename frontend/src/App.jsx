@@ -13,6 +13,7 @@ import SignUpPage from './pages/SignUpPage';
 import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
 import HolidaysViewPage from './pages/HolidaysViewPage';
+import ListingsWinterAfternoonsPage from './pages/ListingsWinterAfternoonsPage';
 
 const App = () => {
 
@@ -26,7 +27,9 @@ const App = () => {
                 <Route path="/signup" element={<SignUpPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/editprofile" element={<EditProfilePage />} />
-                <Route path="/about" element={<HolidaysViewPage />} />
+                <Route path="/staffholidays" element={<HolidaysViewPage />} />
+                <Route path="/winterafternoons" element={<ListingsWinterAfternoonsPage />} />
+                {/* <Route path="/about" element={<HolidaysViewPage />} /> */}
                 
                 {/* <Route path="/" element={<DashboardPage />} />
                     <Route path="/descriptions/new" element={<DescriptionsFormInsertPage />} />

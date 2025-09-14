@@ -26,7 +26,7 @@ import {
   differenceInCalendarDays,
 } from 'date-fns';
 
-const HolidaysViewComponent = ({ logged, user }) => {
+const ListingsWinterAfternoonsComponent = ({ logged, user }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER;
     const theme = useTheme();
 
@@ -126,7 +126,7 @@ const HolidaysViewComponent = ({ logged, user }) => {
             </Button>
 
             <Typography variant="h6">
-                VACACIONES ENTIDAD: {date.getFullYear()} - 
+                TARDES DE INVIERNO: {date.getFullYear()} - 
                 Mes: {date.toLocaleString('es-ES', { month: 'long' }).toUpperCase()}
             </Typography>
 
@@ -245,4 +245,4 @@ const HolidaysViewComponent = ({ logged, user }) => {
   );
 };
 
-export default HolidaysViewComponent;
+export default ListingsWinterAfternoonsComponent;

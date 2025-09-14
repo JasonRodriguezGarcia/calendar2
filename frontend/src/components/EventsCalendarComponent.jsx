@@ -424,11 +424,14 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
     // Personalizando la visualizacion de eventos en el calendario, por defecto "start-end title"
     const CustomEvent = ({ event }) => {
         const usuario = usuarios.find(p => p.usuario_id === event.usuario_id);
+        const espacio = espacios.find(p => p.espacio_id === event.espacio_id);
         const programa = programas.find(p => p.programa_id === event.programa_id);
 
         return (
             <div>
-                <strong>{usuario?.nombre_apellidos || 'Sin nombre'}</strong> - {programa?.descripcion || 'Sin nombre'}
+                {programa?.descripcion || 'Sin nombre'}
+                - <strong>{usuario?.nombre_apellidos || 'Sin nombre'}</strong> 
+                - {espacio?.descripcion || 'Sin nombre'}
             </div>
         );
     };
@@ -475,11 +478,15 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             localizer.format(date, 'eeee', culture), // 'lunes', 'martes', etc.
         }}
         tooltipAccessor={(event) => {                   // Muestra "start - end" y otros al pasar el cursor por encima
-            const usuario = usuarios.find(p => p.usuario_id === event.usuario_id);
             const programa = programas.find(p => p.programa_id === event.programa_id);
+            const usuario = usuarios.find(p => p.usuario_id === event.usuario_id);
+            const espacio = espacios.find(p => p.espacio_id === event.espacio_id);
             // si ponemos usuario?.nombre_apellidos y no usuario.nombre_apellidos, en caso de que programa no exista, obtenemos un crash con error en ejecución
             // Pero si ponemos usuario?.nombre_apellidos y no existe obtenemos un undefined y el programa sigue su curso
-            return `${usuario?.nombre_apellidos || 'Sin nombre'} - ${programa?.descripcion || 'Sin programa'}  — ${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}`;
+            return `${programa?.descripcion || 'Sin programa'} -`+
+                    `${usuario?.nombre_apellidos || 'Sin nombre'} -`+
+                    `${espacio?.descripcion || 'Sin nombre'} -`+
+                    `${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}`;
         }}
 
         eventPropGetter={(event) => {                   // Estilo visual de cada evento

@@ -18,13 +18,17 @@ import logo from "../assets/images/erroaksartu.jpg"
 import { useScrollTrigger } from '@mui/material';
 import { useState } from 'react';
 
-const pages = ['Eventos', 'Vacaciones', 'About'];
+// const pages = ['Eventos', 'Vacaciones', 'About'];
+const pages = ['Reserva Espacio', 'Registra Vacaciones', 'Listados', 'About'];
+// termiar con lists
+const lists = ['Vacaciones personal', 'Tardes invierno', 'Contactos', ]
 const settings = ['Ver perfil', 'Modificar perfil', 'Cerrar sesión'];
 
 function MainMenuComponent({ logged, setLogged, user, setUser }) {
     const navigate = useNavigate()
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
+    const [anchorElList, setAnchorElList] = useState(null);
     // const [logged, setLogged] = useState(true)
     // const [userNick, setUserNick] = useState('Rosa')
 
@@ -61,14 +65,19 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
         setAnchorElUser(null);
     };
 
-    const handleClickedPage = (page) => {
+    const handleClickedPage = (page, event) => {
         console.log("Página pulsada:", page);
 
         switch (page) {
-            case "Eventos":
+            case "Listados":
+                setAnchorElList(event.currentTarget);
+            break;
+                // case "Eventos":
+            case "Reserva Espacio":
                 navigate("/eventos");
                 break;
-            case "Vacaciones":
+            // case "Vacaciones":
+            case "Registra Vacaciones":
                 navigate("/holidays");
                 break;
             case "About":
@@ -151,17 +160,54 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                             sx={{ display: { xs: 'block', md: 'none' } }}
                         >
                             {filteredPages.map((page) => (
-                                <MenuItem key={page} onClick={()=> handleClickedPage(page)}
-                                    sx={{ "&:hover": {backgroundColor: 'lightgrey', color: "black"},
-                                        "&:selected": {backgroundColor: "grey"}
-                                    }}
-                                >
-                                    <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
-                                </MenuItem>
+                                page === "Listados" ? (
+                                    <div key="listados">
+                                        {/* <MenuItem disabled sx={{ fontWeight: 'bold' }}> */}
+                                        <MenuItem sx={{ fontWeight: 'bold', color: "slategrey" }}>
+                                            <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
+                                        </MenuItem>
+                                        {lists.map((item) => (
+                                            <MenuItem
+                                                key={item}
+                                                onClick={() => {
+                                                    setAnchorElNav(null);
+                                                    // navegación
+                                                    switch (item) {
+                                                        case "Vacaciones personal":
+                                                            // navigate("/listado/vacaciones");
+                                                            // navigate("/vacacionespersonal");
+                                                            navigate("/staffholidays");
+                                                            break;
+                                                        case "Tardes invierno":
+                                                            // navigate("/listado/tardes");
+                                                            navigate("/winterafternoons");
+                                                            break;
+                                                        case "Contactos":
+                                                            navigate("/listado/contactos");
+                                                            break;
+                                                        default:
+                                                            break;
+                                                    }
+                                                }}
+                                                sx={{ pl: 4 }}
+                                            >
+                                                <Typography>{item}</Typography>
+                                            </MenuItem>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <MenuItem key={page} onClick={(e)=> handleClickedPage(page,e)}
+                                        sx={{ "&:hover": {backgroundColor: 'lightgrey', color: "black"},
+                                            "&:selected": {backgroundColor: "grey"}
+                                        }}
+                                    >
+                                        <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
+                                    </MenuItem>
+                                )
                             ))}
                         </Menu>
                     </Box>
-                    {/* LOGO MOVIL */}
+    {/* LOGO MOVIL */}
                     {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} /> */}
                     <Typography
                         variant="h5"
@@ -193,12 +239,12 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                             }} 
                         />
                     </Typography>
-                    {/* MENU DESKTOP */}
+    {/* MENU DESKTOP */}
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {filteredPages.map((page) => (
                         <Button
                             key={page}
-                            onClick={()=> handleClickedPage(page)}
+                            onClick={(e)=> handleClickedPage(page,e)}
                             // sx={{ my: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
                             sx={{ my: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
                                 "&:selected": {backgroundColor: "grey"} }}
@@ -207,7 +253,43 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                         </Button>
                         ))}
                     </Box>
-                    {/* USUARIO LOGEADO */}
+                {/* subMENU DE LISTADOS */}
+                    <Menu
+                        anchorEl={anchorElList}
+                        open={Boolean(anchorElList)}
+                        onClose={() => setAnchorElList(null)}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                    >
+                        {lists.map((item) => (
+                            <MenuItem
+                                key={item}
+                                onClick={() => {
+                                    setAnchorElList(null);
+                                    // Añade aquí la lógica de navegación por cada item si la tienes
+                                    switch (item) {
+                                        case "Vacaciones personal":
+                                            // navigate("/listado/vacaciones");
+                                            // navigate("/vacacionespersonal");
+                                            navigate("/staffholidays");
+                                            break;
+                                        case "Tardes invierno":
+                                            // navigate("/listado/tardes");
+                                            navigate("/winterafternoons");
+                                            break;
+                                        case "Contactos":
+                                            navigate("/listado/contactos");
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }}
+                            >
+                                {item}
+                            </MenuItem>
+                        ))}
+                    </Menu>
+            {/* USUARIO LOGEADO */}
                     <Box sx={{ flexGrow: 0, display: logged ? 'block' : 'none' }}>
                         <Tooltip title="Abrir configuración">
                             <Box sx={{ display: "flex", alignItems: "center"}}>
@@ -221,7 +303,8 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                     </Typography>
                                 </Box>
                                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                    <Avatar alt={user.nombre_apellidos} src="/static/images/avatar/2.jpg" />
+                                    {/* <Avatar alt={user.nombre_apellidos} src="/static/images/avatar/2.jpg" /> */}
+                                    <Avatar alt={user.nombre_apellidos} src="/static/images/personicons/rosa.jpg" />
                                 </IconButton>
                             </Box >
                         </Tooltip>
@@ -253,7 +336,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                         </Menu>
                     </Box>
 
-                    {/* Usuario no logeado */}
+            {/* Usuario no logeado */}
                     <Box sx={{ flexGrow: 0, display: logged ? 'none' : 'block'}}>
                         <Tooltip title="Darse de alta" arrow>
                             <Button

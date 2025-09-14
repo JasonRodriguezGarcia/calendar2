@@ -184,7 +184,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                                             navigate("/winterafternoons");
                                                             break;
                                                         case "Contactos":
-                                                            navigate("/listado/contactos");
+                                                            navigate("/contacts");
                                                             break;
                                                         default:
                                                             break;
@@ -279,7 +279,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                             navigate("/winterafternoons");
                                             break;
                                         case "Contactos":
-                                            navigate("/listado/contactos");
+                                            navigate("/contacts");
                                             break;
                                         default:
                                             break;

@@ -14,7 +14,7 @@ import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
 import HolidaysViewPage from './pages/HolidaysViewPage';
 import ListingsWinterAfternoonsPage from './pages/ListingsWinterAfternoonsPage';
-
+import ContactsPage from './pages/ContactsPage';
 const App = () => {
 
     return (
@@ -29,6 +29,7 @@ const App = () => {
                 <Route path="/editprofile" element={<EditProfilePage />} />
                 <Route path="/staffholidays" element={<HolidaysViewPage />} />
                 <Route path="/winterafternoons" element={<ListingsWinterAfternoonsPage />} />
+                <Route path="/contacts" element={<ContactsPage />} />
                 {/* <Route path="/about" element={<HolidaysViewPage />} /> */}
                 
                 {/* <Route path="/" element={<DashboardPage />} />

@@ -112,6 +112,25 @@ export async function getEventos(year, month) {
     }
 }
 
+export async function getEventosUsuario(user, year, month) {
+    console.log("imprimo user-year-month: ", user, year, month)
+    try {
+        const result = await pool.query(`
+            SELECT * FROM erroak.eventos
+            WHERE usuario_id = $1
+            AND start >= $2
+            AND start <= $3
+            ORDER BY start ASC;`, 
+            [user, year, month])
+        console.log("imprimo result getEventos: ", result)
+        return result.rows;
+
+    } catch (err) {
+        console.error('Error al obtener eventos:', err.message);
+        throw err;
+    }
+}
+
 
 // export async function postVacacion(vacacion) {
 //     console.log("imprimo vacacion: ", vacacion)

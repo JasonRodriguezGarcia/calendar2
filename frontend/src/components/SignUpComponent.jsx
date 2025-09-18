@@ -72,6 +72,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
     const [userAlarma, setUserAlarma] = useState("false")
     const [userTurno, setUserTurno] = useState("")
     const [userTarde_Invierno, setUserTarde_Invierno] = useState("")
+    const [userObservaciones, setUserObservaciones] = useState("")
     const [centros, setCentros] = useState([])
     const [turnos, setTurnos] = useState([])
     const [minPasswordLength, setMinPasswordLength] = useState(10) // Longitud contraseña
@@ -151,6 +152,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                         setUserTurno(dataUser.turno_id)
                         setSelectedColor(dataUser.color)
                         setUserTarde_Invierno(dataUser.tarde_invierno)
+                        setUserObservaciones(dataUser.observaciones)
                         const title = action === "read" ? "Ver perfil" : "Modificar perfil"
                         setFormTitle(title)
                         // const readOnly = action === "read" ? true : false
@@ -307,7 +309,8 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                 alarma: userAlarma === "true",
                 turno_id: userTurno,
                 color: selectedColor,
-                tarde_invierno: userTarde_Invierno
+                tarde_invierno: userTarde_Invierno,
+                observaciones: userObservaciones
             }
             console.log("user: ", userTmp)
             const endPoint= action === "create"
@@ -441,7 +444,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="usernombre_apellidos" sx={{ color: "black", minwidth: 100 }}>Nombre y apellidos:</FormLabel>
+                        <FormLabel htmlFor="usernombre_apellidos" sx={{ color: "black", minwidth: 100 }}>Nombre y apellido:</FormLabel>
                         <Input
                             id="usernombre_apellidos"
                             name="usernombre_apellidos"
@@ -525,7 +528,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                             <FormControlLabel value="true" control={<Radio />} label="Si" disabled={formReadOnly}/>
                             <FormControlLabel value="false" control={<Radio />} label="No" disabled={formReadOnly}/>
                         </RadioGroup>
-                                                <FormLabel htmlFor="useralarma" sx={{ color: "black", minwidth: 100 }}>Alarma</FormLabel>
+                        <FormLabel htmlFor="useralarma" sx={{ color: "black", minwidth: 100 }}>Alarma</FormLabel>
                         <RadioGroup
                             row //  esto los pone en horizontal
                             aria-labelledby="demo-radio-buttons-group-label-alarma"
@@ -540,22 +543,6 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
 
                     </Stack>
                 </FormControl>
-                {/* <FormControl>
-                    <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="useralarma" sx={{ color: "black", minwidth: 100 }}>Alarma</FormLabel>
-                        <RadioGroup
-                            row //  esto los pone en horizontal
-                            aria-labelledby="demo-radio-buttons-group-label-alarma"
-                            defaultValue="false"
-                            name="radio-buttons-group-alarma"
-                            value={userAlarma}
-                            onChange={(e)=> setUserAlarma(e.target.value)}
-                        >
-                            <FormControlLabel value="true" control={<Radio />} label="Si" disabled={formReadOnly}/>
-                            <FormControlLabel value="false" control={<Radio />} label="No"disabled={formReadOnly}/>
-                        </RadioGroup>
-                    </Stack>
-                </FormControl> */}
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <FormLabel htmlFor="userturno" sx={{ color: "black", minwidth: 100 }}>Turno</FormLabel>
@@ -621,6 +608,35 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                         </Select>
                     </Stack>
                 </FormControl>
+                {/* <FormControl>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <FormLabel htmlFor="userobservaciones" sx={{ color: "black", minwidth: 100 }}>Observaciones:</FormLabel>
+                        <Input
+                            id="userobservaciones"
+                            name="userobservaciones"
+                            type="text"
+                            autoComplete="observaciones"
+                            placeholder="(máx. 255 car.)"
+                            fullWidth
+                            value={userObservaciones}
+                            disabled={formReadOnly}
+                            // onChange={(e)=> setUserNombre_Apellidos(e.target.value)}
+                            onChange={(e)=> setUserObservaciones(e.target.value)}
+                        />
+                    </Stack>
+                </FormControl> */}
+                <TextField
+                    fullWidth
+                    label="Observaciones"
+                    name="observaciones"
+                    value={userObservaciones}
+                    disabled={formReadOnly}
+                    onChange={(e) => setUserObservaciones(e.target.value)}
+                    margin="dense"
+                    multiline
+                    rows={3}
+                />
+
                 <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 }}>
                     {/* Crear usuario */}
                     {action === "create" 

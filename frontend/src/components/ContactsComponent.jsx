@@ -176,6 +176,26 @@ const ContactsComponent = ({ logged, user }) => {
                             >
                                 Extension
                             </TableCell>
+                            <TableCell align="center"
+                                sx= {
+                                    (theme) => ({ 
+                                    width: {
+                                        xs: '20px',   // móviles
+                                        sm: '120px',  // tablets
+                                        md: '150px',  // escritorio
+                                    },
+                                    fontSize: {
+                                        xs: '6px',   // móviles
+                                        sm: '10px',  // tablets
+                                        md: '14px',  // escritorio
+                                    },
+                                    border: '1px solid rgba(224, 224, 224, 1)', // borde completo
+                                    padding: '8px',
+                                    fontWeight: 'bold',
+                                })}
+                            >
+                                Observaciones
+                            </TableCell>
 
                         </TableRow>
                     </TableHead>
@@ -230,6 +250,18 @@ const ContactsComponent = ({ logged, user }) => {
                                     }}
                                     >
                                         {usuario.extension}
+                                    </TableCell>
+                                    <TableCell sx={{
+                                        border: '1px solid rgba(224, 224, 224, 1)', // borde completo
+                                        padding: '8px',
+                                        fontSize: {
+                                        xs: '6px',
+                                        sm: '10px',
+                                        md: '14px',
+                                        },
+                                    }}
+                                    >
+                                        {usuario.observaciones}
                                     </TableCell>
                             </TableRow>
                         ))}

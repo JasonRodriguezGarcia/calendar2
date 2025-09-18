@@ -47,8 +47,8 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-const saltosTiempo = 15 // step={15}
-const saltosHora = 2 // timeslots={4}
+const saltosTiempo = 60 // step={15}
+const saltosHora = 1 // timeslots={4}
 const horaMinima = new Date(1970, 1, 1, 7, 0) // Limitación hora mínima
 const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
 
@@ -150,7 +150,8 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             // Llamando a backend para presentar los datos
             try {
                 const response = await fetch(
-                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${start.toISOString()}/${end.toISOString()}`
+                //   `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${start.toISOString()}/${end.toISOString()}`
+                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${user.id}/${start.toISOString()}/${end.toISOString()}`
                 );
                 const data = await response.json();
                 const eventosData = data.map(evento => ({

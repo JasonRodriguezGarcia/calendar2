@@ -4,7 +4,7 @@ import { Router} from 'express';
 // import jwt from 'jsonwebtoken';
 // import { getUsuarios, postLogin, postUsuario, getSignUpFormData, getUsuario, putUsuario, getHolidays } from '../models/usuariosModel.js';
 // import { getVacaciones, postVacacion, deleteVacacion, getVacacionesCount } from '../models/vacacionesModel.js';
-import { getNewEventFormData, postEvento, deleteEvento, putEvento, getEventos } from "../models/eventosModel.js"
+import { getNewEventFormData, postEvento, deleteEvento, putEvento, getEventos, getEventosUsuario } from "../models/eventosModel.js"
 
 const router = Router()
 
@@ -50,8 +50,7 @@ router.put('/evento/:event_id', async (req, res) => {
 });
 
 // /api/v1/erroak/eventos/:user/:year/:month
-// Devuelve los datos de los eventos de TODOS LOS USUARIO en un año y mes
-// router.get('/eventos/:user/:anio/:mes', async(req, res) => {
+// Devuelve los datos de los eventos de TODOS LOS USUARIOS en un año y mes
 router.get('/eventos/:anio/:mes', async(req, res) => {
     const {user, anio, mes} = req.params
     const eventos = await getEventos(anio, mes);
@@ -59,8 +58,15 @@ router.get('/eventos/:anio/:mes', async(req, res) => {
     res.json (eventos)
 })
 
-
-
+// /api/v1/erroak/eventos/:user/:year/:month
+// Devuelve los datos de los eventos de TODOS LOS USUARIOS en un año y mes
+// router.get('/eventos/:user/:anio/:mes', async(req, res) => {
+router.get('/eventos/:usuario/:anio/:mes', async(req, res) => {
+    const {usuario, anio, mes} = req.params
+    const eventos = await getEventosUsuario(usuario, anio, mes);
+    console.log(eventos);
+    res.json (eventos)
+})
 
 export default router
 // // /api/v1/erroak/vacacion 

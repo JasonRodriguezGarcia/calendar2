@@ -12,7 +12,7 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+// import AdbIcon from '@mui/icons-material/Adb';
 
 import logo from "../assets/images/erroaksartu.jpg"
 import { useScrollTrigger } from '@mui/material';
@@ -304,8 +304,8 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                     </Typography>
                                 </Box>
                                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                    {/* <Avatar alt={user.nombre_apellidos} src="/static/images/avatar/2.jpg" /> */}
-                                    <Avatar alt={user.nombre_apellidos} src="/static/images/personicons/rosa.jpg" />
+                                    <Avatar alt={user.nombre_apellidos} src="/static/images/avatar/2.jpg" />
+                                    {/* <Avatar alt={user.nombre_apellidos} src="/static/images/personicons/rosa.jpg" /> */}
                                 </IconButton>
                             </Box >
                         </Tooltip>

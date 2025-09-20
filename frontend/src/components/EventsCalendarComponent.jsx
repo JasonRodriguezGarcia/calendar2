@@ -34,6 +34,7 @@ import {
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { es as localeEs } from 'date-fns/locale';
 
@@ -69,6 +70,9 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
     const [usuarios, setUsuarios] = useState([])
     const [espacios, setEspacios] = useState([])
     const [programas, setProgramas] = useState([])
+    const [dialogRepeatOpen, setDialogRepeatOpen] = useState(false)
+    const [eventDataRepeatStart, setEventDataRepeatStart] = useState('')
+    const [eventDataRepeatEnd, setEventDataRepeatEnd] = useState('')
 
     const navigate = useNavigate();
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
@@ -129,15 +133,15 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
 
     useEffect(()=> {
         // Conseguimos la fecha cuando cambie de mes con los botones Mes Ant. y Mes Sig.
-        const month = date.getMonth() + 1; // 0 = Enero, así que +1
-        const year = date.getFullYear();
+        const month = date.getMonth() + 1 // 0 = Enero, así que +1
+        const year = date.getFullYear()
 
-        console.log("Cargando eventos para:", month, year);
+        console.log("Cargando eventos para:", month, year)
 
         const getVisibleRange = (date) => {         // Para conseguir el rango visible del calendario
-            const start = startOfWeek(startOfMonth(date), { weekStartsOn: 1 });
-            const end = endOfWeek(endOfMonth(date), { weekStartsOn: 1 });
-            return { start, end };
+            const start = startOfWeek(startOfMonth(date), { weekStartsOn: 1 })
+            const end = endOfWeek(endOfMonth(date), { weekStartsOn: 1 })
+            return { start, end }
         };
 
         const fetchEventos = async () => {
@@ -161,17 +165,17 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                     color: evento.color,
                 }));
                 console.log("imprimo eventosData: ", eventosData)
-                setEvents(eventosData);
+                setEvents(eventosData)
             } catch (error) {
                 console.error("Error cargando eventos:", error);
             }
         }
 
         if (!user || !user.id) {
-            console.warn("fetchEventos() abortado porque user.id es undefined");
-            return;
+            console.warn("fetchEventos() abortado porque user.id es undefined")
+            return
         }
-        fetchEventos();
+        fetchEventos()
     }, [date, user])
 
     // Si no está logeado se sale del componente
@@ -179,7 +183,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         // navigate("/")        // con esta opción se muestra brevemente y luego pasa a "/"
 
     const handleNavigate = (newDate) => { // Permite desplazar de fecha del calendario
-        setDate(newDate);
+        setDate(newDate)
     };
 
     const handleViewChange = (newView) => { // Permite cambiar la vista del calendario
@@ -190,34 +194,58 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         }
     };
 
-    // Creando un nuevo evento
-    const handleSelectSlot = (slotInfo) => {
-        let { start, end } = slotInfo
+    const eventGenerator = () => {
+        // Generar un ID único combinando timestamp + aleatorio
+        let newEventIdGenerated = Date.now() + Math.floor(Math.random() * 100000)
 
-        // Si es fin de semana, no permitir (opcional según el comentario)
-        const isWeekend = start.getDay() === 0 || start.getDay() === 6
+        // Asegurarse que no se repita ID
+        while (events.some(e => e.event_id === newEventIdGenerated)) {
+            newEventIdGenerated = Date.now() + Math.floor(Math.random() * 100000)
+        }
+
+        return newEventIdGenerated
+
+    }
+    const restaDias = (finicial, ffinal) => {
+        const dia = 1000 * 60 * 60 * 24; // Milisegundos en un día
+
+        // Normalizar las fechas para ignorar la hora
+        const fechaInicial = new Date(finicial)
+        const fechaFinal = new Date(ffinal)
+        fechaInicial.setHours(0, 0, 0, 0)
+        fechaFinal.setHours(0, 0, 0, 0)
+
+        const resta = fechaFinal - fechaFinal
+
+        return Math.round(resta / dia)
+    }
+
+
+    // Creando un nuevo evento
+    const handleSelectSlot = ({ start }) => {
+        // Solo una hora de duración, como en vista semana
+        const newStart = new Date(start)
+        newStart.setHours(horaMinima.getHours(), 0, 0, 0)
+        const newEnd = new Date(newStart)
+        newEnd.setHours(newStart.getHours() + 1) // hasta las 10:00
+        // Si es fin de semana, no permitir
+        const isWeekend = newStart.getDay() === 0 || newStart.getDay() === 6
+
         if (isWeekend) {
             setErrorDialogMessage('Solo se permiten eventos en días laborales.')
             setErrorDialogOpen(true)
             return
         }
 
-        // ✅ Generar un ID único combinando timestamp + aleatorio
-        let newEventId = Date.now() + Math.floor(Math.random() * 100000)
-
-        // Asegurarse que no se repita ID
-        while (events.some(e => e.event_id === newEventId)) {
-            newEventId = Date.now() + Math.floor(Math.random() * 100000)
-        }
-
+        let newEventId = eventGenerator()
         // Generando el evento
         setEventData({
             event_id: newEventId, 
             usuario_id: user.id,
             espacio_id: '',
             programa_id: '',
-            start,
-            end,
+            start: newStart,
+            end: newEnd,
             observaciones: '',
             color: ''
         })
@@ -234,14 +262,73 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         setDialogOpen(true)
     };
 
+    const handleSaveRepeat = async () => { 
+        console.log("Repetir !!", selectedEvent, eventDataRepeatStart, eventDataRepeatEnd)
+debugger
+        if (eventDataRepeatEnd < eventDataRepeatStart) {
+            setErrorDialogMessage(`Fecha Fin menor que fecha Inicio`)
+            setErrorDialogOpen(true)
+            return
+        }
+        // Permitir repetir 30 dias máximo
+        if(restaDias(eventDataRepeatStart, eventDataRepeatEnd) > 30) {
+            setErrorDialogMessage(`Maximo repeticiones 30 días`)
+            setErrorDialogOpen(true)
+            return
+        }
+
+        const newEvents = []
+        let currentDate = new Date(eventDataRepeatStart)      // Copia de eventDataRepatStart
+        let endDate = new Date(eventDataRepeatEnd)
+        let dayCounter = 0
+        const startHour = selectedEvent.start.getHours()
+        const endHour = selectedEvent.end.getHours()
+        while (currentDate <= endDate) {
+            console.log("Paso por el ciclo")
+            const isWeekend = currentDate.getDay() === 0 || currentDate.getDay() === 6
+            if (!isWeekend) {
+                const newEventId = eventGenerator()
+                let startSave = new Date(currentDate)
+                startSave.setHours(startHour)
+                let endSave = new Date(currentDate)
+                endSave.setHours(endHour)
+                // Generando el evento DUPLICADO
+                const eventDataRepeated ={
+                    event_id: newEventId, 
+                    usuario_id: user.id,
+                    espacio_id: selectedEvent.espacio_id,
+                    programa_id: selectedEvent.programa_id,
+                    start: startSave,
+                    end: endSave,
+                    observaciones: selectedEvent.observaciones,
+                    color: selectedEvent.color
+                }
+                newEvents.push(eventDataRepeated)
+            }   
+            currentDate.setDate(currentDate.getDate() + 1)  // Sumo un día
+            
+        }
+        debugger
+        // console.log("Evento duplicado: ", eventDataRepeated)
+        console.log(`Evento repetido ${dayCounter} vece(s)`)
+        setEvents([...events, ...newEvents]);
+        setIsEditing(false)
+        setSelectedEvent(null)
+        setDialogOpen(true)
+        setEventDataRepeatStart('')
+        setEventDataRepeatEnd('')
+        setDialogOpen(false)
+        setDialogRepeatOpen(false)
+    }
+
     // Guardando eventos creados / editados
     const handleSaveEvent = async () => { 
         // Validar que las horas estén dentro del rango permitido
-        const minTime = new Date(eventData.start);
-        minTime.setHours(horaMinima.getHours(), horaMinima.getMinutes());
+        const minTime = new Date(eventData.start)
+        minTime.setHours(horaMinima.getHours(), horaMinima.getMinutes())
 
-        const maxTime = new Date(eventData.start);
-        maxTime.setHours(horaMaxima.getHours(), horaMaxima.getMinutes());
+        const maxTime = new Date(eventData.start)
+        maxTime.setHours(horaMaxima.getHours(), horaMaxima.getMinutes())
 
         // if (eventData.observaciones.length < 1) {
         //     setErrorDialogMessage('Introducir observaciones del evento');
@@ -251,38 +338,37 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
 
         // Limitar inicio y fin si están fuera de los límites
         if (eventData.start >= eventData.end) {
-            setErrorDialogMessage('La hora de inicio debe ser menor que la hora de fin.');
-            setErrorDialogOpen(true);
-            return;
+            setErrorDialogMessage('La hora de inicio debe ser menor que la hora de fin')
+            setErrorDialogOpen(true)
+            return
         }
         if (eventData.start < minTime || eventData.end > maxTime) {
-            setErrorDialogMessage(`La hora del evento debe estar entre ${horaMinima.getHours()}hrs y ${horaMaxima.getHours()}hrs.`);
-            setErrorDialogOpen(true);
-            return;
+            setErrorDialogMessage(`La hora del evento debe estar entre ${horaMinima.getHours()}hrs y ${horaMaxima.getHours()}hrs (dentro del mismo día)`)
+            setErrorDialogOpen(true)
+            return
         }
 
-        const day = eventData.start.getDay();
+        const day = eventData.start.getDay()
         if (day === 0 || day === 6) {
-            setErrorDialogMessage('Solo se permiten eventos en días laborales.');
-            setErrorDialogOpen(true);
-            return;
+            setErrorDialogMessage('Solo se permiten eventos en días laborales')
+            setErrorDialogOpen(true)
+            return
         }
 
         if (eventData.usuario_id < 1) {
-            setErrorDialogMessage('Seleccionar un Usuario');
-            setErrorDialogOpen(true);
-            return;
+            setErrorDialogMessage('Seleccionar un Usuario')
+            setErrorDialogOpen(true)
+            return
         }
 
         if (eventData.programa_id < 1) {
             setErrorDialogMessage('Seleccionar un Programa');
-            setErrorDialogOpen(true);
-            return;
+            setErrorDialogOpen(true)
+            return
         }
         if (isEditing && selectedEvent) {
             // Busca en eventos el evento seleccionado y lo reemplaza por eventData
-            setEvents(events.map(ev => ev.event_id === selectedEvent.event_id ? eventData : ev));
-            // Añadir aqui la llamada a backend para reemplazar evento
+            setEvents(events.map(ev => ev.event_id === selectedEvent.event_id ? eventData : ev))
             // Añadir aqui la llamada a backend para modificar un evento nuevo - selectedEvent.event_id
             try {
                 // fetch eventos
@@ -307,7 +393,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             }
 
         } else {
-            setEvents([...events, eventData]);
+            setEvents([...events, eventData])
             // Añadir aqui la llamada a backend para guardar un evento nuevo - eventData
             try {
                 // fetch eventos
@@ -332,19 +418,23 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             }
 
         }
-        handleCloseDialog();
+        handleCloseDialog()
     };
 
     const handleDeleteEvent = () => {
-        setConfirmDeleteOpen(true);
+        setConfirmDeleteOpen(true)
+    };
+
+    const handleRepeatEvent = () => {
+        setDialogRepeatOpen(true)
     };
 
     const handleEventDrop = async ({ event, start, end }) => {
-        const day = start.getDay();
+        const day = start.getDay()
         if (day === 0 || day === 6) {
-            setErrorDialogMessage('Solo se permiten eventos en días laborales.');
-            setErrorDialogOpen(true);
-            return;
+            setErrorDialogMessage('Solo se permiten eventos en días laborales.')
+            setErrorDialogOpen(true)
+            return
         }
 
         const updatedEvent = { ...event, start, end };
@@ -381,14 +471,14 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
 
     const confirmDelete = async () => {
         if (!selectedEvent || !selectedEvent.event_id) {
-            setErrorDialogMessage('No hay evento válido para eliminar.');
-            setErrorDialogOpen(true);
-            return;
+            setErrorDialogMessage('No hay evento válido para eliminar.')
+            setErrorDialogOpen(true)
+            return
         }
 
-        setEvents(events.filter(ev => ev.event_id !== selectedEvent.event_id));
-        setConfirmDeleteOpen(false);
-        setDialogOpen(false);
+        setEvents(events.filter(ev => ev.event_id !== selectedEvent.event_id))
+        setConfirmDeleteOpen(false)
+        setDialogOpen(false)
 // Llamar a backend para borrar un evento - selectedEvent.event_id
         try {
             // fetch eventos
@@ -419,8 +509,31 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
     };
 
     const handleCloseDialog = () => {
-        setDialogOpen(false);
+        setDialogOpen(false)
     };
+
+    const handleCloseRepeat = () => {
+        setEventDataRepeatStart('')
+        setEventDataRepeatEnd('')
+        setDialogRepeatOpen(false)
+    };
+
+    const handleEventDataRepeatStart = (value) => {
+        console.log("value: ", value)
+        if (value) {
+            const tempValue = new Date(value)
+            tempValue.setHours(12, 0, 0, 0)
+            setEventDataRepeatStart(tempValue)
+        }
+    }
+    const handleEventDataRepeatEnd = (value) => {
+        console.log("value: ", value)
+        if (value) {
+            const tempValue = new Date(value)
+            tempValue.setHours(12, 0, 0, 0)
+            setEventDataRepeatEnd(tempValue)
+        }
+    }
 
     // Personalizando la visualizacion de eventos en el calendario, por defecto "start-end title"
     const CustomEvent = ({ event }) => {
@@ -447,11 +560,32 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
       <DnDCalendar
         localizer={localizer}
         culture='es'                                    // días mes, semana, día en español
-        events={events}                                 // Personalizando la visualizacion de eventos en el calendario
+        // events={events}                                 // Personalizando la visualizacion de eventos en el calendario usando el array events
+        events={ view === 'month'
+            ? events.filter(ev => {
+                const d = new Date(ev.start).getDay();
+                return d >= 1 && d <= 5;
+            })
+            : events
+        }
+        // events={
+        //     view === 'month'
+        //     ? events.filter(event => {
+        //         const day = new Date(event.start).getDay();
+        //         console.log("day: ", day)
+        //         return day !== 0 && day !== 6; // Excluir domingo (0) y sábado (6)
+        //         })
+        //     : events
+        // }
+        // events={events.filter(ev => {
+        //     const day = new Date(ev.start).getDay();
+        //     return day >= 1 && day <= 5; // lunes a viernes
+        // })}
         selectable                                      // habilita la seleccion de celdas
         views={['month', 'work_week', 'day', 'agenda']}
         onView={handleViewChange}
         defaultView='work_week'
+        // defaultView='month'
         step={saltosTiempo}
         timeslots={saltosHora}
         min={horaMinima}                                // Limitación hora mínima
@@ -597,8 +731,11 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             </DialogContent>
             <DialogActions>
                 {isEditing && (
-                    <Button onClick={handleDeleteEvent} color="error" variant="contained">Eliminar</Button>
-            )}
+                    <>
+                        <Button onClick={handleDeleteEvent} color="error" variant="contained">Eliminar</Button>
+                        <Button onClick={handleRepeatEvent} variant="contained">Repetir</Button>
+                    </>
+                )}
                 <Button onClick={handleSaveEvent} variant="contained">Guardar</Button>
                 <Button onClick={handleCloseDialog} variant="contained">Cancelar</Button>
             </DialogActions>
@@ -611,6 +748,33 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             <DialogActions>
                 <Button onClick={confirmDelete} color="error" variant="contained">Eliminar</Button>
                 <Button onClick={cancelDelete} variant="contained">Cancelar</Button>
+            </DialogActions>
+        </Dialog>
+                {/* <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth> */}
+
+        <Dialog open={dialogRepeatOpen} onClose={handleCloseRepeat}>
+            <DialogTitle>Repetir evento (max. 30)</DialogTitle>
+            <DialogContent>
+                    <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+                        <DatePicker
+                            label="Inicio *"
+                            value={eventDataRepeatStart}
+                            onChange={(value) => handleEventDataRepeatStart(value)}
+                            slotProps={{ textField: { fullWidth: true, margin: 'dense' } }}
+                        />
+                        <DatePicker
+                            label="Fin *"
+                            value={eventDataRepeatEnd}
+                            onChange={(value) => handleEventDataRepeatEnd(value)}
+                            slotProps={{ textField: { fullWidth: true, margin: 'dense' } }} // forma moderna y sin avisos en consola
+                        />
+                    </Stack>
+
+                {/* ¿Estás seguro de que deseas Repetir el evento <strong>{selectedEvent?.title}</strong>? */}
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleSaveRepeat} color="error" variant="contained">Repetir</Button>
+                <Button onClick={handleCloseRepeat} variant="contained">Cancelar</Button>
             </DialogActions>
         </Dialog>
         <Dialog open={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>

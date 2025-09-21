@@ -70,7 +70,19 @@ fichero de mern_4 0leemeDia26Junio.txt con información de nginx
 
 directorio de mern_4 my-express-app con indicaciones para montar contenedor con express
 ***************
+Para que al dar F5 estando en cualquier ruta como pueda ser https://calendar2-6wyj.onrender.com/holidays el navegador
+no nos devuelva NOT FOUND
 
+En Render tenemos que configurar en frontend el apartado Redirect/Rewrite con los siguiente parámetros
+    - Usando react
+        Source:	/
+        Destination: /index.html
+        Action:	Rewrite
+    - Usando Vite
+        Source:	/*
+        Destination: /index.html
+        Action:	Rewrite
 
+***************
 
 

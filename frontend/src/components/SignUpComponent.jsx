@@ -143,8 +143,8 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
                         setUserEmail(dataUser.email)
                         setUserPassword(dataUser.password)
                         setUserNombre_Apellidos(dataUser.nombre_apellidos)
-                        const movil = dataUser.movil.slice(0, 3) + "-" + dataUser.movil.slice(3)
-                        setUserMovil(movil)
+                        // const movil = dataUser.movil.slice(0, 3) + "-" + dataUser.movil.slice(3)
+                        setUserMovil(dataUser.movil)
                         setUserExtension(dataUser.extension)
                         setUserCentro(dataUser.centro_id)
                         setUserLlave(dataUser.llave)
@@ -245,15 +245,16 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
     };
 
     const handleUserMovil = (e) => {
-       let numbersOnly = e.target.value.replace(/\D/g, '').slice(0, 9); // solo 9 números
-       console.log("numbersOnly: ", numbersOnly)
-        // if (numbersOnly.length > 9) return;
-        if (numbersOnly.length <= 3) {
-            setUserMovil(numbersOnly);
-        } else {
-            const formatted = `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3)}`;
-            setUserMovil(formatted);
-        }
+        let numbersOnly = e.target.value.replace(/\D/g, '').slice(0, 9); // solo 9 números
+        setUserMovil(numbersOnly);
+    //    console.log("numbersOnly: ", numbersOnly)
+    //     // if (numbersOnly.length > 9) return;
+    //     if (numbersOnly.length <= 3) {
+    //         setUserMovil(numbersOnly);
+    //     } else {
+    //         const formatted = `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3)}`;
+    //         setUserMovil(formatted);
+    //     }
     }
 
     const handleUserExtension = (e) => {
@@ -291,10 +292,10 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
             setErrorMessage("Nombre y Apellidos más largo")
             return
         }
-        if (userMovil.length !== 0 && !isValidMovil(userMovil)) {
-            setErrorMessage("El móvil debe tener formato 999-999999");
-            return;
-        }
+        // if (userMovil.length !== 0 && !isValidMovil(userMovil)) {
+        //     setErrorMessage("El móvil debe tener formato 999-999999");
+        //     return;
+        // }
         try {
             console.log("paso por hadleSignUp")
             const userTmp = {

@@ -29,7 +29,8 @@ import {
     InputLabel,
     Select,
     Stack,
-    Toolbar, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
+    Toolbar,
+    Box, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -281,12 +282,32 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
 
     return (
         // <div style={{ padding: 20 }}>
-        <>
+        <Box
+            // sx={{
+            //     display: 'flex',
+            //     flexDirection: 'column',
+            //     height: '100vh', // altura total de la pantalla
+            // }}
+            // sx={
+            //     // width: '150px', // Tamaño fijo para la columna de usuario
+            //     (theme) => ({
+            //         display: 'flex',
+            //         flexDirection: 'column',
+            //         fontSize: {
+            //             xs: '2px',   // móviles
+            //             sm: '10px',  // tablets
+            //             md: '14px',  // escritorio
+            //         },
+            //         height: {
+            //             xs: '100%',   // móviles
+            //             sm: '100vh',  // tablets
+            //             md: '100vh',  // escritorio
+            //         },
+            // })}
+
+        >
             <Toolbar />
             <h2>VACACIONES AÑO: {date.getFullYear()} (Dias de vac. en uso: {diasUsadosVacaciones})</h2>
-            {/* <h2>VACACIONES (Dias restantes: {diasTotalVacaciones - diasUsadosVacaciones} - En uso: {diasUsadosVacaciones})</h2> */}
-            {/* <DnDCalendar  // Permite D&D */} 
-            {/* <div style={{ display: 'flex', gap: 20 }}> */}
 
             <Calendar
                 localizer={localizer}
@@ -296,7 +317,8 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
                 views={{month: true}}                           // Solo vista mensual permitida
                 onSelectSlot={handleSelectSlot}                 // Crear nuevo evento
                 onSelectEvent={handleSelectEvent}               // Editar evento existente
-                style={{ height: 700 }}
+                style={{ height: "calc(100vh - 150px)" }}
+                // style= {{height: 1000, fontSize: 'clamp(0.75rem, 1vw, 1.2rem)',}}
                 // style={{ height: 600, width: '33%' }}
                 date={date}
                 view={view}
@@ -332,7 +354,7 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
                 }}
             />
         {/* </div> */}
-        </>
+        </Box>
     );
 }
 

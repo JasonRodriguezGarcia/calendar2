@@ -31,7 +31,7 @@ const MainPage = ({ logged }) => {
     return (
         <div>
             <MainMenuComponent logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />
-            <h1 style={{paddingTop: "100px"}}>Bienvenido a Erroak Sartu</h1>
+            <h1 style={{paddingTop: "100px"}}>Bienvenido/a a Erroak Sartu</h1>
             <h3 style={{paddingTop: "100px"}}>Logeado: {logeado ? "Si" : "No"}</h3>
         </div>
     )

@@ -13,6 +13,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 // import AdbIcon from '@mui/icons-material/Adb';
+import HomeIcon from '@mui/icons-material/Home';
 
 import logo from "../assets/images/erroaksartu.jpg"
 import { useScrollTrigger } from '@mui/material';
@@ -120,13 +121,43 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                             textDecoration: 'none',
                         }}
                     >
-                        {/* LOGO
-                        */}
+                        {/* LOGO */}
+                        <IconButton color="primary" aria-label="home">
+                            <HomeIcon                             
+                                style={{ 
+                                    height: 50,
+                                    fontSize: "3rem",
+                                    marginRight: 8,
+                                    display: 'flex',
+                                    // color: "white",
+                                    color: "#8BC000",
+                                    borderRadius: "10px",
+                            }}/>
+                        </IconButton>
+                    </Typography>
+                    <Typography
+                        variant="h"
+                        noWrap
+                        // component="a"
+                        // href="#app-bar-with-responsive-menu"
+                        component = {Link} // Usar link en lugar de "a" y "href" para no rerenderizar
+                        to="https://erroaksartu.org/"
+                        sx={{
+                            mr: 2,
+                            display: { xs: 'none', md: 'flex' },
+                            fontFamily: 'monospace',
+                            fontWeight: 700,
+                            letterSpacing: '.3rem',
+                            color: 'inherit',
+                            textDecoration: 'none',
+                        }}
+                    >
+                        {/* LOGO */}
                         <img 
                             src={logo} 
                             alt="logo" 
                             style={{ 
-                                height: 60, 
+                                height: 50, 
                                 marginRight: 8, 
                                 display: 'flex',
                                 borderRadius: "10px",
@@ -209,7 +240,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                             ))}
                         </Menu>
                     </Box>
-    {/* LOGO MOVIL */}
+                    {/* LOGO MOVIL */}
                     {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} /> */}
                     <Typography
                         variant="h5"
@@ -227,6 +258,38 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                             letterSpacing: '.3rem',
                             color: 'inherit',
                             textDecoration: 'none',
+                            justifyItems: 'left'
+                        }}
+                    >
+                        {/* LOGO */}
+                        <IconButton color="primary" aria-label="home">
+                            <HomeIcon                             
+                                style={{ 
+                                    height: 35, 
+                                    // marginRight: 8, 
+                                    // display: 'flex',
+                                    // color: "white",
+                                    color: "#8BC000",
+                                    borderRadius: "10px",
+                            }}/>
+                        </IconButton>
+                    </Typography>
+                    <Typography
+                        variant="h5"
+                        noWrap
+                        // component="a"
+                        // href="#app-bar-with-responsive-menu"
+                        component = {Link} // Usar link en lugar de "a" y "href" para no rerenderizar
+                        to="https://erroaksartu.org/"
+                        sx={{
+                            mr: 2,
+                            display: { xs: 'flex', md: 'none' },
+                            flexGrow: 1,
+                            fontFamily: 'monospace',
+                            fontWeight: 700,
+                            letterSpacing: '.3rem',
+                            color: 'inherit',
+                            textDecoration: 'none',
                         }}
                     >
                         {/* LOGO */}
@@ -234,7 +297,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                             src={logo} 
                             alt="logo" 
                             style={{ 
-                                height: 60, 
+                                height: 35, 
                                 marginRight: 8, 
                                 display: 'flex',
                                 borderRadius: "10px",
@@ -295,11 +358,20 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                     <Box sx={{ flexGrow: 0, display: logged ? 'block' : 'none' }}>
                         <Tooltip title="Abrir configuración">
                             <Box sx={{ display: "flex", alignItems: "center"}}>
-                                <Box sx={{mx: 2}}>
+                                <Box sx={{mx: 1}}>
                                     {/* User */}
                                     <Typography
                                         variant="body1"
-                                        sx={{ mx: 2, color: 'white', fontWeight: 'bold', backgroundColor: '#0072AD', px: 1.5, py: 0.5, borderRadius: 1 }}
+                                        // sx={{ mx: 2, color: 'white', fontWeight: 'bold', backgroundColor: '#0072AD', px: 1.5, py: 0.5, borderRadius: 1 }}
+                                        sx={
+                                            (theme) => ({
+                                                fontSize: {
+                                                    xs: '10px',   // móviles
+                                                    sm: '10px',  // tablets
+                                                    md: '14px',  // escritorio
+                                                },
+                                                color: 'white', fontWeight: 'bold', backgroundColor: '#0072AD', px: 1.5, py: 0.5, borderRadius: 1 
+                                        })}
                                     >
                                         Usuario/a: {user.nombre_apellidos}
                                     </Typography>

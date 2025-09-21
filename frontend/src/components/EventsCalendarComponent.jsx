@@ -560,23 +560,7 @@ debugger
       <DnDCalendar
         localizer={localizer}
         culture='es'                                    // días mes, semana, día en español
-        // events={events}                                 // Personalizando la visualizacion de eventos en el calendario usando el array events
-        events={ view === 'month'
-            ? events.filter(ev => {
-                const d = new Date(ev.start).getDay();
-                return d >= 1 && d <= 5;
-            })
-            : events
-        }
-        // events={
-        //     view === 'month'
-        //     ? events.filter(event => {
-        //         const day = new Date(event.start).getDay();
-        //         console.log("day: ", day)
-        //         return day !== 0 && day !== 6; // Excluir domingo (0) y sábado (6)
-        //         })
-        //     : events
-        // }
+        events={events}                                 // Personalizando la visualizacion de eventos en el calendario usando el array events
         // events={events.filter(ev => {
         //     const day = new Date(ev.start).getDay();
         //     return day >= 1 && day <= 5; // lunes a viernes
@@ -760,13 +744,13 @@ debugger
                             label="Inicio *"
                             value={eventDataRepeatStart}
                             onChange={(value) => handleEventDataRepeatStart(value)}
-                            slotProps={{ textField: { fullWidth: true, margin: 'dense' } }}
+                            slotProps={{ textField: { fullWidth: true, margin: 'dense', sx: { mt: 1 }} }}
                         />
                         <DatePicker
                             label="Fin *"
                             value={eventDataRepeatEnd}
                             onChange={(value) => handleEventDataRepeatEnd(value)}
-                            slotProps={{ textField: { fullWidth: true, margin: 'dense' } }} // forma moderna y sin avisos en consola
+                            slotProps={{ textField: { fullWidth: true, margin: 'dense' }, sx: { mt: 1 } }} // forma moderna y sin avisos en consola
                         />
                     </Stack>
 

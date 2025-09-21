@@ -98,7 +98,8 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
     });
     
     return (
-        <AppBar position="fixed">
+        // <AppBar position="fixed" >
+        <AppBar position="fixed" sx={{ backgroundColor: '#0072AD' }}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
@@ -298,7 +299,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                     {/* User */}
                                     <Typography
                                         variant="body1"
-                                        sx={{ mx: 2, color: 'white', fontWeight: 'bold', backgroundColor: '#1976d2', px: 1.5, py: 0.5, borderRadius: 1 }}
+                                        sx={{ mx: 2, color: 'white', fontWeight: 'bold', backgroundColor: '#0072AD', px: 1.5, py: 0.5, borderRadius: 1 }}
                                     >
                                         Usuario/a: {user.nombre_apellidos}
                                     </Typography>

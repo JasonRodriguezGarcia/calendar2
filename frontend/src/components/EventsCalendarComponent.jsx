@@ -228,7 +228,8 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         newStart.setHours(horaMinima.getHours(), 0, 0, 0)
         const newEnd = new Date(newStart)
         newEnd.setHours(newStart.getHours() + 1) // hasta las 10:00
-        // Si es fin de semana, no permitir
+
+        // Si es fin de semana, no permitir crear evento
         const isWeekend = newStart.getDay() === 0 || newStart.getDay() === 6
 
         if (isWeekend) {
@@ -552,6 +553,17 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         <Toolbar />
         <h2>EVENTOS AÑO: {date.getFullYear()}</h2>
 
+        {/* OCULTANDO LA LÍNEA (NO NECESARIA) DE EVENTOS QUE DURAN VARIOS DÍAS */}
+        {(view === 'work_week' || view === 'day') && (
+        <style>
+            {`
+            .rbc-allday-cell,
+            .rbc-allday-header {
+                display: none !important;
+            }
+            `}
+        </style>
+        )}
         {/* <Calendar */}
         <DnDCalendar
             style= {{height: 1000, fontSize: 'clamp(0.75rem, 1vw, 1.2rem)',}}

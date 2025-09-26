@@ -84,5 +84,9 @@ En Render tenemos que configurar en frontend el apartado Redirect/Rewrite con lo
         Action:	Rewrite
 
 ***************
-
+PARA ENVÍO DE CORREO ELECTRONICO DESDE BACKEND
+EN BACKEND
+    npm install @sendgrid/mail
+DARSE ALTA EN SENDGRID (es twilio product)
+CREAR API KEY
 

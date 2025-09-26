@@ -1,5 +1,9 @@
 import pool from '../db-pg.js';
+import sgMail from "@sendgrid/mail";
+import dotenv from "dotenv";
 
+dotenv.config(); // Permite usar variables de entorno
+sgMail.setApiKey(process.env.SENDGRID_APIKEY);
 export async function getUsuarios() {
     try {
         const result = await pool.query("SELECT * FROM erroak.usuarios ORDER BY nombre_apellidos;");
@@ -25,6 +29,81 @@ export async function postLogin(loginDetails) {
     } catch (err) {
         console.error('Error en postLogin:', err.message);
         throw err;
+    }
+}
+
+export async function postRecoveryPassword(recoveryPasswordDetails) {
+    try {
+        // const { username, useremail } = recoveryPasswordDetails
+        const { useremail } = recoveryPasswordDetails
+        console.log("useremail: ", useremail)
+        // habría que desencriptar password/token, esto para más adelante
+        // const result = await pool.query("SELECT usuario_id, password FROM erroak.usuarios WHERE nombre_apellidos = $1 AND email = $2",
+        //     [username, useremail]);
+        const result = await pool.query("SELECT usuario_id, password, nombre_apellidos FROM erroak.usuarios WHERE email = $1",
+            // [username, useremail]);
+            [useremail]);
+        console.log("result: ", result)
+        if (result.rows.length > 0) {
+
+// AUN HABIENDOLO ENCONTRADO VERIFICAR QUE SU EMAIL SEA EL QUE PONE¿?
+            const {usuario_id, nombre_apellidos} = result.rows[0]
+            const resetLink = `http://localhost:5173/newpassword/${usuario_id}`
+            const msg = {
+                    to: useremail,
+                    // from: "tu-correo-verificado@tudominio.com", // debe ser verificado en SendGrid
+                    // from: {"arandia@erroak.sartu.org"}, // debe ser verificado en SendGrid
+                    from: "jasonr@erroak.sartu.org", // debe ser verificado en SendGrid
+                    subject: "Recuperación de contraseña",
+                    // <p>Hola ${username},</p>
+                    html: `
+                        <p>Hola ${nombre_apellidos},</p>
+                        <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+                        <a href="${resetLink}">${resetLink}</a>
+                        <p>Este enlace expirará en 1 hora.</p>
+                    `,
+            }
+
+            try {
+                await sgMail.send(msg);
+                console.log("Correo enviado a", nombre_apellidos);
+                return result.rows
+            } catch (error) {
+                console.error("Error al enviar correo:", error.response?.body || error)
+                throw error
+            }
+
+        }
+        else
+            return ({result: "No encontrado"})
+
+    } catch (err) {
+        console.error('Error en postRecoveryPassword:', err.message)
+        throw err
+    }
+}
+
+export async function postNewPassword(newPasswordDetails) {
+    try {
+        const { userid, newpassword } = newPasswordDetails
+        console.log("userid - newpassword: ", userid, newpassword)
+        // habría que desencriptar password/token, esto para más adelante
+        const result = await pool.query(`UPDATE erroak.usuarios SET password = $1 WHERE usuario_id = $2 RETURNING *;`,
+            [newpassword, userid]);
+        console.log("result: ", result)
+
+        console.log("result: ", result.command)
+        if (result.rows.length > 0) {
+            console.log("Usuario encontrado y CONTRASEÑA actualizada: ", result.rows[0])
+            // return result.rows
+            return result.rows[0]  // retornamos el usuario actualizado
+        }
+        else
+            return ({result: "No encontrado"})
+
+    } catch (err) {
+        console.error('Error en postRecoveryPassword:', err.message)
+        throw err
     }
 }
 

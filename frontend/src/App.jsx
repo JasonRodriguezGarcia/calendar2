@@ -15,6 +15,9 @@ import EditProfilePage from './pages/EditProfilePage';
 import HolidaysViewPage from './pages/HolidaysViewPage';
 import ListingsWinterAfternoonsPage from './pages/ListingsWinterAfternoonsPage';
 import ContactsPage from './pages/ContactsPage';
+import PasswordRecoveryPage from './pages/PasswordRecoveryPage';
+import NewPasswordPage from './pages/NewPasswordPage';
+
 const App = () => {
 
     return (
@@ -30,6 +33,8 @@ const App = () => {
                 <Route path="/staffholidays" element={<HolidaysViewPage />} />
                 <Route path="/winterafternoons" element={<ListingsWinterAfternoonsPage />} />
                 <Route path="/contacts" element={<ContactsPage />} />
+                <Route path="/passwordrecovery" element={<PasswordRecoveryPage />} />
+                <Route path="/newpassword/:id" element={<NewPasswordPage />} />
                 {/* <Route path="/about" element={<HolidaysViewPage />} /> */}
                 
                 {/* <Route path="/" element={<DashboardPage />} />

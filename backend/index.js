@@ -2,6 +2,7 @@
 import express from "express";
 import path from "path";
 import cors from 'cors';
+// import sgMail from "@sendgrid/mail";
 import { fileURLToPath } from "url";
 import usuariosRouter from './routes/usuarios.js'
 import vacacionesRouter from './routes/vacaciones.js'
@@ -9,11 +10,6 @@ import eventosRouter from './routes/eventos.js'
 import listingsRouter from './routes/listings.js'
 import dotenv from 'dotenv';
 dotenv.config();
-
-console.log("Loaded env:");
-console.log("DATABASE_USER:", process.env.DATABASE_USER);
-console.log("DATABASE_PASSWORD:", process.env.DATABASE_PASSWORD);
-
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -42,7 +42,7 @@ const pool = new Pool({
   idleTimeoutMillis: 30000, // Optional: close idle clients after 30 seconds
 
 });
-console.log ("imprimo pool: ", pool)
+// console.log ("imprimo pool: ", pool)
 
 export default pool;
 

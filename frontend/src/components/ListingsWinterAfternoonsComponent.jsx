@@ -142,15 +142,52 @@ const ListingsWinterAfternoonsComponent = ({ logged, user }) => {
                                                     {/* {el.alarma && <AlarmIcon sx={{ fontSize: 16, ml: 0.5 }} />} */}
                                                     {el.alarma && (
                                                         <Tooltip title="Tiene alarma" arrow>
-                                                            <NotificationsActiveIcon sx={{ fontSize: 16, ml: 0.5, color: "red" }} />
+                                                            <NotificationsActiveIcon 
+                                                            // sx={{ fontSize: 16, ml: 0.5, color: "red" }} 
+                                                                sx={{
+                                                                    ml: 0.5, 
+                                                                    color: "red",
+                                                                    fontSize: {
+                                                                    xs: '10px',
+                                                                    sm: '10px',
+                                                                    md: '14px',
+                                                                    },
+                                                                }}
+                                                            />
                                                         </Tooltip>
                                                     )}
                                                     {el.llave && (
                                                         <Tooltip title="Tiene llave" arrow>
-                                                            <VpnKeyIcon sx={{ fontSize: 16, ml: 0.5, color: "green" }} />
+                                                            <VpnKeyIcon 
+                                                            // sx={{ fontSize: 16, ml: 0.5, color: "green" }}
+                                                                sx={{
+                                                                    ml: 0.5, 
+                                                                    color: "green",
+                                                                    fontSize: {
+                                                                    xs: '10px',
+                                                                    sm: '10px',
+                                                                    md: '14px',
+                                                                    },
+                                                                }}
+                                                            />
                                                         </Tooltip>
                                                     )}
-                                                    -{el.nombre_centro}
+                                                    -{el.nombre_centro && (
+                                                        <Typography
+                                                            // sx={{ fontSize: 16, ml: 0.5, color: "green" }}
+                                                                sx={{
+                                                                    ml: 0.5, 
+                                                                    // color: "green",
+                                                                    fontSize: {
+                                                                    xs: '6px',
+                                                                    sm: '10px',
+                                                                    md: '14px',
+                                                                    },
+                                                                }}
+                                                        >
+                                                            {el.nombre_centro}
+                                                        </Typography>
+                                                    )}
                                                 </Box>
                                             </>
                                             ) : ""

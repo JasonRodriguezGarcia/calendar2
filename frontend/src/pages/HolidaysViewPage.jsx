@@ -23,7 +23,7 @@ const HolidaysViewPage = () =>{
             }
             else {
                 setLogeado(false)
-                navigate(`/`);
+                navigate(`/`, { replace: true });
             }
         }
 

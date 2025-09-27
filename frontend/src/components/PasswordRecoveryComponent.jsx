@@ -25,7 +25,7 @@ const PasswordRecoveryComponent = ({ logged, setLogged }) => {
     // const [userName, setUserName] = useState("")
     const [userEmail, setUserEmail] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
-
+    const [dialogRecovery, setDialogRecovery]= useState(false)
     const navigate = useNavigate();
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
 
@@ -72,6 +72,7 @@ const PasswordRecoveryComponent = ({ logged, setLogged }) => {
                     return
                 } else {
                     const {usuario_id} = data[0]
+                    setDialogRecovery(true)
                     // console.log("Recibido password: ", data[0].password)
                     // // Crear localStorage
                     // const resultado = data[0]
@@ -79,8 +80,8 @@ const PasswordRecoveryComponent = ({ logged, setLogged }) => {
                     // localStorage.setItem("user", resultado.nombre_apellidos)
                     // localStorage.setItem("password", resultado.password)
                     // setLogged(true)
-                    navigate('/')
-                    // navigate(`/newpassword/${usuario_id}`)
+
+                    // navigate('/', { replace: true })
                 }
 
             } catch (error) {
@@ -91,7 +92,12 @@ const PasswordRecoveryComponent = ({ logged, setLogged }) => {
             }
 
     }
-    
+
+    const handleRecovery = () => {
+        setDialogRecovery(false)
+        navigate('/', { replace: true })
+    }
+
     return (
         <>
         <Box
@@ -129,20 +135,6 @@ const PasswordRecoveryComponent = ({ logged, setLogged }) => {
                 <Typography variant="h4" component="h3" sx={{ color: "black"}}>
                     <b>Recuperar Contraseña</b>
                 </Typography>
-                {/* <FormControl>
-                    <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="username" sx={{ color: "black", minwidth: 100 }}>Nombre Usuario</FormLabel>
-                        <Input
-                            id="username"
-                            name="username"
-                            type="text"
-                            // autoComplete="email"
-                            placeholder="Nombre usuario"
-                            fullWidth
-                            onChange={(e)=> setUserName(e.target.value)}
-                        />
-                    </Stack>
-                </FormControl> */}
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>Email</FormLabel>
@@ -157,22 +149,31 @@ const PasswordRecoveryComponent = ({ logged, setLogged }) => {
                         />
                     </Stack>
                 </FormControl>
-
                 <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 /* margin top */ }}>Recuperar contraseña</Button>
                 {/* <Button type="submit" id="boton2" name="signup" sx={{ mt: 1 }}>SignUP</Button> */}
 
-                {errorMessage && 
-                
-                <Typography level="body-sm" color="danger" fontWeight="bold" fontSize="1em">{errorMessage}</Typography>
+                {errorMessage &&                 
+                    <Typography level="body-sm" color="danger" fontWeight="bold" fontSize="1em">{errorMessage}</Typography>
                 }
-                {/* <Typography
-                    endDecorator={<Link href="/sign-up">Sign up</Link>}
-                    sx={{ fontSize: 'sm', alignSelf: 'center' }}
-                    onClick={handleSignUp}
-                    >
-                    Don&apos;t have an account?
-                </Typography> */}
+                <Dialog open={dialogRecovery} onClose={handleRecovery}>
+                    <DialogTitle>
+                        <Typography variant="h4">
 
+                            Recuperar contraseña
+                        </Typography>
+
+                    </DialogTitle>
+                    <DialogContent>
+                            {/* <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+                            </Stack> */}
+                        <DialogContent>
+                            Se ha enviado un link de recuperación de contraseña al correo electrónico {userEmail}.
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleRecovery} variant="contained">Continuar</Button>
+                        </DialogActions>
+                    </DialogContent>
+                </Dialog>
             </Box>
         </Box>
         </>

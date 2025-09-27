@@ -22,7 +22,7 @@ const EventsCalendarPage = () =>{
             }
             else {
                 setLogeado(false)
-                navigate(`/`);
+                navigate(`/`, { replace: true });
             }
         }
 

@@ -78,7 +78,7 @@ const NewPasswordComponent = ({ logged, setLogged }) => {
                 } else {
                     // console.log("Recibido newpassword: ", data)
                 }
-                navigate("/")
+                navigate("/", { replace: true })
 
             } catch (error) {
                 // setError(error.message); // Handle errors

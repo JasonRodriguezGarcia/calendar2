@@ -88,5 +88,28 @@ PARA ENVÍO DE CORREO ELECTRONICO DESDE BACKEND
 EN BACKEND
     npm install @sendgrid/mail
 DARSE ALTA EN SENDGRID (es twilio product)
-CREAR API KEY
+Una vez logeado
+CREAR API KEY en 
+    SETTINGS - API KEY
+Luego añadimos la dirección de correo origen del email
+    SETTINGS
+        sender autentication
+        Aparecerá una nueva pantalla en la que uno de los botones pondrá
+            VERIFY A SINGLE sender
+            Lo que nos permitirá meter una dirección de mail que usaremos como origen del email
+            Que luego tendremos que verificar, lo cual haremos al crearla, ya recibiremos un email que tengremos que contestar
+        También tendremos que hacer un domain autentication para que el receptor de los correos no reciba un aviso de 
+        correo no verificado
+            DOMAIN AUTHENTICACION
+            Verifica el dominio en SendGrid
+            Para que los correos no aparezcan como "NO VERIFICADO", debes verificar que el dominio erroak.sartu.org esté autenticado en tu cuenta de SendGrid.
+            Pasos:
+            Entra en https://app.sendgrid.com/settings/sender_auth
+            En la sección "Domain Authentication", haz clic en "Get Started".
+            Selecciona tu proveedor de DNS (por ejemplo, Cloudflare, GoDaddy, etc.).
+            Ingresa el dominio: erroak.sartu.org.
+            SendGrid te dará varios registros DNS (como CNAME) que debes añadir en el panel DNS de tu dominio.
+            Una vez añadidos, vuelve a SendGrid y haz clic en "Verify".
+            ✅ Importante: Este paso puede tardar un poco en propagarse (hasta 24h), pero normalmente es rápido.
+
 

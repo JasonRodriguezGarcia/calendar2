@@ -47,9 +47,11 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
     const handleCloseUserMenu = (setting) => {
         switch (setting) {
             case "Ver perfil":
+                // navigate("/profile", { replace: true });
                 navigate("/profile");
                 break;
             case "Modificar perfil":
+                // navigate("/editprofile", { replace: true });
                 navigate("/editprofile");
                 break;
             case "Cerrar sesión":
@@ -58,7 +60,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                 localStorage.removeItem("password")
                 setLogged(false)
                 setUser({})
-                navigate("/");
+                navigate("/", { replace: true });
                 break;
             default:
                 break;
@@ -75,13 +77,16 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
             break;
                 // case "Eventos":
             case "Eventos":
+                // navigate("/eventos", { replace: true });
                 navigate("/eventos");
                 break;
             // case "Vacaciones":
             case "Vacaciones":
+                // navigate("/holidays", { replace: true });
                 navigate("/holidays");
                 break;
             case "About":
+                // navigate("/about", { replace: true });
                 navigate("/about");
                 break;
             default:
@@ -209,13 +214,16 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                                         case "Vacaciones personal":
                                                             // navigate("/listado/vacaciones");
                                                             // navigate("/vacacionespersonal");
+                                                            // navigate("/staffholidays", { replace: true });
                                                             navigate("/staffholidays");
                                                             break;
                                                         case "Tardes invierno":
                                                             // navigate("/listado/tardes");
+                                                            // navigate("/winterafternoons", { replace: true });
                                                             navigate("/winterafternoons");
                                                             break;
                                                         case "Contactos":
+                                                            // navigate("/contacts", { replace: true });
                                                             navigate("/contacts");
                                                             break;
                                                         default:
@@ -336,13 +344,16 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                         case "Vacaciones personal":
                                             // navigate("/listado/vacaciones");
                                             // navigate("/vacacionespersonal");
+                                            // navigate("/staffholidays", { replace: true });
                                             navigate("/staffholidays");
                                             break;
                                         case "Tardes invierno":
                                             // navigate("/listado/tardes");
+                                            // navigate("/winterafternoons", { replace: true });
                                             navigate("/winterafternoons");
                                             break;
                                         case "Contactos":
+                                            // navigate("/contacts", { replace: true });
                                             navigate("/contacts");
                                             break;
                                         default:
@@ -376,7 +387,9 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                         Usuario/a: {user.nombre_apellidos}
                                     </Typography>
                                 </Box>
-                                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                <IconButton onClick={handleOpenUserMenu}
+                                 sx={{ p: 0 }}
+                                >
                                     <Avatar alt={user.nombre_apellidos} src="/static/images/avatar/2.jpg" />
                                     {/* <Avatar alt={user.nombre_apellidos} src="/static/images/personicons/rosa.jpg" /> */}
                                 </IconButton>
@@ -415,10 +428,22 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                         <Tooltip title="Darse de alta" arrow>
                             <Button
                                 // onClick={handleSignUp}
+                                // onClick={()=> navigate('/signup', { replace: true })}
                                 onClick={()=> navigate('/signup')}
-                                sx={{ m: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
-                                "&:selected": {backgroundColor: "grey"}
-                                }}
+                                // sx={{ 
+                                //     m: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
+                                //     "&:selected": {backgroundColor: "grey"}
+                                // }}
+                                sx={
+                                    (theme) => ({
+                                        fontSize: {
+                                            xs: '10px',   // móviles
+                                            sm: '10px',  // tablets
+                                            md: '14px',  // escritorio
+                                        },
+                                        mr: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
+                                    
+                                })}
                             >
                                 Alta usuario/a
                             </Button>
@@ -428,10 +453,22 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                     <Box sx={{ flexGrow: 0, display: logged ? 'none' : 'block'}}>
                         <Tooltip title="Iniciar sesión" arrow>
                             <Button
+                                // onClick={()=> navigate('/login', { replace: true })}
                                 onClick={()=> navigate('/login')}
-                                sx={{ m: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
-                                    "&:selected": {backgroundColor: "grey"}
-                                }}
+                                // sx={{ m: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
+                                //     "&:selected": {backgroundColor: "grey"}
+                                // }}
+                                sx={
+                                    (theme) => ({
+                                        fontSize: {
+                                            xs: '10px',   // móviles
+                                            sm: '10px',  // tablets
+                                            md: '14px',  // escritorio
+                                        },
+                                        mr: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
+                                    
+                                })}
+
                             >
                                 Iniciar sesión
                             </Button>

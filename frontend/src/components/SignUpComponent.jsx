@@ -277,7 +277,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
         // console.log("Pulsado: ", buttonSelected)
         // if (buttonSelected === "login") {
         if (action === "read") {
-            navigate(`/`);
+            navigate(`/`, { replace: true });
             return
         }
         if (userEmail.length < 7) {
@@ -351,7 +351,7 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
             localStorage.setItem("user", userNombre_Apellidos)
             localStorage.setItem("password", userPassword)
             setLogged(true)
-            navigate('/')
+            navigate('/', { replace: true })
                 // setIsValidToken(true)
                 // setLogged(true)       
                 // setUserNick(data.nick)

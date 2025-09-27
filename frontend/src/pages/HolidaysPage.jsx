@@ -22,7 +22,7 @@ const HolidaysPage = () =>{
             }
             else {
                 setLogeado(false)
-                navigate(`/`);
+                navigate(`/`, { replace: true });
             }
         }
 

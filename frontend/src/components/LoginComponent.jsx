@@ -53,7 +53,7 @@ const LoginComponent = ({ logged, setLogged }) => {
         const buttonSelected = e.nativeEvent.submitter.name
         if (buttonSelected === "passwordrecover") {
             console.log("pulsado recuperar contraseña")
-            navigate('/passwordrecovery')
+            navigate('/passwordrecovery', { replace: true }) // no deja retroceder en el navegador
         }
         if (userEmail.length === 0) {
             setErrorMessage("Introduzca email")
@@ -90,7 +90,7 @@ const LoginComponent = ({ logged, setLogged }) => {
                     localStorage.setItem("user", resultado.nombre_apellidos)
                     localStorage.setItem("password", resultado.password)
                     setLogged(true)
-                    navigate('/')
+                    navigate('/', { replace: true }) // no deja retroceder en el navegador
                 }
 
             } catch (error) {

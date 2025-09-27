@@ -58,7 +58,8 @@ export async function postRecoveryPassword(recoveryPasswordDetails) {
                     // <p>Hola ${username},</p>
                     html: `
                         <p>Hola ${nombre_apellidos},</p>
-                        <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+                        <p>Has hecho una petición para restablecer tu contraseña:</p>
+                        <p>Haz clic en el siguiente enlace para cambiarla:</p>
                         <a href="${resetLink}">${resetLink}</a>
                         <p>Este enlace expirará en 1 hora.</p>
                     `,

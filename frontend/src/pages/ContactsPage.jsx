@@ -24,7 +24,7 @@ const ContactsPage = () =>{
             }
             else {
                 setLogeado(false)
-                navigate(`/`);
+                navigate(`/`, { replace: true });
             }
         }
 

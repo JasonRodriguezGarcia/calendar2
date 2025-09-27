@@ -23,7 +23,7 @@ const ListingsWinterAfternoonsPage = () =>{
             }
             else {
                 setLogeado(false)
-                navigate(`/`);
+                navigate(`/`, { replace: true });
             }
         }
 

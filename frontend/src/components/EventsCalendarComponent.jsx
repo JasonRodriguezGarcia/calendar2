@@ -225,14 +225,20 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
 
 
     // Creando un nuevo evento
-    const handleSelectSlot = ({ start }) => {
+    const handleSelectSlot = ({ start, end }) => {
         // Solo una hora de duración, como en vista semana
-        const newStart = new Date(start)
-        newStart.setHours(horaMinima.getHours(), 0, 0, 0)
-        const newEnd = new Date(newStart)
-        newEnd.setHours(newStart.getHours() + 1) // hasta las 10:00
+        // const newStart = new Date(start)
+        // newStart.setHours(horaMinima.getHours(), 0, 0, 0)
+        // console.log ("start-end: ", start, end)
+        // console.log("start hours: ", newStart.getHours())
+        // const newEnd = new Date(newStart)
+        // newEnd.setHours(newStart.getHours() + 1) // hasta las 10:00
 
-        // Si es fin de semana, no permitir crear evento
+        // // Si es fin de semana, no permitir crear evento
+        // const isWeekend = newStart.getDay() === 0 || newStart.getDay() === 6
+
+        const newStart = start
+        const newEnd = end
         const isWeekend = newStart.getDay() === 0 || newStart.getDay() === 6
 
         if (isWeekend) {
@@ -385,6 +391,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                     setDialogError(true)
                     return
                 }
+                debugger
                 if (data.result === "Espacio ya existente") {
                     setErrorMessage("Espacio OCUPADO, elegir otro")
                     setDialogError(true)
@@ -452,15 +459,10 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             setErrorDialogOpen(true)
             return
         }
-
         const updatedEvent = { ...event, start, end };
-        setEvents(prevEvents =>
-            prevEvents.map(ev => (ev.event_id === event.event_id ? updatedEvent : ev))
-        );
 
         // OJO !!! LA HORA ES UTC+2, EN BACKEND SE GUARDA -2HRS, PERO NO HAY PROBLEMA PORQUE AL 
         // CARGARSE LOS DATOS LOS ATUALIZA A UTC+2
-
         try {
             // fetch eventos
             const responseEdit = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${event.event_id}`,
@@ -476,6 +478,15 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                 setErrorMessage("Evento event_id NO existente")
                 return
             }
+            if (data.result === "Espacio ya existente") {
+                setErrorMessage("Espacio en uso en ese rango de tiempo.")
+                setDialogError(true)
+                return
+            }
+            setEvents(prevEvents => // busca el evento y lo actualiza, actualización de objetos --> updatedEvent: ev
+                prevEvents.map(ev => (ev.event_id === event.event_id ? updatedEvent : ev)) 
+            );
+
         } catch (error) {
             // setError(error.message); // Handle errors
             console.log(error.message)

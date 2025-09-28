@@ -158,10 +158,8 @@ const PasswordRecoveryComponent = ({ logged, setLogged }) => {
                 <Dialog open={dialogRecovery} onClose={handleRecovery}>
                     <DialogTitle>
                         <Typography variant="h4">
-
                             Recuperar contraseña
                         </Typography>
-
                     </DialogTitle>
                     <DialogContent>
                             {/* <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">

@@ -31,6 +31,7 @@ import {
     Select,
     Stack,
     Toolbar, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
+    Typography,
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -55,24 +56,26 @@ const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
 
 const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
     
-    const [events, setEvents] = useState([]);
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [eventData, setEventData] = useState({});
-    const [date, setDate] = useState(new Date());
-    const [view, setView] = useState(Views.WORK_WEEK);      // POR DEFECTO VISTA SEMANA LABORAL
-    const [isEditing, setIsEditing] = useState(false);
-    const [selectedEvent, setSelectedEvent] = useState(null);
-    const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
-    const [errorDialogOpen, setErrorDialogOpen] = useState(false);
-    const [errorDialogMessage, setErrorDialogMessage] = useState('');
+    const [events, setEvents] = useState([])
+    const [dialogOpen, setDialogOpen] = useState(false)
+    const [eventData, setEventData] = useState({})
+    const [date, setDate] = useState(new Date())
+    const [view, setView] = useState(Views.WORK_WEEK)     // POR DEFECTO VISTA SEMANA LABORAL
+    const [isEditing, setIsEditing] = useState(false)
+    const [selectedEvent, setSelectedEvent] = useState(null)
+    const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
+    const [errorDialogOpen, setErrorDialogOpen] = useState(false)
+    const [errorDialogMessage, setErrorDialogMessage] = useState('')
     const [actionEventMessage, setActionEventMessage] = useState(['Agregar', 'Editar'])
-    const [usedColors, setUsedColors] = useState([]); // backgroundColor del evento
+    const [usedColors, setUsedColors] = useState([]) // backgroundColor del evento
     const [usuarios, setUsuarios] = useState([])
     const [espacios, setEspacios] = useState([])
     const [programas, setProgramas] = useState([])
     const [dialogRepeatOpen, setDialogRepeatOpen] = useState(false)
     const [eventDataRepeatStart, setEventDataRepeatStart] = useState('')
     const [eventDataRepeatEnd, setEventDataRepeatEnd] = useState('')
+    const [errorMessage, setErrorMessage] = useState("") // SE USA PERO NO SE MUESTRA, SE PODRÍA BORRAR
+    const [dialogError, setDialogError] = useState(false)
 
     const navigate = useNavigate();
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
@@ -308,7 +311,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             currentDate.setDate(currentDate.getDate() + 1)  // Sumo un día
             
         }
-        console.log(`Evento repetido ${dayCounter} vece(s)`)
+
         setEvents([...events, ...newEvents]);
         setIsEditing(false)
         setSelectedEvent(null)
@@ -365,8 +368,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             return
         }
         if (isEditing && selectedEvent) {
-            // Busca en eventos el evento seleccionado y lo reemplaza por eventData
-            setEvents(events.map(ev => ev.event_id === selectedEvent.event_id ? eventData : ev))
             // Añadir aqui la llamada a backend para modificar un evento nuevo - selectedEvent.event_id
             try {
                 // fetch eventos
@@ -379,10 +380,20 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                 )
                 const data = await responseEdit.json()
                 console.log("Respuesta backend evento post: ", data)
-                if (data.result === "Evento ya existente") {
+                if (data.result === "Evento ya existente") { // PRACTICAMENTE IMPOSIBLE
                     setErrorMessage("Evento ya existente")
+                    setDialogError(true)
                     return
                 }
+                if (data.result === "Espacio ya existente") {
+                    setErrorMessage("Espacio OCUPADO, elegir otro")
+                    setDialogError(true)
+                    return
+                }
+
+                // Busca en eventos el evento seleccionado y lo reemplaza por eventData
+                setEvents(events.map(ev => ev.event_id === selectedEvent.event_id ? eventData : ev))
+
             } catch (error) {
                 // setError(error.message); // Handle errors
                 console.log(error.message)
@@ -391,7 +402,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             }
 
         } else {
-            setEvents([...events, eventData])
             // Añadir aqui la llamada a backend para guardar un evento nuevo - eventData
             try {
                 // fetch eventos
@@ -404,10 +414,18 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                 )
                 const data = await response.json()
                 console.log("Respuesta backend vacacion post: ", data)
-                if (data.result === "Evento ya existente") {
-                    setErrorMessage("Evento ya existente")
+                if (data.result === "Evento ya existente") { // PRACTICAMENTE IMPOSIBLE
+                    setErrorMessage("Evento ID ya existente")
+                    setDialogError(true)
                     return
                 }
+                if (data.result === "Espacio ya existente") {
+                    setErrorMessage("Espacio en uso en ese rango de tiempo.")
+                    setDialogError(true)
+                    return
+                }
+                setEvents([...events, eventData])
+
             } catch (error) {
                 // setError(error.message); // Handle errors
                 console.log(error.message)
@@ -533,6 +551,9 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         }
     }
 
+    const handleCloseError = () => {
+        setDialogError(false)
+    }
     // Personalizando la visualizacion de eventos en el calendario, por defecto "start-end title"
     const CustomEvent = ({ event }) => {
         const usuario = usuarios.find(p => p.usuario_id === event.usuario_id);
@@ -783,6 +804,23 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                             Cerrar
                         </Button>
                 </DialogActions>
+            </Dialog>
+            <Dialog open={dialogError} onClose={handleCloseError}>
+                <DialogTitle>
+                    <Typography variant="h4">
+                        No se puede guardar
+                    </Typography>
+                </DialogTitle>
+                <DialogContent>
+                        {/* <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+                        </Stack> */}
+                    <DialogContent>
+                        {errorMessage}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseError} variant="contained">Continuar</Button>
+                    </DialogActions>
+                </DialogContent>
             </Dialog>
         </LocalizationProvider>
     </>

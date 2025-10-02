@@ -75,6 +75,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
     const [eventDataRepeatEnd, setEventDataRepeatEnd] = useState('')
     const [errorMessage, setErrorMessage] = useState("") // SE USA PERO NO SE MUESTRA, SE PODRÍA BORRAR
     const [dialogError, setDialogError] = useState(false)
+    const [dialogRepeatedResultOpen, setDialogRepeatedResultOpen] = useState(false)
 
     const navigate = useNavigate();
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
@@ -285,7 +286,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         let dayCounter = 0
         const startHour = selectedEvent.start.getHours()
         const endHour = selectedEvent.end.getHours()
-        const alreadyExistEvents = []
+        const alreadyExistSpaces = []
         while (currentDate <= endDate) {
             console.log("Paso por el ciclo")
             const isWeekend = currentDate.getDay() === 0 || currentDate.getDay() === 6
@@ -329,7 +330,8 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                         // setErrorMessage("Espacio OCUPADO, elegir otro")
                         // setDialogError(true)
                         // return
-                        alreadyExistEvents.push(data)
+                        alreadyExistSpaces.push(eventDataRepeated)
+                        console.log("alreadyExistSpaces: ", alreadyExistSpaces)
                     } else {
                         // Busca en eventos el evento seleccionado y lo reemplaza por eventData
                         setEvents(events.map(ev => ev.event_id === selectedEvent.event_id ? eventData : ev))
@@ -343,16 +345,20 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                 }
             }   
             currentDate.setDate(currentDate.getDate() + 1)  // Sumo un día
-            
+            if (alreadyExistSpaces.length > 0) {
+                setErrorMessage([...alreadyExistSpaces])
+            }
+            setDialogRepeatedResultOpen(true)
+            // const
         }
 
         setEvents([...events, ...newEvents]);
         setIsEditing(false)
         setSelectedEvent(null)
         setDialogOpen(true)
-        setEventDataRepeatStart('')
-        setEventDataRepeatEnd('')
-        setDialogOpen(false)
+        // setEventDataRepeatStart('')
+        // setEventDataRepeatEnd('')
+        // setDialogOpen(false)
         setDialogRepeatOpen(false)
     }
 
@@ -587,6 +593,15 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
     const handleCloseError = () => {
         setDialogError(false)
     }
+
+    const handleCloseRepeatedResult = () => {
+        setDialogOpen(false)
+        setDialogRepeatedResultOpen(false)
+        setEventDataRepeatStart('')
+        setEventDataRepeatEnd('')
+        setErrorMessage("")
+    }
+
     // Personalizando la visualizacion de eventos en el calendario, por defecto "start-end title"
     const CustomEvent = ({ event }) => {
         const usuario = usuarios.find(p => p.usuario_id === event.usuario_id);
@@ -602,7 +617,24 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         );
     };
 
-  return (
+    const handleCopyToClipboard = () => {
+        if (!errorMessage || errorMessage.length === 0) return
+
+        const formattedErrors = errorMessage
+            .map(error => new Date(error.start).toLocaleDateString('es-ES'))
+            .join('\n')
+
+        navigator.clipboard.writeText(formattedErrors)
+            .then(() => {
+                console.log('Copiado al portapapeles')
+                // Si quieres mostrar feedback visual, puedes usar Snackbar
+            })
+            .catch(err => {
+                console.error('Error al copiar:', err)
+            })
+    }
+
+    return (
     <>
         <Toolbar />
         <h2>EVENTOS AÑO: {date.getFullYear()}</h2>
@@ -851,9 +883,63 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                     </DialogActions>
                 </DialogContent>
             </Dialog>
+            <Dialog open={dialogRepeatedResultOpen} onClose={handleCloseRepeatedResult}>
+                <DialogTitle>
+                    <Typography variant="h4">
+                        Resultado Repetición
+                    </Typography>
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContent>
+                        {!errorMessage &&
+                            <Typography>
+                                Repetición sin incidencias
+                            </Typography>
+                        }
+                        {errorMessage &&
+                            <>
+                                <Typography>
+                                    Desde: {eventDataRepeatStart.toLocaleString('es-ES', {
+                                                day: '2-digit',
+                                                month: '2-digit',
+                                                year: 'numeric',
+                                            })}
+                                    &nbsp; - Hasta: {eventDataRepeatEnd.toLocaleString('es-ES', {
+                                                day: '2-digit',
+                                                month: '2-digit',
+                                                year: 'numeric',
+                                            })}
+                                </Typography>
+                                <Typography color="error" >
+                                    Repetición CON incidencias
+                                </Typography>
+                                {errorMessage.map((error, index) => (
+                                    <Typography>
+                                        {error.start.toLocaleString('es-ES', {
+                                                day: '2-digit',
+                                                month: '2-digit',
+                                                year: 'numeric',
+                                            }
+                                        )}
+                                    </Typography>
+                                ))}
+                                {/* Botón para copiar al portapapeles */}
+                                <Box mt={2}>
+                                    <Button variant="outlined" onClick={handleCopyToClipboard}>
+                                        Copiar incidencias
+                                    </Button>
+                                </Box>
+                            </>
+                        }
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseRepeatedResult} variant="contained">Continuar</Button>
+                    </DialogActions>
+                </DialogContent>
+            </Dialog>
         </LocalizationProvider>
     </>
-  );
+    )
 }
 
 export default EventsCalendarComponent;

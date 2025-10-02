@@ -45,8 +45,15 @@ const NewPasswordComponent = ({ logged, setLogged }) => {
         }
     }, [errorMessage])
 
+    useEffect(() => {
+        if (logged) {
+            navigate("/", { replace: true });
+        }
+    }, [logged, navigate]); // se ejecuta al menos una vez, justo después del primer render, y también cada vez que logged cambie.
+
     if (logged)
-        return
+        // navigate("/", { replace: true })
+        return null //Sin el return null, podrías ver el formulario "parpadear" antes de redirigir.
 
     const handleNewPassword = async (e) => {
         e.preventDefault()

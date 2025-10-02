@@ -37,15 +37,19 @@ const PasswordRecoveryComponent = ({ logged, setLogged }) => {
             return () => clearTimeout(intervalo)
         }
     }, [errorMessage])
+console.log("logged: ", logged)
+useEffect(() => {
+    if (logged) {
+        navigate("/", { replace: true });
+    }
+}, [logged, navigate]); // se ejecuta al menos una vez, justo después del primer render, y también cada vez que logged cambie.
 
-    if (logged) return null
+    if (logged) 
+        // navigate("/", { replace: true })
+        return null //Sin el return null, podrías ver el formulario "parpadear" antes de redirigir.
 
     const handlePasswordRecovery = async (e) => {
         e.preventDefault()
-        // if (userName.length === 0) {
-        //     setErrorMessage("Introduzca Nombre de usuario")
-        //     return
-        // }
         if (userEmail.length === 0) {
             setErrorMessage("Introduzca email")
             return

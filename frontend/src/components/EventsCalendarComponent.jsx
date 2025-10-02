@@ -67,7 +67,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
     const [errorDialogOpen, setErrorDialogOpen] = useState(false)
     const [errorDialogMessage, setErrorDialogMessage] = useState('')
     const [actionEventMessage, setActionEventMessage] = useState(['Agregar', 'Editar'])
-    const [usedColors, setUsedColors] = useState([]) // backgroundColor del evento
     const [usuarios, setUsuarios] = useState([])
     const [espacios, setEspacios] = useState([])
     const [programas, setProgramas] = useState([])
@@ -80,7 +79,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
     const navigate = useNavigate();
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
 
-    // console.log("prop usuario: ", user)
 
     useEffect(() => {
         const getNewEventFormData = async () => {
@@ -226,19 +224,14 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
 
     // Creando un nuevo evento
     const handleSelectSlot = ({ start, end }) => {
-        // Solo una hora de duración, como en vista semana
-        // const newStart = new Date(start)
-        // newStart.setHours(horaMinima.getHours(), 0, 0, 0)
-        // console.log ("start-end: ", start, end)
-        // console.log("start hours: ", newStart.getHours())
-        // const newEnd = new Date(newStart)
-        // newEnd.setHours(newStart.getHours() + 1) // hasta las 10:00
-
-        // // Si es fin de semana, no permitir crear evento
-        // const isWeekend = newStart.getDay() === 0 || newStart.getDay() === 6
 
         const newStart = start
         const newEnd = end
+        // En vista "month" el "end" es por defecto un día mas, le restamos un día
+        if (view === "month") {
+            newEnd.setDate(end.getDate() -1) // resto un día
+        }
+
         const isWeekend = newStart.getDay() === 0 || newStart.getDay() === 6
 
         if (isWeekend) {
@@ -292,6 +285,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         let dayCounter = 0
         const startHour = selectedEvent.start.getHours()
         const endHour = selectedEvent.end.getHours()
+        const alreadyExistEvents = []
         while (currentDate <= endDate) {
             console.log("Paso por el ciclo")
             const isWeekend = currentDate.getDay() === 0 || currentDate.getDay() === 6
@@ -312,7 +306,41 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                     observaciones: selectedEvent.observaciones,
                     color: selectedEvent.color
                 }
-                newEvents.push(eventDataRepeated)
+                // añadir a backend y dependiendo de si ya esta ocupado se guarda o no
+                // pero hay que pasar la fecha y el espacio_id
+                // se responde a backend con el resultado para que se añada a o no a newEvents
+                try {
+                    // fetch eventos
+                    const responseRepeated = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/`,
+                        {
+                            method: "POST",
+                            headers: {'Content-type': 'application/json; charset=UTF-8'},
+                            body: JSON.stringify(eventDataRepeated)
+                        }
+                    )
+                    const data = await responseRepeated.json()
+                    console.log("Respuesta backend evento post: ", data)
+                    if (data.result === "Evento ya existente") { // PRACTICAMENTE IMPOSIBLE
+                        console.log("OJO EVENTO YA EXISTENTE??")
+                        // setErrorMessage("Evento ya existente")
+                        // setDialogError(true)
+                        // return
+                    } else if (data.result === "Espacio ya existente") {
+                        // setErrorMessage("Espacio OCUPADO, elegir otro")
+                        // setDialogError(true)
+                        // return
+                        alreadyExistEvents.push(data)
+                    } else {
+                        // Busca en eventos el evento seleccionado y lo reemplaza por eventData
+                        setEvents(events.map(ev => ev.event_id === selectedEvent.event_id ? eventData : ev))
+                        newEvents.push(eventDataRepeated)
+                    }
+                } catch (error) {
+                    // setError(error.message); // Handle errors
+                    console.log(error.message)
+                } finally {
+                    // setLoading(false); // Set loading to false once data is fetched or error occurs
+                }
             }   
             currentDate.setDate(currentDate.getDate() + 1)  // Sumo un día
             
@@ -336,12 +364,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
 
         const maxTime = new Date(eventData.start)
         maxTime.setHours(horaMaxima.getHours(), horaMaxima.getMinutes())
-
-        // if (eventData.observaciones.length < 1) {
-        //     setErrorDialogMessage('Introducir observaciones del evento');
-        //     setErrorDialogOpen(true);
-        //     return;
-        // }
 
         // Limitar inicio y fin si están fuera de los límites
         if (eventData.start >= eventData.end) {
@@ -602,7 +624,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                 // style={{
                 //     width: '1000',
                 //     height: '100%',
-                //     fontSize: 'clamp(0.75rem, 1vw, 1.2rem)', // 👈 Ajuste responsivo
+                //     fontSize: 'clamp(0.75rem, 1vw, 1.2rem)', // Ajuste responsivo
                 // }}
             localizer={localizer}
             culture='es'                                    // días mes, semana, día en español
@@ -780,8 +802,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                     <Button onClick={cancelDelete} variant="contained">Cancelar</Button>
                 </DialogActions>
             </Dialog>
-                    {/* <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth> */}
-
             <Dialog open={dialogRepeatOpen} onClose={handleCloseRepeat}>
                 <DialogTitle>Repetir evento (max. 30)</DialogTitle>
                 <DialogContent>
@@ -823,8 +843,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                     </Typography>
                 </DialogTitle>
                 <DialogContent>
-                        {/* <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
-                        </Stack> */}
                     <DialogContent>
                         {errorMessage}
                     </DialogContent>

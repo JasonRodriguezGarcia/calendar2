@@ -13,7 +13,7 @@ import SignUpPage from './pages/SignUpPage';
 import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
 import HolidaysViewPage from './pages/HolidaysViewPage';
-import ListingsWinterAfternoonsPage from './pages/ListingsWinterAfternoonsPage';
+import WinterAfternoonsPage from './pages/WinterAfternoonsPage';
 import ContactsPage from './pages/ContactsPage';
 import PasswordRecoveryPage from './pages/PasswordRecoveryPage';
 import NewPasswordPage from './pages/NewPasswordPage';
@@ -31,7 +31,7 @@ const App = () => {
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/editprofile" element={<EditProfilePage />} />
                 <Route path="/staffholidays" element={<HolidaysViewPage />} />
-                <Route path="/winterafternoons" element={<ListingsWinterAfternoonsPage />} />
+                <Route path="/winterafternoons" element={<WinterAfternoonsPage />} />
                 <Route path="/contacts" element={<ContactsPage />} />
                 <Route path="/passwordrecovery" element={<PasswordRecoveryPage />} />
                 <Route path="/newpassword/:id" element={<NewPasswordPage />} />

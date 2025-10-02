@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 import usuariosRouter from './routes/usuarios.js'
 import vacacionesRouter from './routes/vacaciones.js'
 import eventosRouter from './routes/eventos.js'
-import listingsRouter from './routes/listings.js'
+// import listingsRouter from './routes/xlistings.js'
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -34,7 +34,7 @@ app.use(express.json());
 app.use('/api/v1/erroak', usuariosRouter)
 app.use('/api/v1/erroak', vacacionesRouter)
 app.use('/api/v1/erroak', eventosRouter)
-app.use('/api/v1/erroak', listingsRouter)
+// app.use('/api/v1/erroak', listingsRouter)
 
 // // Start Server
 // app.listen(PORT, HOSTNAME, () => {

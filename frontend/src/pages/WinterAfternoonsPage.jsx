@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 // import HolidaysComponent from '../components/HolidaysComponent';
-import ListingsWinterAfternoonsComponent from '../components/ListingsWinterAfternoonsComponent';
+import ListingsWinterAfternoonsComponent from '../components/WinterAfternoonsComponent';
 import MainMenuComponent from '../components/MainMenuComponent';
 import { useNavigate } from 'react-router-dom';
 
-const ListingsWinterAfternoonsPage = () =>{
+const WinterAfternoonsPage = () =>{
     const navigate = useNavigate();
     const [logeado, setLogeado] = useState(false)
     const [usuario, setUsuario] = useState({})
@@ -39,4 +39,4 @@ const ListingsWinterAfternoonsPage = () =>{
     )
 }
 
-export default ListingsWinterAfternoonsPage
+export default WinterAfternoonsPage

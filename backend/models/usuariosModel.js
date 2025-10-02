@@ -213,98 +213,17 @@ export async function putUsuario(id, updatedUser) {
     }
 }
 
-// ANULADO NO USAR
-// export async function getHolidays(id, ano) {
-//     try {
-//         // habría que desencriptar password/token, esto para más adelante
-//         //
-//         const result = await pool.query("SELECT * FROM erroak.usuariosvacaciones WHERE usuario_id = $1 AND ano = $2", [id, ano]);
-//         console.log("result getHolidays: ", result)
+export async function getWinterAfternoons() {
+    try {
+        const result = await pool.query(
+            `SELECT u.tarde_invierno, u.nombre_apellidos, u.centro_id, c.centro AS nombre_centro, u.llave, u.alarma FROM erroak.usuarios u
+                JOIN erroak.centros c ON u.centro_id = c.centro_id
+                WHERE u.tarde_invierno > 0 
+                ORDER BY u.tarde_invierno, u.nombre_apellidos;`);
+        return result.rows;
 
-//         // hay que devolver los días de vacaciones y la cuenta de días de vacaciones usados
-//         if (result.rows.length > 0) {
-//             console.log("Usuario encontrado en getHolidays: ", result.rows[0])
-//             return result.rows[0]
-//             // return result.rows[0]
-//         }
-//         else
-//             return ({result: "No encontrado"})
-
-//   } catch (err) {
-//     console.error('Error en getHolidays:', err.message);
-//     throw err;
-//   }
-// }
-
-
-
-// *****************************************
-// export async function getVotos() {
-//   try {
-//     const result = await pool.query("SELECT * FROM eurovision.votos;");
-//     return result.rows;
-//     //return result.rows[0].total;
-
-//   } catch (err) {
-//     console.error('Error:', err.message);
-//     throw err;
-//   }
-// }
-
-// export async function getActuacionesRanking(selectRanking) {
-//     try {
-//         const selectedQuery = 
-//             selectRanking   ? `SELECT a.nombre_artista, a.code_pais, a.titulo_cancion, a.id, SUM(v.voto) as nota FROM eurovision.votos v RIGHT JOIN eurovision.actuaciones a ON a.id = v."idActuacion" GROUP BY a.nombre_artista, a.code_pais, a.titulo_cancion, a.id;`
-//                             : "SELECT * FROM eurovision.actuaciones;"
-
-//         const result = await pool.query(selectedQuery);
-//         return result.rows;
-//         //return result.rows[0].total;
-
-//     } catch (err) {
-//         console.error('Error:', err.message);
-//         throw err;
-//     }
-// }
-
-
-// export async function sendVotos(votoEmitido) {
-//   try {
-//     // const result = await pool.query("SELECT * FROM eurovision.votantes;");
-//     const {idVotante, idActuacion, fechaVoto, voto} = votoEmitido
-//     const result = await pool.query(`INSERT INTO eurovision.votos 
-//         ("idVotante", "idActuacion", "fechaVoto", voto)
-//         VALUES ($1, $2, $3, $4);`, [idVotante, idActuacion, fechaVoto, voto])
-//     // console.log("imprimo result: ", result)
-//     // return result;
-//     return {success: true, message: "OK"}
-
-//   } catch (err) {
-//     console.error('Error:', err.message);
-//     throw err;
-//   }
-// }
-
-// export async function sendVotosMultiples(votosEmitidos) {
-//     const stringVotos = `INSERT INTO eurovision.votos 
-//         ("idVotante", "idActuacion", "fechaVoto", voto) `
-//     votosEmitidos.map(voto => (
-//         stringVotos += (`VALUES (${votosEmitidos.idVotante}, ${votosEmitidos.idActuacion}, ${votosEmitidos.fechaVoto}, ${votosEmitidos.voto}),`)
-//     ))
-//     stringVotos = st
-//     try {
-
-//         const {idVotante, idActuacion, fechaVoto, voto} = votoEmitido
-//         const result = await pool.query(`INSERT INTO eurovision.votos 
-//             ("idVotante", "idActuacion", "fechaVoto", voto)
-//             VALUES ($1, $2, $3, $4);`, [idVotante, idActuacion, fechaVoto, voto])
-//         // console.log("imprimo result: ", result)
-//         // return result;
-//         return {success: true, message: "OK"}
-
-//     } catch (err) {
-//         console.error('Error:', err.message);
-//         throw err;
-//     }
-// }
-
+    } catch (err) {
+        console.error('Error:', err.message);
+        throw err;
+    }
+}

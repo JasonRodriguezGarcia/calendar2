@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Box,
     Stack,
@@ -15,27 +15,23 @@ import {
     useTheme,
     Paper, 
 } from '@mui/material';
-import AlarmIcon from '@mui/icons-material/Alarm'; // despertador
 import VpnKeyIcon from '@mui/icons-material/VpnKey'; // llave
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive'; // sirena
 
-const ListingsWinterAfternoonsComponent = ({ logged, user }) => {
+const WinterAfternoonsComponent = ({ logged, user }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER;
     const theme = useTheme();
 
     const [events, setEvents] = useState([])
     const [usuarios, setUsuarios] = useState([])
-    const [date, setDate] = useState(new Date())
-    const [rows, setRows] = useState([])
     const [headTableDays, setHeadTableDays] = useState([
         "Lunes", "Martes", "Miércoles", "Jueves", "Viernes"
     ])
-    const [actualMonthDays, setActualMonthDays] = useState([])
 
     const fetchUsuarios = async () => {
         try {
             const response = await fetch(
-                `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/listings/winterafternoons`,
+                `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/winterafternoons`,
             )
             const data = await response.json()
         // Paso 1: Inicializar 5 columnas vacías (lunes a viernes)
@@ -204,4 +200,4 @@ const ListingsWinterAfternoonsComponent = ({ logged, user }) => {
   );
 };
 
-export default ListingsWinterAfternoonsComponent;
+export default WinterAfternoonsComponent;

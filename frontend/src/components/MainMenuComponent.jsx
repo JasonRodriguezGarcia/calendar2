@@ -22,7 +22,7 @@ import { useState } from 'react';
 // const pages = ['Eventos', 'Vacaciones', 'About'];
 const pages = ['Eventos', 'Vacaciones', 'Listados', 'About'];
 // termiar con lists
-const lists = ['Vacaciones personal', 'Tardes invierno', 'Contactos', ]
+const lists = ['Eventos entidad', 'Vacaciones personal', 'Tardes invierno', 'Contactos', ]
 const settings = ['Ver perfil', 'Modificar perfil', 'Cerrar sesión'];
 
 function MainMenuComponent({ logged, setLogged, user, setUser }) {
@@ -211,14 +211,15 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                                     setAnchorElNav(null);
                                                     // navegación
                                                     switch (item) {
+                                                        case "Eventos entidad":
+                                                            // navigate("/staffholidays", { replace: true });
+                                                            navigate("/");
+                                                            break;
                                                         case "Vacaciones personal":
-                                                            // navigate("/listado/vacaciones");
-                                                            // navigate("/vacacionespersonal");
                                                             // navigate("/staffholidays", { replace: true });
                                                             navigate("/staffholidays");
                                                             break;
                                                         case "Tardes invierno":
-                                                            // navigate("/listado/tardes");
                                                             // navigate("/winterafternoons", { replace: true });
                                                             navigate("/winterafternoons");
                                                             break;
@@ -341,14 +342,15 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                     setAnchorElList(null);
                                     // Añade aquí la lógica de navegación por cada item si la tienes
                                     switch (item) {
+                                        case "Eventos entidad":
+                                            // navigate("/staffholidays", { replace: true });
+                                            navigate("/");
+                                            break;
                                         case "Vacaciones personal":
-                                            // navigate("/listado/vacaciones");
-                                            // navigate("/vacacionespersonal");
                                             // navigate("/staffholidays", { replace: true });
                                             navigate("/staffholidays");
                                             break;
                                         case "Tardes invierno":
-                                            // navigate("/listado/tardes");
                                             // navigate("/winterafternoons", { replace: true });
                                             navigate("/winterafternoons");
                                             break;

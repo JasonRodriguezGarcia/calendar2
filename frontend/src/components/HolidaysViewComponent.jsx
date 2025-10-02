@@ -102,13 +102,13 @@ const HolidaysViewComponent = ({ logged, user }) => {
             fechas: eventosUsuario,
             };
         });
-        console.log("tempRows: ", tempRows)
+        // console.log("tempRows: ", tempRows)
         setRows(tempRows);
     }, [usuarios, events]);
 
     useEffect(() => {
-        console.log("eventos y usuarios: ", events, usuarios)
-        console.log("actualMonthDays: ", actualMonthDays)
+        // console.log("eventos y usuarios: ", events, usuarios)
+        // console.log("actualMonthDays: ", actualMonthDays)
     }, [events, usuarios, actualMonthDays])
     if (!logged) return null;
 
@@ -207,11 +207,11 @@ const HolidaysViewComponent = ({ logged, user }) => {
                                 {actualMonthDays.map((day, dayIndex) => {
                                     const currentDate = new Date(date.getFullYear(), date.getMonth(), day, 12, 0, 0)
                                     const weekDay = new Date(date.getFullYear(), date.getMonth(), day).getDay()
-                                    console.log("currendDate: ", currentDate)
+                                    // console.log("currendDate: ", currentDate)
                                     const tieneEvento = row.fechas.some(evento => {
                                         const start = evento.start;
                                         const end = evento.end;
-                                        console.log("start:", evento.start)
+                                        // console.log("start:", evento.start)
                                         return currentDate >= start && currentDate <= end;
                                     });
 

@@ -15,6 +15,7 @@ import {
 
 import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { GlobalStyles } from '@mui/material'; // para cambiar el estilo del día y permita cambiar de color al pasar raton por encima
 
 // MUI
 import {
@@ -216,7 +217,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         const fechaFinal = new Date(ffinal)
         fechaInicial.setHours(0, 0, 0, 0)
         fechaFinal.setHours(0, 0, 0, 0)
-
         const resta = fechaFinal - fechaFinal
 
         return Math.round(resta / dia)
@@ -639,7 +639,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         <Toolbar />
         <h2>EVENTOS AÑO: {date.getFullYear()}</h2>
 
-        {/* OCULTANDO LA LÍNEA (NO NECESARIA) DE EVENTOS QUE DURAN VARIOS DÍAS */}
+        {/* OCULTANDO LA LÍNEA SUPERIOR (NO NECESARIA) DE EVENTOS QUE DURAN VARIOS DÍAS */}
         {(view === 'work_week' || view === 'day') && (
         <style>
             {`
@@ -651,6 +651,14 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         </style>
         )}
         {/* <Calendar */}
+        <GlobalStyles styles={{ // Cambiando el estilo del día para que al pasar el ratón por encima cambie de color
+            '.rbc-month-view .rbc-date-cell > *:first-child:hover': {
+                // color: '#1976d2',
+                backgroundColor: 'grey',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+            }
+        }} />
         <DnDCalendar
             style= {{height: 1000, fontSize: 'clamp(0.75rem, 1vw, 1.2rem)',}}
                 // style={{
@@ -722,14 +730,14 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                 }
             }}
             messages={{
-            next: 'Sig.',
-            previous: 'Ant.',
-            today: 'Hoy',
-            month: 'Mes',
-            //   week: 'Semana',                            // No se usa porque usamos work_week
-            work_week: "Semana",                          // ponemos el texto Semana para work_week, sino aparecería "Work week"
-            day: 'Día',
-            agenda: 'Agenda',
+                next: 'Sig.',
+                previous: 'Ant.',
+                today: 'Hoy',
+                month: 'Mes',
+                //   week: 'Semana',                            // No se usa porque usamos work_week
+                work_week: "Semana",                          // ponemos el texto Semana para work_week, sino aparecería "Work week"
+                day: 'Día',
+                agenda: 'Agenda',
             }}
         />
 
@@ -870,9 +878,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             </Dialog>
             <Dialog open={dialogError} onClose={handleCloseError}>
                 <DialogTitle>
-                    <Typography variant="h4">
-                        No se puede guardar
-                    </Typography>
+                    No se puede guardar
                 </DialogTitle>
                 <DialogContent>
                     <DialogContent>
@@ -885,9 +891,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             </Dialog>
             <Dialog open={dialogRepeatedResultOpen} onClose={handleCloseRepeatedResult}>
                 <DialogTitle>
-                    <Typography variant="h4">
-                        Resultado Repetición
-                    </Typography>
+                    Resultado Repetición
                 </DialogTitle>
                 <DialogContent>
                     <DialogContent>
@@ -914,7 +918,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                                     Repetición CON incidencias
                                 </Typography>
                                 {errorMessage.map((error, index) => (
-                                    <Typography>
+                                    <Typography key={index}>
                                         {error.start.toLocaleString('es-ES', {
                                                 day: '2-digit',
                                                 month: '2-digit',

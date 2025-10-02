@@ -54,7 +54,7 @@ const tardes_invierno = [
     {tarde_id: 4, descripcion: "Jueves"},
     {tarde_id: 5, descripcion: "Viernes"},
 ]
-const SignUpComponent = ({ logged, setLogged, user, action }) => {
+const UsersCRUDComponent = ({ logged, setLogged, user, action }) => {
 
     // const [isValidToken, setIsValidToken] = useState(false)
     // const [userName, setUserName] = useState("")
@@ -184,8 +184,8 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
             // !user	¿user es null/undefined/etc?	Cuando user = null, undefined, etc.
             // !user.id	¿id está ausente o es falsy?	Cuando user = {} o user = { id: undefined }
         if ((action === "read" || action === "update") && (!user || !user.id)) {
-            console.warn("getData() abortado porque user.id es undefined");
-            return;
+            console.warn("getData() abortado porque user.id es undefined")
+            return
         }
 
         getData()
@@ -292,10 +292,6 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
             setErrorMessage("Nombre y Apellidos más largo")
             return
         }
-        // if (userMovil.length !== 0 && !isValidMovil(userMovil)) {
-        //     setErrorMessage("El móvil debe tener formato 999-999999");
-        //     return;
-        // }
         try {
             console.log("paso por hadleSignUp")
             const userTmp = {
@@ -384,22 +380,23 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
             <Box component="form"
                 onSubmit={(e)=> handleSignUp(e)}
                 sx={{
-                heigth: "100vh",
-                width: { xs: '90%', sm: 320 },
-                mx: 'auto', // margin left & right
-                my: 4, // margin top & bottom
-                py: 3, // padding top & bottom
-                px: 2, // padding left & right
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',   // alineado vertical
-                alignItems: 'left',       // alineado horizontal
-                gap: 2,
-                border: "1px solid grey",
-                borderRadius: '10px',
-                boxShadow: '10px 10px 15px 5px grey',
-                // boxShadow: 5,
-                // backgroundColor: "#339fff"
+                    heigth: "100vh",
+                    // width: { xs: '90%', sm: 320 },
+                    width: { xs: '90%', sm: "30%" },
+                    mx: 'auto', // margin left & right
+                    my: 4, // margin top & bottom
+                    py: 3, // padding top & bottom
+                    px: 2, // padding left & right
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',   // alineado vertical
+                    alignItems: 'left',       // alineado horizontal
+                    gap: 2,
+                    border: "1px solid grey",
+                    borderRadius: '10px',
+                    boxShadow: '10px 10px 15px 5px grey',
+                    // boxShadow: 5,
+                    // backgroundColor: "#339fff"
                 }}
             >
                 <div>
@@ -657,4 +654,4 @@ const SignUpComponent = ({ logged, setLogged, user, action }) => {
     )
 }
 
-export default SignUpComponent
+export default UsersCRUDComponent

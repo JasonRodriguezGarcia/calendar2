@@ -36,10 +36,8 @@ const ProfilePage = () =>{
     return (
         <>
             <MainMenuComponent logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />
-            {/* <div style={{ padding: 20 }}> */}
             <Toolbar /> {/* Añadiendo Toolbar vacío justo después, para que actúe como "espaciador" */}
             <UsersCRUDComponent logged={logeado} setLogged={setLogeado} user={usuario} action="read" />
-            {/* </div> */}
         </>
     )
 }

@@ -213,7 +213,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                                     switch (item) {
                                                         case "Eventos entidad":
                                                             // navigate("/staffholidays", { replace: true });
-                                                            navigate("/");
+                                                            navigate("/entityevents");
                                                             break;
                                                         case "Vacaciones personal":
                                                             // navigate("/staffholidays", { replace: true });
@@ -344,7 +344,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                     switch (item) {
                                         case "Eventos entidad":
                                             // navigate("/staffholidays", { replace: true });
-                                            navigate("/");
+                                            navigate("/entityevents");
                                             break;
                                         case "Vacaciones personal":
                                             // navigate("/staffholidays", { replace: true });

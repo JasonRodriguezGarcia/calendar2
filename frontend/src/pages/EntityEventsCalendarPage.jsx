@@ -1,14 +1,10 @@
 import { useState, useEffect } from 'react';
-import EventsCalendarComponent from '../components/EventsCalendarComponent';
 import MainMenuComponent from '../components/MainMenuComponent';
+import EntityEventsCalendarComponent from '../components/EntityEventsCalendarComponent';
 import { useNavigate } from 'react-router-dom';
-// import SignUpComponent from '../components/SignUpComponent';
-import UsersCRUDComponent from '../components/UsersCRUDComponent';
-import { Toolbar } from '@mui/material';
 
-const EditProfilePage = () =>{
+const EntityEventsCalendarPage = () =>{
     const navigate = useNavigate();
-
     const [logeado, setLogeado] = useState(false)
     const [usuario, setUsuario] = useState({})
 
@@ -26,20 +22,20 @@ const EditProfilePage = () =>{
             }
             else {
                 setLogeado(false)
-                navigate(`/`, { replace: true }); // evita que el usuario regrese con back
+                navigate(`/`, { replace: true });
             }
         }
 
         checklogeado()
     }, [])
 
+
     return (
         <>
             <MainMenuComponent logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />
-            <Toolbar /> {/* Añadiendo Toolbar vacío justo después, para que actúe como "espaciador" */}
-            <UsersCRUDComponent logged={logeado} setLogged={setLogeado} user={usuario} action="update" />
+            <EntityEventsCalendarComponent logged={logeado} setLogged={setLogeado} user={usuario} />
         </>
     )
 }
 
-export default EditProfilePage
+export default EntityEventsCalendarPage;

@@ -55,13 +55,14 @@ const saltosHora = 1 // timeslots={4}
 const horaMinima = new Date(1970, 1, 1, 7, 0) // Limitación hora mínima
 const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
 
-const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
+const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
     
     const [events, setEvents] = useState([])
     const [dialogOpen, setDialogOpen] = useState(false)
     const [eventData, setEventData] = useState({})
     const [date, setDate] = useState(new Date())
-    const [view, setView] = useState(Views.WORK_WEEK)     // POR DEFECTO VISTA SEMANA LABORAL
+    // const [view, setView] = useState(Views.WORK_WEEK)     // POR DEFECTO VISTA SEMANA LABORAL
+    const [view, setView] = useState(Views.MONTH)     // POR DEFECTO VISTA MES
     const [isEditing, setIsEditing] = useState(false)
     const [selectedEvent, setSelectedEvent] = useState(null)
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
@@ -74,10 +75,9 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
     const [dialogRepeatOpen, setDialogRepeatOpen] = useState(false)
     const [eventDataRepeatStart, setEventDataRepeatStart] = useState('')
     const [eventDataRepeatEnd, setEventDataRepeatEnd] = useState('')
-    const [errorMessage, setErrorMessage] = useState("")
+    const [errorMessage, setErrorMessage] = useState("") // SE USA PERO NO SE MUESTRA, SE PODRÍA BORRAR
     const [dialogError, setDialogError] = useState(false)
     const [dialogRepeatedResultOpen, setDialogRepeatedResultOpen] = useState(false)
-    const [errorMessageRepeated, setErrorMessageRepeated] = useState("")
 
     const navigate = useNavigate();
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
@@ -159,7 +159,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             try {
                 const response = await fetch(
                 //   `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${start.toISOString()}/${end.toISOString()}`
-                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventosuser/${user.id}/${start.toISOString()}/${end.toISOString()}`
+                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${start.toISOString()}/${end.toISOString()}/${user.id}`
                 );
                 const data = await response.json();
                 const eventosData = data.map(evento => ({
@@ -261,10 +261,12 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
 
     // Editando un evento
     const handleSelectEvent = async (event) => {
-        setEventData({ ...event })
-        setIsEditing(true)
-        setSelectedEvent(event)
-        setDialogOpen(true)
+        if (user.id === 12341234) {
+            setEventData({ ...event })
+            setIsEditing(true)
+            setSelectedEvent(event)
+            setDialogOpen(true)
+        }
     };
 
     const handleSaveRepeat = async () => { 
@@ -340,14 +342,14 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                     }
                 } catch (error) {
                     // setError(error.message); // Handle errors
-                    // console.log(error.message)
+                    console.log(error.message)
                 } finally {
                     // setLoading(false); // Set loading to false once data is fetched or error occurs
                 }
             }   
             currentDate.setDate(currentDate.getDate() + 1)  // Sumo un día
             if (alreadyExistSpaces.length > 0) {
-                setErrorMessageRepeated([...alreadyExistSpaces])
+                setErrorMessage([...alreadyExistSpaces])
             }
             setDialogRepeatedResultOpen(true)
             // const
@@ -600,7 +602,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         setDialogRepeatedResultOpen(false)
         setEventDataRepeatStart('')
         setEventDataRepeatEnd('')
-        setErrorMessageRepeated("")
+        setErrorMessage("")
     }
 
     // Personalizando la visualizacion de eventos en el calendario, por defecto "start-end title"
@@ -638,7 +640,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
     return (
     <>
         <Toolbar />
-        <h2>EVENTOS AÑO: {date.getFullYear()}</h2>
+        <h2>EVENTOS ENTIDAD AÑO: {date.getFullYear()}</h2>
 
         {/* OCULTANDO LA LÍNEA SUPERIOR (NO NECESARIA) DE EVENTOS QUE DURAN VARIOS DÍAS */}
         {(view === 'work_week' || view === 'day') && (
@@ -662,7 +664,20 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             }
         }} />
         <DnDCalendar
-            style= {{height: 1000, fontSize: 'clamp(0.75rem, 1vw, 1.2rem)',}}
+            // style= {{
+            //     // height: 1000,
+            //     // height: "100vh",
+            //     fontSize: 'clamp(0.75rem, 1vw, 1.2rem)',  // Ajuste responsivo
+            //     minHeight: 'calc(100vh - 64px)',  // resta la altura del menu
+
+            // }}
+            style={{ 
+                minHeight: 1000,
+                // fontSize: 'clamp(0.75rem, 1rem, 1.2rem)',  // Ajuste responsivo
+            //     minHeight: 'calc(100vh - 64px)',  // resta la altura del menu
+
+             }} // cambiado a celdas más altas
+
                 // style={{
                 //     width: '1000',
                 //     height: '100%',
@@ -675,22 +690,28 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             //     const day = new Date(ev.start).getDay();
             //     return day >= 1 && day <= 5; // lunes a viernes
             // })}
+            // eventLimit={6} // no válido
             selectable                                      // habilita la seleccion de celdas
             views={['month', 'work_week', 'day', 'agenda']}
             onView={handleViewChange}
-            defaultView='work_week'
-            // defaultView='month'
+            // defaultView='work_week'
+            defaultView='month'
             step={saltosTiempo}
             timeslots={saltosHora}
             min={horaMinima}                                // Limitación hora mínima
             max={horaMaxima}                                // Limitacion hora máxima
-            onSelectSlot={handleSelectSlot}                 // Crear nuevo evento
+            // onSelectSlot={handleSelectSlot}                 // Crear nuevo evento
+            
+            //
+            // a modificar onSelectEvent en el futuro
             onSelectEvent={handleSelectEvent}               // Editar evento existente
-            onEventDrop={handleEventDrop}                   // Permite hacer d&d con eventos, se ejecuta cuando arrastramos un evento y lo soltamos a otra posicion
-            draggableAccessor={() => true}                  // Indica si un evento puede ser movido mediante drag and drop.
+
+
+            // onEventDrop={handleEventDrop}                   // Permite hacer d&d con eventos, se ejecuta cuando arrastramos un evento y lo soltamos a otra posicion
+            // draggableAccessor={() => true}                  // Indica si un evento puede ser movido mediante drag and drop.
             // permitir si un evento se puede mover o no a conveniencia mediante una condición
             // draggableAccessor={(event) => event.permiteMover === true}
-            resizable={false}                               // No permite ampliar/reducir eventos (su horario)
+            // resizable={false}                               // No permite ampliar/reducir eventos (su horario)
             // style={{ height: 700 }}
             // style={{ height: 1000 }} // cambiado a celdas más altas
             // style={{ height: "125%" }} // cambiado a celdas más altas
@@ -727,7 +748,10 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                         color: 'white',
                         borderRadius: '4px',
                         border: '1px solid black',
-                        padding: '4px',
+                        // padding: '4px',
+                        padding: '2px',
+                        // minHeight: '100%',
+                        // fontSize: '60%'
                     }
                 }
             }}
@@ -736,8 +760,8 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                 previous: 'Ant.',
                 today: 'Hoy',
                 month: 'Mes',
-                //   week: 'Semana',                            // No se usa porque usamos work_week
-                work_week: "Semana",                          // ponemos el texto Semana para work_week, sino aparecería "Work week"
+                //   week: 'Semana',                       // No se usa porque usamos work_week
+                work_week: "Semana",                       // ponemos el texto Semana para work_week, sino aparecería "Work week"
                 day: 'Día',
                 agenda: 'Agenda',
             }}
@@ -826,8 +850,8 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                 <DialogActions>
                     {isEditing && (
                         <>
-                            <Button onClick={handleDeleteEvent} color="error" variant="contained">Eliminar</Button>
-                            <Button onClick={handleRepeatEvent} variant="contained">Repetir</Button>
+                            {/* <Button onClick={handleDeleteEvent} color="error" variant="contained">Eliminar</Button> */}
+                            {/* <Button onClick={handleRepeatEvent} variant="contained">Repetir</Button> */}
                         </>
                     )}
                     <Button onClick={handleSaveEvent} variant="contained">Guardar</Button>
@@ -897,12 +921,12 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                 </DialogTitle>
                 <DialogContent>
                     <DialogContent>
-                        {!errorMessageRepeated &&
+                        {!errorMessage &&
                             <Typography>
                                 Repetición sin incidencias
                             </Typography>
                         }
-                        {errorMessageRepeated &&
+                        {errorMessage &&
                             <>
                                 <Typography>
                                     Desde: {eventDataRepeatStart.toLocaleString('es-ES', {
@@ -919,7 +943,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                                 <Typography color="error" >
                                     Repetición CON incidencias
                                 </Typography>
-                                {errorMessageRepeated.map((error, index) => (
+                                {errorMessage.map((error, index) => (
                                     <Typography key={index}>
                                         {error.start.toLocaleString('es-ES', {
                                                 day: '2-digit',
@@ -948,4 +972,4 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
     )
 }
 
-export default EventsCalendarComponent;
+export default EntityEventsCalendarComponent;

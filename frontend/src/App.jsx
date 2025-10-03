@@ -17,6 +17,7 @@ import WinterAfternoonsPage from './pages/WinterAfternoonsPage';
 import ContactsPage from './pages/ContactsPage';
 import PasswordRecoveryPage from './pages/PasswordRecoveryPage';
 import NewPasswordPage from './pages/NewPasswordPage';
+import EntityEventsCalendarPage from './pages/EntityEventsCalendarPage';
 
 const App = () => {
 
@@ -35,7 +36,7 @@ const App = () => {
                 <Route path="/contacts" element={<ContactsPage />} />
                 <Route path="/passwordrecovery" element={<PasswordRecoveryPage />} />
                 <Route path="/newpassword/:id" element={<NewPasswordPage />} />
-                {/* <Route path="/about" element={<HolidaysViewPage />} /> */}
+                <Route path="/entityevents" element={<EntityEventsCalendarPage />} />
                 
                 {/* <Route path="/" element={<DashboardPage />} />
                     <Route path="/descriptions/new" element={<DescriptionsFormInsertPage />} />

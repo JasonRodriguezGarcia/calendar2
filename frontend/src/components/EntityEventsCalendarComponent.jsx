@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
-import { es } from 'date-fns/locale';
+import { de, es } from 'date-fns/locale';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 import {
@@ -20,6 +20,7 @@ import { GlobalStyles } from '@mui/material'; // para cambiar el estilo del día
 // MUI
 import {
     Box,
+    Checkbox,
     Dialog,
     DialogTitle,
     DialogContent,
@@ -28,7 +29,10 @@ import {
     TextField,
     MenuItem,
     FormControl, 
+    Grid,
     InputLabel,
+    ListItemText,
+    OutlinedInput,
     Select,
     Stack,
     Toolbar, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
@@ -58,6 +62,7 @@ const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
 const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
     
     const [events, setEvents] = useState([])
+    const [allEvents, setAllEvents] = useState([])
     const [dialogOpen, setDialogOpen] = useState(false)
     const [eventData, setEventData] = useState({})
     const [date, setDate] = useState(new Date())
@@ -78,6 +83,7 @@ const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
     const [errorMessage, setErrorMessage] = useState("") // SE USA PERO NO SE MUESTRA, SE PODRÍA BORRAR
     const [dialogError, setDialogError] = useState(false)
     const [dialogRepeatedResultOpen, setDialogRepeatedResultOpen] = useState(false)
+    const [selectedUsuarios, setSelectedUsuarios] = useState([])
 
     const navigate = useNavigate();
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
@@ -169,7 +175,17 @@ const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
                     color: evento.color,
                 }));
                 console.log("imprimo eventosData: ", eventosData)
-                setEvents(eventosData)
+                // setEvents(eventosData)
+                setAllEvents(eventosData)
+                debugger
+                const eventosFiltrados = 
+                    selectedUsuarios.length > 0
+                        ?eventosData.filter(evento =>
+                            selectedUsuarios.includes(evento.usuario_id))
+                            // evento.includes(usuariosTMP)
+                        : eventosData
+                setEvents(eventosFiltrados)
+
             } catch (error) {
                 console.error("Error cargando eventos:", error);
             }
@@ -191,6 +207,15 @@ const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
     };
 
     const handleViewChange = (newView) => { // Permite cambiar la vista del calendario
+        debugger
+        const eventosFiltrados = 
+           selectedUsuarios.length > 0
+            ?allEvents.filter(evento =>
+                selectedUsuarios.includes(evento.usuario_id))
+                // evento.includes(usuariosTMP)
+            : null
+        setEvents(eventosFiltrados)
+
         if (newView === 'week') {
             setView('work_week') // Forzamos semana laboral
         } else {
@@ -637,6 +662,28 @@ const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
             })
     }
 
+    const handleChangeSelectedUsuarios = (event) => {
+        debugger
+        const usuariosTMP = event.target.value
+        setSelectedUsuarios(usuariosTMP)
+        console.log("usuariosTMP: ", usuariosTMP)
+        // Uso `nuevosUsuarios` aquí para el filtrado
+        const eventosFiltrados = 
+           usuariosTMP.length === 0
+            ?allEvents // Si no hay usuarios seleccionados, mostrar todo
+            :allEvents.filter(evento =>
+                usuariosTMP.includes(evento.usuario_id)
+                // evento.includes(usuariosTMP)
+        )
+        setEvents(eventosFiltrados)
+    }
+
+    const handleResetFilters = () => {
+        console.log("Reiniciando filtros ...")
+        setSelectedUsuarios([])
+        setEvents(allEvents)
+    }
+
     return (
     <>
         <Toolbar />
@@ -663,311 +710,365 @@ const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
                 cursor: 'pointer',
             }
         }} />
-        <DnDCalendar
-            // style= {{
-            //     // height: 1000,
-            //     // height: "100vh",
-            //     fontSize: 'clamp(0.75rem, 1vw, 1.2rem)',  // Ajuste responsivo
-            //     minHeight: 'calc(100vh - 64px)',  // resta la altura del menu
-
-            // }}
-            style={{ 
-                minHeight: 1000,
-                // fontSize: 'clamp(0.75rem, 1rem, 1.2rem)',  // Ajuste responsivo
-            //     minHeight: 'calc(100vh - 64px)',  // resta la altura del menu
-
-             }} // cambiado a celdas más altas
-
-                // style={{
-                //     width: '1000',
-                //     height: '100%',
-                //     fontSize: 'clamp(0.75rem, 1vw, 1.2rem)', // Ajuste responsivo
-                // }}
-            localizer={localizer}
-            culture='es'                                    // días mes, semana, día en español
-            events={events}                                 // Personalizando la visualizacion de eventos en el calendario usando el array events
-            // events={events.filter(ev => {
-            //     const day = new Date(ev.start).getDay();
-            //     return day >= 1 && day <= 5; // lunes a viernes
-            // })}
-            // eventLimit={6} // no válido
-            selectable                                      // habilita la seleccion de celdas
-            views={['month', 'work_week', 'day', 'agenda']}
-            onView={handleViewChange}
-            // defaultView='work_week'
-            defaultView='month'
-            step={saltosTiempo}
-            timeslots={saltosHora}
-            min={horaMinima}                                // Limitación hora mínima
-            max={horaMaxima}                                // Limitacion hora máxima
-            // onSelectSlot={handleSelectSlot}                 // Crear nuevo evento
-            
-            //
-            // a modificar onSelectEvent en el futuro
-            onSelectEvent={handleSelectEvent}               // Editar evento existente
-
-
-            // onEventDrop={handleEventDrop}                   // Permite hacer d&d con eventos, se ejecuta cuando arrastramos un evento y lo soltamos a otra posicion
-            // draggableAccessor={() => true}                  // Indica si un evento puede ser movido mediante drag and drop.
-            // permitir si un evento se puede mover o no a conveniencia mediante una condición
-            // draggableAccessor={(event) => event.permiteMover === true}
-            // resizable={false}                               // No permite ampliar/reducir eventos (su horario)
-            // style={{ height: 700 }}
-            // style={{ height: 1000 }} // cambiado a celdas más altas
-            // style={{ height: "125%" }} // cambiado a celdas más altas
-            date={date}
-            view={view}
-            onNavigate={handleNavigate}
-            components={{
-                event: CustomEvent
+    <Box sx={{ flexGrow: 1 }}>  {/* equivale a width: "100%" */}
+        <Grid container spacing={2} 
+            direction={{
+                xs: "column",
+                md: "row",
             }}
-            popup
-            formats={{
-                eventTimeRangeFormat: () => '',             // Oculta el "start - end" de la visualizacion de eventos que aparece por defecto
-                weekdayFormat: (date, culture, localizer) =>
-                localizer.format(date, 'eeee', culture), // 'lunes', 'martes', etc.
-            }}
-            tooltipAccessor={(event) => {                   // Muestra "start - end" y otros al pasar el cursor por encima
-                const programa = programas.find(p => p.programa_id === event.programa_id);
-                const usuario = usuarios.find(p => p.usuario_id === event.usuario_id);
-                const espacio = espacios.find(p => p.espacio_id === event.espacio_id);
-                // si ponemos usuario?.nombre_apellidos y no usuario.nombre_apellidos, en caso de que programa no exista, obtenemos un crash con error en ejecución
-                // Pero si ponemos usuario?.nombre_apellidos y no existe obtenemos un undefined y el programa sigue su curso
-                return `${programa?.descripcion || 'Sin programa'} -`+
-                        `${usuario?.nombre_apellidos || 'Sin nombre'} -`+
-                        `${espacio?.descripcion || 'Sin nombre'} -`+
-                        `${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}`;
-            }}
+        >
+            <Grid size={{ xs: 8, md: 3 }}>
+                <h2>Filtros</h2>
+                <Button onClick={handleResetFilters} variant="contained">Borrar filtros</Button>
 
-            eventPropGetter={(event) => {                   // Estilo visual de cada evento
-                const user = usuarios.find(u => u.usuario_id === event.usuario_id);
-                const backgroundColor = user?.color || '#BDBDBD';
-                return {    // retornando un style por eso el return tiene {} en lugar de ()
-                    style: {
-                        backgroundColor,
-                        color: 'white',
-                        borderRadius: '4px',
-                        border: '1px solid black',
-                        // padding: '4px',
-                        padding: '2px',
-                        // minHeight: '100%',
-                        // fontSize: '60%'
-                    }
-                }
-            }}
-            messages={{
-                next: 'Sig.',
-                previous: 'Ant.',
-                today: 'Hoy',
-                month: 'Mes',
-                //   week: 'Semana',                       // No se usa porque usamos work_week
-                work_week: "Semana",                       // ponemos el texto Semana para work_week, sino aparecería "Work week"
-                day: 'Día',
-                agenda: 'Agenda',
-            }}
-        />
-
-        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeEs}>
-            <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth>
-                <DialogTitle>{!isEditing ? actionEventMessage[0] : actionEventMessage[1]} evento</DialogTitle>
-                <DialogContent>
-                    <Stack spacing={1} mt={1}> 
+                    <Stack spacing={1} m={1}> 
                         <FormControl fullWidth margin='dense'>
-                            <InputLabel id="select-label-usuario_id">Usuario *</InputLabel>
+                            <InputLabel id="select-label-usuarios_id">Usuarios</InputLabel>
                             <Select
                                 // fullWidth
-                                labelId="select-label-usuario_id"
-                                id="select-usuario_id"
-                                label="Usuario *"
-                                value={eventData.usuario_id}
-                                onChange={(e) => setEventData({ ...eventData, usuario_id: e.target.value})}
-                                disabled
+                                labelId="select-label-usuarios_id"
+                                id="select-usuarios_id"
+                                multiple
+                                label="Usuarios"
+                                value={selectedUsuarios}
+                                onChange={handleChangeSelectedUsuarios}
+                                input={<OutlinedInput label="Tag" />} // Estilo borde exterior
+                                // renderValue indica cómo queremos mostrar esos datos en este caso un array selectedUsuarios
+                                // CON OBJETOS que es seleccionado como "selected"
+                                // Aquí usamos el array de objetos para mostrar solo los nombre_apellidos
+                                renderValue={(selected) => 
+                                    // selected.map((user) => user.nombre_apellidos).join(', ')
+                                    usuarios
+                                        .filter(u => selected.includes(u.usuario_id))
+                                        .map(u=> u.nombre_apellidos)
+                                        .join(", ")
+                                }
                             >
                                 {usuarios.map((usuario) => (
-                                    <MenuItem key={usuario.usuario_id} value={usuario.usuario_id}>{usuario.nombre_apellidos}</MenuItem>
+                                    <MenuItem key={usuario.usuario_id} value={usuario.usuario_id}>
+                                        {/* revisar si ese objeto está en el array por su usuario_id */}
+                                        {/* si fuese un array normal usaríamos selectedUsuarios.includes() */}
+                                        {/* <Checkbox checked={selectedUsuarios.some(user => user.usuario_id === usuario.usuario_id)} /> */}
+                                        <Checkbox checked={selectedUsuarios.includes(usuario.usuario_id)} />
+                                        <ListItemText primary={usuario.nombre_apellidos} />
+                                    </MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
-                        <FormControl fullWidth margin='dense'>
-                            <InputLabel id="select-label-espacio_id">Espacio</InputLabel>
-                            <Select
-                                // fullWidth
-                                labelId="select-label-espacio_id"
-                                id="select-espacio_id"
-                                label="Espacio"
-                                value={eventData.espacio_id}
-                                onChange={(e) => setEventData({ ...eventData, espacio_id: e.target.value})}
-                            >
-                                {espacios.map((espacio) => (
-                                    <MenuItem key={espacio.espacio_id} value={espacio.espacio_id}>{espacio.descripcion}</MenuItem>
-
-                                ))}
-                            </Select>
-                        </FormControl>
-                        <FormControl fullWidth margin='dense'>
-                            <InputLabel id="select-label-programa_id">Programa *</InputLabel>
-                            <Select
-                                // fullWidth // al ser un FormControl no es necesario
-                                labelId="select-label-programa_id"
-                                id="select-programa_id"
-                                label="Programa *"
-                                value={eventData.programa_id}
-                                onChange={(e) => setEventData({ ...eventData, programa_id: e.target.value})}
-                            >
-                                {programas.map((programa) => (
-                                    <MenuItem key={programa.programa_id} value={programa.programa_id}>{programa.descripcion}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-
-                        <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
-                            <DateTimePicker
-                                label="Inicio *"
-                                value={eventData.start}
-                                onChange={(newValue) => setEventData({ ...eventData, start: newValue })}
-                                slotProps={{ textField: { fullWidth: true, margin: 'dense' } }}
-                            />
-                            <DateTimePicker
-                                label="Fin *"
-                                value={eventData.end}
-                                onChange={(newValue) => setEventData({ ...eventData, end: newValue })}
-                                slotProps={{ textField: { fullWidth: true, margin: 'dense' } }} // forma moderna y sin avisos en consola
-                            />
-                        </Stack>
-
-                        <TextField
-                            fullWidth
-                            label="Observaciones"
-                            name="observaciones"
-                            value={eventData.observaciones}
-                            onChange={(e) => setEventData({ ...eventData, observaciones: e.target.value })}
-                            margin="dense"
-                            multiline
-                            rows={3}
-                        />
                     </Stack>
-                </DialogContent>
-                <DialogActions>
-                    {isEditing && (
-                        <>
-                            {/* <Button onClick={handleDeleteEvent} color="error" variant="contained">Eliminar</Button> */}
-                            {/* <Button onClick={handleRepeatEvent} variant="contained">Repetir</Button> */}
-                        </>
-                    )}
-                    <Button onClick={handleSaveEvent} variant="contained">Guardar</Button>
-                    <Button onClick={handleCloseDialog} variant="contained">Cancelar</Button>
-                </DialogActions>
-            </Dialog>
-            <Dialog open={confirmDeleteOpen} onClose={cancelDelete}>
-                <DialogTitle>¿Eliminar evento?</DialogTitle>
-                <DialogContent>
-                    ¿Estás seguro de que deseas eliminar el evento <strong>{selectedEvent?.title}</strong>?
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={confirmDelete} color="error" variant="contained">Eliminar</Button>
-                    <Button onClick={cancelDelete} variant="contained">Cancelar</Button>
-                </DialogActions>
-            </Dialog>
-            <Dialog open={dialogRepeatOpen} onClose={handleCloseRepeat}>
-                <DialogTitle>Repetir evento (max. 30)</DialogTitle>
-                <DialogContent>
-                        <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
-                            <DatePicker
-                                label="Inicio *"
-                                value={eventDataRepeatStart}
-                                onChange={(value) => handleEventDataRepeatStart(value)}
-                                slotProps={{ textField: { fullWidth: true, margin: 'dense', sx: { mt: 1 }} }}
-                            />
-                            <DatePicker
-                                label="Fin *"
-                                value={eventDataRepeatEnd}
-                                onChange={(value) => handleEventDataRepeatEnd(value)}
-                                slotProps={{ textField: { fullWidth: true, margin: 'dense' }, sx: { mt: 1 } }} // forma moderna y sin avisos en consola
-                            />
-                        </Stack>
+            </Grid>
+            <Grid size={{ xs: 12, md: 9 }}>
+                <DnDCalendar
+                    style={{ 
+                        minHeight: 1000,
+                        // fontSize: 'clamp(0.75rem, 1rem, 1.2rem)',  // Ajuste responsivo
+                    //     minHeight: 'calc(100vh - 64px)',  // resta la altura del menu
+                    }} 
+                        // cambiado a celdas más altas
+                        // style={{
+                        //     width: '1000',
+                        //     height: '100%',
+                        //     fontSize: 'clamp(0.75rem, 1vw, 1.2rem)', // Ajuste responsivo
+                        // }}
+                    localizer={localizer}
+                    culture='es'                                    // días mes, semana, día en español
+                    events={events}                                 // Personalizando la visualizacion de eventos en el calendario usando el array events
+                    // events={
+                    //         selectedUsuarios.length === 0
+                    //             ?allEvents // Si no hay usuarios seleccionados, mostrar todo
+                    //             :allEvents.filter((evento) =>
+                    //                 selectedUsuarios.some((usuario) => evento.usuario_id === usuario.usuario_id)
+                    //         )
+                            
+                    //     // const eventosTMpFiltrados = allEvents.filter((evento) =>
+                    //     //     selectedUsuarios.some((usuario) => evento.usuario_id === usuario.usuario_id))
+                    //     // events.filter(ev => {
+                    //     // const day = new Date(ev.start).getDay();
+                    //     // debugger
+                    //     // return day >= 1 && day <= 5; // lunes a viernes
+                    // }
+                    // eventLimit={6} // no válido
+                    selectable                                      // habilita la seleccion de celdas
+                    views={['month', 'work_week', 'day', 'agenda']}
+                    onView={handleViewChange}
+                    // defaultView='work_week'
+                    defaultView='month'
+                    step={saltosTiempo}
+                    timeslots={saltosHora}
+                    min={horaMinima}                                // Limitación hora mínima
+                    max={horaMaxima}                                // Limitacion hora máxima
+                    // onSelectSlot={handleSelectSlot}                 // Crear nuevo evento
+                    
+                    //
+                    // a modificar onSelectEvent en el futuro
+                    onSelectEvent={handleSelectEvent}               // Editar evento existente
 
-                    {/* ¿Estás seguro de que deseas Repetir el evento <strong>{selectedEvent?.title}</strong>? */}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleSaveRepeat} color="error" variant="contained">Repetir</Button>
-                    <Button onClick={handleCloseRepeat} variant="contained">Cancelar</Button>
-                </DialogActions>
-            </Dialog>
-            <Dialog open={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>
-                <DialogTitle>Advertencia</DialogTitle>
-                <DialogContent>{errorDialogMessage}</DialogContent>
-                <DialogActions>
-                        <Button onClick={() => setErrorDialogOpen(false)} autoFocus>
-                            Cerrar
-                        </Button>
-                </DialogActions>
-            </Dialog>
-            <Dialog open={dialogError} onClose={handleCloseError}>
-                <DialogTitle>
-                    No se puede guardar
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContent>
-                        {errorMessage}
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleCloseError} variant="contained">Continuar</Button>
-                    </DialogActions>
-                </DialogContent>
-            </Dialog>
-            <Dialog open={dialogRepeatedResultOpen} onClose={handleCloseRepeatedResult}>
-                <DialogTitle>
-                    Resultado Repetición
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContent>
-                        {!errorMessage &&
-                            <Typography>
-                                Repetición sin incidencias
-                            </Typography>
+
+                    // onEventDrop={handleEventDrop}                   // Permite hacer d&d con eventos, se ejecuta cuando arrastramos un evento y lo soltamos a otra posicion
+                    // draggableAccessor={() => true}                  // Indica si un evento puede ser movido mediante drag and drop.
+                    // permitir si un evento se puede mover o no a conveniencia mediante una condición
+                    // draggableAccessor={(event) => event.permiteMover === true}
+                    // resizable={false}                               // No permite ampliar/reducir eventos (su horario)
+                    // style={{ height: 700 }}
+                    // style={{ height: 1000 }} // cambiado a celdas más altas
+                    // style={{ height: "125%" }} // cambiado a celdas más altas
+                    date={date}
+                    view={view}
+                    onNavigate={handleNavigate}
+                    components={{
+                        event: CustomEvent
+                    }}
+                    popup
+                    formats={{
+                        eventTimeRangeFormat: () => '',             // Oculta el "start - end" de la visualizacion de eventos que aparece por defecto
+                        weekdayFormat: (date, culture, localizer) =>
+                        localizer.format(date, 'eeee', culture), // 'lunes', 'martes', etc.
+                    }}
+                    tooltipAccessor={(event) => {                   // Muestra "start - end" y otros al pasar el cursor por encima
+                        const programa = programas.find(p => p.programa_id === event.programa_id);
+                        const usuario = usuarios.find(p => p.usuario_id === event.usuario_id);
+                        const espacio = espacios.find(p => p.espacio_id === event.espacio_id);
+                        // si ponemos usuario?.nombre_apellidos y no usuario.nombre_apellidos, en caso de que programa no exista, obtenemos un crash con error en ejecución
+                        // Pero si ponemos usuario?.nombre_apellidos y no existe obtenemos un undefined y el programa sigue su curso
+                        return `${programa?.descripcion || 'Sin programa'} -`+
+                                `${usuario?.nombre_apellidos || 'Sin nombre'} -`+
+                                `${espacio?.descripcion || 'Sin nombre'} -`+
+                                `${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}`;
+                    }}
+
+                    eventPropGetter={(event) => {                   // Estilo visual de cada evento
+                        const user = usuarios.find(u => u.usuario_id === event.usuario_id);
+                        const backgroundColor = user?.color || '#BDBDBD';
+                        return {    // retornando un style por eso el return tiene {} en lugar de ()
+                            style: {
+                                backgroundColor,
+                                color: 'white',
+                                borderRadius: '4px',
+                                border: '1px solid black',
+                                // padding: '4px',
+                                padding: '2px',
+                                // minHeight: '100%',
+                                // fontSize: '60%'
+                            }
                         }
-                        {errorMessage &&
-                            <>
-                                <Typography>
-                                    Desde: {eventDataRepeatStart.toLocaleString('es-ES', {
-                                                day: '2-digit',
-                                                month: '2-digit',
-                                                year: 'numeric',
-                                            })}
-                                    &nbsp; - Hasta: {eventDataRepeatEnd.toLocaleString('es-ES', {
-                                                day: '2-digit',
-                                                month: '2-digit',
-                                                year: 'numeric',
-                                            })}
-                                </Typography>
-                                <Typography color="error" >
-                                    Repetición CON incidencias
-                                </Typography>
-                                {errorMessage.map((error, index) => (
-                                    <Typography key={index}>
-                                        {error.start.toLocaleString('es-ES', {
-                                                day: '2-digit',
-                                                month: '2-digit',
-                                                year: 'numeric',
-                                            }
-                                        )}
+                    }}
+                    messages={{
+                        next: 'Sig.',
+                        previous: 'Ant.',
+                        today: 'Hoy',
+                        month: 'Mes',
+                        //   week: 'Semana',                       // No se usa porque usamos work_week
+                        work_week: "Semana",                       // ponemos el texto Semana para work_week, sino aparecería "Work week"
+                        day: 'Día',
+                        agenda: 'Agenda',
+                    }}
+                />
+
+                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeEs}>
+                    <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth>
+                        <DialogTitle>{!isEditing ? actionEventMessage[0] : actionEventMessage[1]} evento</DialogTitle>
+                        <DialogContent>
+                            <Stack spacing={1} mt={1}> 
+                                <FormControl fullWidth margin='dense'>
+                                    <InputLabel id="select-label-usuario_id">Usuario *</InputLabel>
+                                    <Select
+                                        // fullWidth
+                                        labelId="select-label-usuario_id"
+                                        id="select-usuario_id"
+                                        label="Usuario *"
+                                        value={eventData.usuario_id}
+                                        onChange={(e) => setEventData({ ...eventData, usuario_id: e.target.value})}
+                                        disabled
+                                    >
+                                        {usuarios.map((usuario) => (
+                                            <MenuItem key={usuario.usuario_id} value={usuario.usuario_id}>{usuario.nombre_apellidos}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <FormControl fullWidth margin='dense'>
+                                    <InputLabel id="select-label-espacio_id">Espacio</InputLabel>
+                                    <Select
+                                        // fullWidth
+                                        labelId="select-label-espacio_id"
+                                        id="select-espacio_id"
+                                        label="Espacio"
+                                        value={eventData.espacio_id}
+                                        onChange={(e) => setEventData({ ...eventData, espacio_id: e.target.value})}
+                                    >
+                                        {espacios.map((espacio) => (
+                                            <MenuItem key={espacio.espacio_id} value={espacio.espacio_id}>{espacio.descripcion}</MenuItem>
+
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <FormControl fullWidth margin='dense'>
+                                    <InputLabel id="select-label-programa_id">Programa *</InputLabel>
+                                    <Select
+                                        // fullWidth // al ser un FormControl no es necesario
+                                        labelId="select-label-programa_id"
+                                        id="select-programa_id"
+                                        label="Programa *"
+                                        value={eventData.programa_id}
+                                        onChange={(e) => setEventData({ ...eventData, programa_id: e.target.value})}
+                                    >
+                                        {programas.map((programa) => (
+                                            <MenuItem key={programa.programa_id} value={programa.programa_id}>{programa.descripcion}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+
+                                <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+                                    <DateTimePicker
+                                        label="Inicio *"
+                                        value={eventData.start}
+                                        onChange={(newValue) => setEventData({ ...eventData, start: newValue })}
+                                        slotProps={{ textField: { fullWidth: true, margin: 'dense' } }}
+                                    />
+                                    <DateTimePicker
+                                        label="Fin *"
+                                        value={eventData.end}
+                                        onChange={(newValue) => setEventData({ ...eventData, end: newValue })}
+                                        slotProps={{ textField: { fullWidth: true, margin: 'dense' } }} // forma moderna y sin avisos en consola
+                                    />
+                                </Stack>
+
+                                <TextField
+                                    fullWidth
+                                    label="Observaciones"
+                                    name="observaciones"
+                                    value={eventData.observaciones}
+                                    onChange={(e) => setEventData({ ...eventData, observaciones: e.target.value })}
+                                    margin="dense"
+                                    multiline
+                                    rows={3}
+                                />
+                            </Stack>
+                        </DialogContent>
+                        <DialogActions>
+                            {isEditing && (
+                                <>
+                                    {/* <Button onClick={handleDeleteEvent} color="error" variant="contained">Eliminar</Button> */}
+                                    {/* <Button onClick={handleRepeatEvent} variant="contained">Repetir</Button> */}
+                                </>
+                            )}
+                            <Button onClick={handleSaveEvent} variant="contained">Guardar</Button>
+                            <Button onClick={handleCloseDialog} variant="contained">Cancelar</Button>
+                        </DialogActions>
+                    </Dialog>
+                    <Dialog open={confirmDeleteOpen} onClose={cancelDelete}>
+                        <DialogTitle>¿Eliminar evento?</DialogTitle>
+                        <DialogContent>
+                            ¿Estás seguro de que deseas eliminar el evento <strong>{selectedEvent?.title}</strong>?
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={confirmDelete} color="error" variant="contained">Eliminar</Button>
+                            <Button onClick={cancelDelete} variant="contained">Cancelar</Button>
+                        </DialogActions>
+                    </Dialog>
+                    <Dialog open={dialogRepeatOpen} onClose={handleCloseRepeat}>
+                        <DialogTitle>Repetir evento (max. 30)</DialogTitle>
+                        <DialogContent>
+                                <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+                                    <DatePicker
+                                        label="Inicio *"
+                                        value={eventDataRepeatStart}
+                                        onChange={(value) => handleEventDataRepeatStart(value)}
+                                        slotProps={{ textField: { fullWidth: true, margin: 'dense', sx: { mt: 1 }} }}
+                                    />
+                                    <DatePicker
+                                        label="Fin *"
+                                        value={eventDataRepeatEnd}
+                                        onChange={(value) => handleEventDataRepeatEnd(value)}
+                                        slotProps={{ textField: { fullWidth: true, margin: 'dense' }, sx: { mt: 1 } }} // forma moderna y sin avisos en consola
+                                    />
+                                </Stack>
+
+                            {/* ¿Estás seguro de que deseas Repetir el evento <strong>{selectedEvent?.title}</strong>? */}
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleSaveRepeat} color="error" variant="contained">Repetir</Button>
+                            <Button onClick={handleCloseRepeat} variant="contained">Cancelar</Button>
+                        </DialogActions>
+                    </Dialog>
+                    <Dialog open={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>
+                        <DialogTitle>Advertencia</DialogTitle>
+                        <DialogContent>{errorDialogMessage}</DialogContent>
+                        <DialogActions>
+                                <Button onClick={() => setErrorDialogOpen(false)} autoFocus>
+                                    Cerrar
+                                </Button>
+                        </DialogActions>
+                    </Dialog>
+                    <Dialog open={dialogError} onClose={handleCloseError}>
+                        <DialogTitle>
+                            No se puede guardar
+                        </DialogTitle>
+                        <DialogContent>
+                            <DialogContent>
+                                {errorMessage}
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleCloseError} variant="contained">Continuar</Button>
+                            </DialogActions>
+                        </DialogContent>
+                    </Dialog>
+                    <Dialog open={dialogRepeatedResultOpen} onClose={handleCloseRepeatedResult}>
+                        <DialogTitle>
+                            Resultado Repetición
+                        </DialogTitle>
+                        <DialogContent>
+                            <DialogContent>
+                                {!errorMessage &&
+                                    <Typography>
+                                        Repetición sin incidencias
                                     </Typography>
-                                ))}
-                                {/* Botón para copiar al portapapeles */}
-                                <Box mt={2}>
-                                    <Button variant="outlined" onClick={handleCopyToClipboard}>
-                                        Copiar incidencias
-                                    </Button>
-                                </Box>
-                            </>
-                        }
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleCloseRepeatedResult} variant="contained">Continuar</Button>
-                    </DialogActions>
-                </DialogContent>
-            </Dialog>
-        </LocalizationProvider>
+                                }
+                                {errorMessage &&
+                                    <>
+                                        <Typography>
+                                            Desde: {eventDataRepeatStart.toLocaleString('es-ES', {
+                                                        day: '2-digit',
+                                                        month: '2-digit',
+                                                        year: 'numeric',
+                                                    })}
+                                            &nbsp; - Hasta: {eventDataRepeatEnd.toLocaleString('es-ES', {
+                                                        day: '2-digit',
+                                                        month: '2-digit',
+                                                        year: 'numeric',
+                                                    })}
+                                        </Typography>
+                                        <Typography color="error" >
+                                            Repetición CON incidencias
+                                        </Typography>
+                                        {errorMessage.map((error, index) => (
+                                            <Typography key={index}>
+                                                {error.start.toLocaleString('es-ES', {
+                                                        day: '2-digit',
+                                                        month: '2-digit',
+                                                        year: 'numeric',
+                                                    }
+                                                )}
+                                            </Typography>
+                                        ))}
+                                        {/* Botón para copiar al portapapeles */}
+                                        <Box mt={2}>
+                                            <Button variant="outlined" onClick={handleCopyToClipboard}>
+                                                Copiar incidencias
+                                            </Button>
+                                        </Box>
+                                    </>
+                                }
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleCloseRepeatedResult} variant="contained">Continuar</Button>
+                            </DialogActions>
+                        </DialogContent>
+                    </Dialog>
+                </LocalizationProvider>
+            </Grid>
+        </Grid>
+
+    </Box>
     </>
     )
 }

@@ -84,6 +84,8 @@ const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
     const [dialogError, setDialogError] = useState(false)
     const [dialogRepeatedResultOpen, setDialogRepeatedResultOpen] = useState(false)
     const [selectedUsuarios, setSelectedUsuarios] = useState([])
+    const [selectedProgramas, setSelectedProgramas] = useState([])
+    const [selectedEspacios, setSelectedEspacios] = useState([])
 
     const navigate = useNavigate();
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
@@ -177,14 +179,7 @@ const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
                 console.log("imprimo eventosData: ", eventosData)
                 // setEvents(eventosData)
                 setAllEvents(eventosData)
-                debugger
-                const eventosFiltrados = 
-                    selectedUsuarios.length > 0
-                        ?eventosData.filter(evento =>
-                            selectedUsuarios.includes(evento.usuario_id))
-                            // evento.includes(usuariosTMP)
-                        : eventosData
-                setEvents(eventosFiltrados)
+                setEvents(filterEvents(eventosData, selectedUsuarios, selectedProgramas, selectedEspacios))
 
             } catch (error) {
                 console.error("Error cargando eventos:", error);
@@ -207,15 +202,7 @@ const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
     };
 
     const handleViewChange = (newView) => { // Permite cambiar la vista del calendario
-        debugger
-        const eventosFiltrados = 
-           selectedUsuarios.length > 0
-            ?allEvents.filter(evento =>
-                selectedUsuarios.includes(evento.usuario_id))
-                // evento.includes(usuariosTMP)
-            : null
-        setEvents(eventosFiltrados)
-
+        setEvents(filterEvents(allEvents, selectedUsuarios, selectedProgramas, selectedEspacios))
         if (newView === 'week') {
             setView('work_week') // Forzamos semana laboral
         } else {
@@ -447,7 +434,6 @@ const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
                     setDialogError(true)
                     return
                 }
-                debugger
                 if (data.result === "Espacio ya existente") {
                     setErrorMessage("Espacio OCUPADO, elegir otro")
                     setDialogError(true)
@@ -655,32 +641,60 @@ const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
         navigator.clipboard.writeText(formattedErrors)
             .then(() => {
                 console.log('Copiado al portapapeles')
-                // Si quieres mostrar feedback visual, puedes usar Snackbar
+                // Se podría mostrar un texto "Copiado al portapapeles" usando un Snackbar
             })
             .catch(err => {
                 console.error('Error al copiar:', err)
             })
     }
 
-    const handleChangeSelectedUsuarios = (event) => {
-        debugger
-        const usuariosTMP = event.target.value
-        setSelectedUsuarios(usuariosTMP)
-        console.log("usuariosTMP: ", usuariosTMP)
-        // Uso `nuevosUsuarios` aquí para el filtrado
-        const eventosFiltrados = 
-           usuariosTMP.length === 0
-            ?allEvents // Si no hay usuarios seleccionados, mostrar todo
-            :allEvents.filter(evento =>
-                usuariosTMP.includes(evento.usuario_id)
-                // evento.includes(usuariosTMP)
-        )
-        setEvents(eventosFiltrados)
+    const handleChangeSelectedValues = (selection, event) => {
+        const valorTMP = event.target.value
+        // Guardamos los valores actuales de los Select
+        let valoresUsuarios = selectedUsuarios
+        let valoresProgramas = selectedProgramas
+        let valoresEspacios = selectedEspacios
+        // Dependiendo de cual sea llamado lo guardamos en su Select
+        // Además actualizamos su valor en Valores
+        switch (selection) {
+            case "usuarios":
+                setSelectedUsuarios(valorTMP)
+                valoresUsuarios = valorTMP
+                break
+            case "programas":
+                setSelectedProgramas(valorTMP)
+                valoresProgramas = valorTMP
+                break
+            case "espacios":
+                setSelectedEspacios(valorTMP)
+                valoresEspacios = valorTMP
+                break
+            default:
+                break
+        }
+        
+        // Llamamos a filterEvents para filtrar por los valores de los Select
+        // Por el mero hecho de pasar por aqui, es que se ha seleccionado un Select
+        setEvents(filterEvents(allEvents, valoresUsuarios, valoresProgramas, valoresEspacios))
+    }
+    
+    const filterEvents = (datos, usuarios, programas, espacios) => {
+        // Aplicar todos los filtros que tengan valores
+        const eventosFiltrados = datos.filter(evento => {
+            const cumpleUsuario = usuarios.length === 0 || usuarios.includes(evento.usuario_id)
+            const cumplePrograma = programas.length === 0 || programas.includes(evento.programa_id)
+            const cumpleEspacio = espacios.length === 0 || espacios.includes(evento.espacio_id)
+
+            return cumpleUsuario && cumplePrograma && cumpleEspacio
+        })
+        return eventosFiltrados
     }
 
     const handleResetFilters = () => {
         console.log("Reiniciando filtros ...")
         setSelectedUsuarios([])
+        setSelectedProgramas([])
+        setSelectedEspacios([])
         setEvents(allEvents)
     }
 
@@ -701,15 +715,14 @@ const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
         </style>
         )}
         {/* <Calendar */}
-        <GlobalStyles styles={{ // Cambiando el estilo del día para que al pasar el ratón por encima cambie de color
-            // '.rbc-month-view .rbc-date-cell > *:first-child:hover': {
-            '.rbc-month-view .rbc-date-cell > *:first-of-type:hover': {
-                // color: '#1976d2',
-                backgroundColor: 'grey',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-            }
-        }} />
+        <GlobalStyles styles={{ // Cambiando el estilo del número de día para que al pasar el ratón por encima cambie de color
+                '.rbc-month-view .rbc-date-cell > *:first-of-type:hover': {
+                    backgroundColor: 'grey',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                }
+            }} 
+        />
     <Box sx={{ flexGrow: 1 }}>  {/* equivale a width: "100%" */}
         <Grid container spacing={2} 
             direction={{
@@ -720,42 +733,111 @@ const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
             <Grid size={{ xs: 8, md: 3 }}>
                 <h2>Filtros</h2>
                 <Button onClick={handleResetFilters} variant="contained">Borrar filtros</Button>
-
-                    <Stack spacing={1} m={1}> 
-                        <FormControl fullWidth margin='dense'>
-                            <InputLabel id="select-label-usuarios_id">Usuarios</InputLabel>
-                            <Select
-                                // fullWidth
-                                labelId="select-label-usuarios_id"
-                                id="select-usuarios_id"
-                                multiple
-                                label="Usuarios"
-                                value={selectedUsuarios}
-                                onChange={handleChangeSelectedUsuarios}
-                                input={<OutlinedInput label="Tag" />} // Estilo borde exterior
-                                // renderValue indica cómo queremos mostrar esos datos en este caso un array selectedUsuarios
-                                // CON OBJETOS que es seleccionado como "selected"
-                                // Aquí usamos el array de objetos para mostrar solo los nombre_apellidos
-                                renderValue={(selected) => 
-                                    // selected.map((user) => user.nombre_apellidos).join(', ')
-                                    usuarios
-                                        .filter(u => selected.includes(u.usuario_id))
-                                        .map(u=> u.nombre_apellidos)
-                                        .join(", ")
-                                }
-                            >
-                                {usuarios.map((usuario) => (
-                                    <MenuItem key={usuario.usuario_id} value={usuario.usuario_id}>
-                                        {/* revisar si ese objeto está en el array por su usuario_id */}
-                                        {/* si fuese un array normal usaríamos selectedUsuarios.includes() */}
-                                        {/* <Checkbox checked={selectedUsuarios.some(user => user.usuario_id === usuario.usuario_id)} /> */}
-                                        <Checkbox checked={selectedUsuarios.includes(usuario.usuario_id)} />
-                                        <ListItemText primary={usuario.nombre_apellidos} />
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Stack>
+                <Stack spacing={1} m={3}> 
+                    <FormControl fullWidth margin='dense'>
+                        <InputLabel id="select-label-usuarios_id">Usuarios</InputLabel>
+                        <Select
+                            // fullWidth
+                            labelId="select-label-usuarios_id"
+                            id="select-usuarios_id"
+                            multiple
+                            label="Usuarios"
+                            value={selectedUsuarios}
+                            onChange={(e)=> handleChangeSelectedValues("usuarios", e)}
+                            // input={<OutlinedInput label="Tag" />} // Estilo borde exterior
+                            // renderValue indica cómo queremos mostrar esos datos en este caso un array selectedUsuarios
+                            // CON OBJETOS que es seleccionado como "selected"
+                            // Aquí usamos el array de objetos para mostrar solo los nombre_apellidos
+                            renderValue={(selected) => 
+                                // selected.map((user) => user.nombre_apellidos).join(', ')
+                                usuarios
+                                    .filter(u => selected.includes(u.usuario_id))
+                                    .map(u=> u.nombre_apellidos)
+                                    .join(", ")
+                            }
+                        >
+                            {usuarios.map((usuario) => (
+                                <MenuItem key={usuario.usuario_id} value={usuario.usuario_id}>
+                                    {/* revisar si ese objeto está en el array por su usuario_id */}
+                                    {/* si fuese un array normal usaríamos selectedUsuarios.includes() */}
+                                    {/* <Checkbox checked={selectedUsuarios.some(user => user.usuario_id === usuario.usuario_id)} /> */}
+                                    <Checkbox checked={selectedUsuarios.includes(usuario.usuario_id)} />
+                                    <ListItemText primary={usuario.nombre_apellidos} />
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Stack>
+                <Stack spacing={1} m={3}> 
+                    <FormControl fullWidth margin='dense'>
+                        <InputLabel id="select-label-programas_id">Programas</InputLabel>
+                        <Select
+                            // fullWidth
+                            labelId="select-label-programas_id"
+                            id="select-programas_id"
+                            multiple
+                            label="Programas"
+                            value={selectedProgramas}
+                            onChange={(e)=> handleChangeSelectedValues("programas", e)}
+                            // input={<OutlinedInput label="Tag" />} // Estilo borde exterior
+                            // renderValue indica cómo queremos mostrar esos datos en este caso un array selectedUsuarios
+                            // CON OBJETOS que es seleccionado como "selected"
+                            // Aquí usamos el array de objetos para mostrar solo los nombre_apellidos
+                            renderValue={(selected) => 
+                                // selected.map((user) => user.nombre_apellidos).join(', ')
+                                programas
+                                    .filter(u => selected.includes(u.programa_id))
+                                    .map(u=> u.descripcion)
+                                    .join(", ")
+                            }
+                        >
+                            {programas.map((programa) => (
+                                <MenuItem key={programa.programa_id} value={programa.programa_id}>
+                                    {/* revisar si ese objeto está en el array por su usuario_id */}
+                                    {/* si fuese un array normal usaríamos selectedUsuarios.includes() */}
+                                    {/* <Checkbox checked={selectedUsuarios.some(user => user.usuario_id === usuario.usuario_id)} /> */}
+                                    <Checkbox checked={selectedProgramas.includes(programa.programa_id)} />
+                                    <ListItemText primary={programa.descripcion} />
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Stack>
+                <Stack spacing={1} m={3}> 
+                    <FormControl fullWidth margin='dense'>
+                        <InputLabel id="select-label-espacios_id">Espacios</InputLabel>
+                        <Select
+                            // fullWidth
+                            labelId="select-label-espacios_id"
+                            id="select-espacios_id"
+                            multiple
+                            label="Espacios"
+                            value={selectedEspacios}
+                            onChange={(e)=> handleChangeSelectedValues("espacios", e)}
+                            // input={<OutlinedInput label="Tag" />} // Estilo borde exterior
+                            // renderValue indica cómo queremos mostrar esos datos en este caso un array selectedUsuarios
+                            // CON OBJETOS que es seleccionado como "selected"
+                            // Aquí usamos el array de objetos para mostrar solo los nombre_apellidos
+                            renderValue={(selected) => 
+                                // selected.map((user) => user.nombre_apellidos).join(', ')
+                                espacios
+                                    .filter(u => selected.includes(u.espacio_id))
+                                    .map(u=> u.descripcion)
+                                    .join(", ")
+                            }
+                        >
+                            {espacios.map((espacio) => (
+                                <MenuItem key={espacio.espacio_id} value={espacio.espacio_id}>
+                                    {/* revisar si ese objeto está en el array por su usuario_id */}
+                                    {/* si fuese un array normal usaríamos selectedUsuarios.includes() */}
+                                    {/* <Checkbox checked={selectedUsuarios.some(user => user.usuario_id === usuario.usuario_id)} /> */}
+                                    <Checkbox checked={selectedEspacios.includes(espacio.espacio_id)} />
+                                    <ListItemText primary={espacio.descripcion} />
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Stack>
             </Grid>
             <Grid size={{ xs: 12, md: 9 }}>
                 <DnDCalendar
@@ -764,30 +846,9 @@ const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
                         // fontSize: 'clamp(0.75rem, 1rem, 1.2rem)',  // Ajuste responsivo
                     //     minHeight: 'calc(100vh - 64px)',  // resta la altura del menu
                     }} 
-                        // cambiado a celdas más altas
-                        // style={{
-                        //     width: '1000',
-                        //     height: '100%',
-                        //     fontSize: 'clamp(0.75rem, 1vw, 1.2rem)', // Ajuste responsivo
-                        // }}
                     localizer={localizer}
                     culture='es'                                    // días mes, semana, día en español
                     events={events}                                 // Personalizando la visualizacion de eventos en el calendario usando el array events
-                    // events={
-                    //         selectedUsuarios.length === 0
-                    //             ?allEvents // Si no hay usuarios seleccionados, mostrar todo
-                    //             :allEvents.filter((evento) =>
-                    //                 selectedUsuarios.some((usuario) => evento.usuario_id === usuario.usuario_id)
-                    //         )
-                            
-                    //     // const eventosTMpFiltrados = allEvents.filter((evento) =>
-                    //     //     selectedUsuarios.some((usuario) => evento.usuario_id === usuario.usuario_id))
-                    //     // events.filter(ev => {
-                    //     // const day = new Date(ev.start).getDay();
-                    //     // debugger
-                    //     // return day >= 1 && day <= 5; // lunes a viernes
-                    // }
-                    // eventLimit={6} // no válido
                     selectable                                      // habilita la seleccion de celdas
                     views={['month', 'work_week', 'day', 'agenda']}
                     onView={handleViewChange}
@@ -797,21 +858,8 @@ const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
                     timeslots={saltosHora}
                     min={horaMinima}                                // Limitación hora mínima
                     max={horaMaxima}                                // Limitacion hora máxima
-                    // onSelectSlot={handleSelectSlot}                 // Crear nuevo evento
-                    
-                    //
                     // a modificar onSelectEvent en el futuro
                     onSelectEvent={handleSelectEvent}               // Editar evento existente
-
-
-                    // onEventDrop={handleEventDrop}                   // Permite hacer d&d con eventos, se ejecuta cuando arrastramos un evento y lo soltamos a otra posicion
-                    // draggableAccessor={() => true}                  // Indica si un evento puede ser movido mediante drag and drop.
-                    // permitir si un evento se puede mover o no a conveniencia mediante una condición
-                    // draggableAccessor={(event) => event.permiteMover === true}
-                    // resizable={false}                               // No permite ampliar/reducir eventos (su horario)
-                    // style={{ height: 700 }}
-                    // style={{ height: 1000 }} // cambiado a celdas más altas
-                    // style={{ height: "125%" }} // cambiado a celdas más altas
                     date={date}
                     view={view}
                     onNavigate={handleNavigate}
@@ -845,10 +893,7 @@ const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
                                 color: 'white',
                                 borderRadius: '4px',
                                 border: '1px solid black',
-                                // padding: '4px',
                                 padding: '2px',
-                                // minHeight: '100%',
-                                // fontSize: '60%'
                             }
                         }
                     }}
@@ -857,7 +902,6 @@ const EntityEventsCalendarComponent = ({ logged, setLogged, user } ) => {
                         previous: 'Ant.',
                         today: 'Hoy',
                         month: 'Mes',
-                        //   week: 'Semana',                       // No se usa porque usamos work_week
                         work_week: "Semana",                       // ponemos el texto Semana para work_week, sino aparecería "Work week"
                         day: 'Día',
                         agenda: 'Agenda',

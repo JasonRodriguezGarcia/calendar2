@@ -2,9 +2,14 @@ import React, {useEffect, useState} from "react";
 import { useNavigate } from 'react-router-dom';
 // import {createContext, useContext} from 'react';
 // import LoginContext from '../context/LoginContext';
-import Box from '@mui/material/Box';
+// import {
+//     Visibility,
+//     VisibilityOff,
+// }
+// from '@mui/icons-material';
 // MUI
 import {
+    Box, 
     Dialog,
     DialogTitle,
     DialogContent,
@@ -16,6 +21,8 @@ import {
     FormControl, 
     FormControlLabel, 
     FormLabel,
+    IconButton,
+    InputAdornment, 
     InputLabel,
     Input,
     RadioGroup,
@@ -78,9 +85,7 @@ const UsersCRUDComponent = ({ logged, setLogged, user, action }) => {
     const [minPasswordLength, setMinPasswordLength] = useState(10) // Longitud contraseña
     const [formTitle, setFormTitle] = useState('')
     const [formReadOnly, setFormReadOnly] = useState(false)
-    // const [api, setApi] = useState('')
-    // const [method, setMethod] = useState('')
-    
+    const [showPassword,setShowPassword] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
     const navigate = useNavigate();
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
@@ -429,7 +434,10 @@ const UsersCRUDComponent = ({ logged, setLogged, user, action }) => {
                         <Input
                             id="userpassword"
                             name="userpassword"
-                            type="password"
+                            // type="password"
+                            type={showPassword ? 'text' : 'password'}
+                            onMouseEnter={() => setShowPassword(true)}
+                            onMouseLeave={() => setShowPassword(false)}
                             autoComplete="password"
                             placeholder={`(mín. ${minPasswordLength} - máx. 15 car.)`}
                             required

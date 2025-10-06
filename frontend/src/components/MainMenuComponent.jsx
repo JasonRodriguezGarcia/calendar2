@@ -19,9 +19,7 @@ import logo from "../assets/images/erroaksartu.jpg"
 import { useScrollTrigger } from '@mui/material';
 import { useState } from 'react';
 
-// const pages = ['Eventos', 'Vacaciones', 'About'];
 const pages = ['Eventos', 'Vacaciones', 'Listados', 'About'];
-// termiar con lists
 const lists = ['Eventos entidad', 'Vacaciones personal', 'Tardes invierno', 'Contactos', ]
 const settings = ['Ver perfil', 'Modificar perfil', 'Cerrar sesión'];
 
@@ -127,18 +125,21 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                         }}
                     >
                         {/* LOGO */}
-                        <IconButton color="primary" aria-label="home">
-                            <HomeIcon                             
-                                style={{ 
-                                    height: 50,
-                                    fontSize: "3rem",
-                                    marginRight: 8,
-                                    display: 'flex',
-                                    // color: "white",
-                                    color: "#8BC000",
-                                    borderRadius: "10px",
-                            }}/>
-                        </IconButton>
+                        <Tooltip title="Inicio">
+                            <IconButton color="primary" aria-label="home">
+                                <HomeIcon
+                                    style={{ 
+                                        height: 50,
+                                        fontSize: "3rem",
+                                        marginRight: 8,
+                                        display: 'flex',
+                                        // color: "white",
+                                        color: "#8BC000",
+                                        borderRadius: "10px",
+                                    }}
+                                />
+                            </IconButton>
+                        </Tooltip>
                     </Typography>
                     <Typography
                         variant="h"
@@ -158,16 +159,18 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                         }}
                     >
                         {/* LOGO */}
-                        <img 
-                            src={logo} 
-                            alt="logo" 
-                            style={{ 
-                                height: 50, 
-                                marginRight: 8, 
-                                display: 'flex',
-                                borderRadius: "10px",
-                            }} 
-                        />
+                        <Tooltip title="Página web Erroak Sartu">
+                            <img 
+                                src={logo} 
+                                alt="logo" 
+                                style={{ 
+                                    height: 50, 
+                                    marginRight: 8, 
+                                    display: 'flex',
+                                    borderRadius: "10px",
+                                }} 
+                            />
+                        </Tooltip>
                     </Typography>
     {/* menu mobil */}
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }}}>
@@ -271,17 +274,20 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                         }}
                     >
                         {/* LOGO */}
-                        <IconButton color="primary" aria-label="home">
-                            <HomeIcon                             
-                                style={{ 
-                                    height: 35, 
-                                    // marginRight: 8, 
-                                    // display: 'flex',
-                                    // color: "white",
-                                    color: "#8BC000",
-                                    borderRadius: "10px",
-                            }}/>
-                        </IconButton>
+                        <Tooltip title="Inicio">
+                            <IconButton color="primary" aria-label="home">
+                                <HomeIcon
+                                    style={{ 
+                                        height: 35, 
+                                        // marginRight: 8, 
+                                        // display: 'flex',
+                                        // color: "white",
+                                        color: "#8BC000",
+                                        borderRadius: "10px",
+                                    }}
+                                />
+                            </IconButton>
+                        </Tooltip>
                     </Typography>
                     <Typography
                         variant="h5"
@@ -302,16 +308,18 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                         }}
                     >
                         {/* LOGO */}
-                        <img 
-                            src={logo} 
-                            alt="logo" 
-                            style={{ 
-                                height: 35, 
-                                marginRight: 8, 
-                                display: 'flex',
-                                borderRadius: "10px",
-                            }} 
-                        />
+                        <Tooltip title="Página web Erroak Sartu">
+                            <img 
+                                src={logo} 
+                                alt="logo"
+                                style={{ 
+                                    height: 35, 
+                                    marginRight: 8, 
+                                    display: 'flex',
+                                    borderRadius: "10px",
+                                }} 
+                            />
+                        </Tooltip>
                     </Typography>
     {/* MENU DESKTOP */}
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
@@ -369,34 +377,34 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                     </Menu>
             {/* USUARIO LOGEADO */}
                     <Box sx={{ flexGrow: 0, display: logged ? 'block' : 'none' }}>
-                        <Tooltip title="Abrir configuración">
-                            <Box sx={{ display: "flex", alignItems: "center"}}>
-                                <Box sx={{mx: 1}}>
-                                    {/* User */}
-                                    <Typography
-                                        variant="body1"
-                                        // sx={{ mx: 2, color: 'white', fontWeight: 'bold', backgroundColor: '#0072AD', px: 1.5, py: 0.5, borderRadius: 1 }}
-                                        sx={
-                                            (theme) => ({
-                                                fontSize: {
-                                                    xs: '10px',   // móviles
-                                                    sm: '10px',  // tablets
-                                                    md: '14px',  // escritorio
-                                                },
-                                                color: 'white', fontWeight: 'bold', backgroundColor: '#0072AD', px: 1.5, py: 0.5, borderRadius: 1 
-                                        })}
-                                    >
-                                        Usuario/a: {user.nombre_apellidos}
-                                    </Typography>
-                                </Box>
+                        <Box sx={{ display: "flex", alignItems: "center"}}>
+                            <Box sx={{mx: 1}}>
+                                {/* User */}
+                                <Typography
+                                    variant="body1"
+                                    // sx={{ mx: 2, color: 'white', fontWeight: 'bold', backgroundColor: '#0072AD', px: 1.5, py: 0.5, borderRadius: 1 }}
+                                    sx={
+                                        (theme) => ({
+                                            fontSize: {
+                                                xs: '10px',   // móviles
+                                                sm: '10px',  // tablets
+                                                md: '14px',  // escritorio
+                                            },
+                                            color: 'white', fontWeight: 'bold', backgroundColor: '#0072AD', px: 1.5, py: 0.5, borderRadius: 1 
+                                    })}
+                                >
+                                    Usuario/a: {user.nombre_apellidos}
+                                </Typography>
+                            </Box>
+                            <Tooltip title="Abrir configuración">
                                 <IconButton onClick={handleOpenUserMenu}
-                                 sx={{ p: 0 }}
+                                sx={{ p: 0 }}
                                 >
                                     <Avatar alt={user.nombre_apellidos} src="/static/images/avatar/2.jpg" />
                                     {/* <Avatar alt={user.nombre_apellidos} src="/static/images/personicons/rosa.jpg" /> */}
                                 </IconButton>
-                            </Box >
-                        </Tooltip>
+                            </Tooltip>
+                        </Box >
                         <Menu
                             sx={{ mt: '45px' }}         // Aplica margen superior de 45px (espaciado del botón que abre el menú)
                             id="menu-appbar"            // ID para accesibilidad

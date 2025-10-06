@@ -308,6 +308,7 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
         >
             <Toolbar />
             <h2>VACACIONES AÑO: {date.getFullYear()} (Dias de vac. en uso: {diasUsadosVacaciones})</h2>
+            <p>(Clickar en un día para añadir/quitar)</p>
 
             <Calendar
                 localizer={localizer}

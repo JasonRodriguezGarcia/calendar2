@@ -1,6 +1,8 @@
 import MainMenuComponent from '../components/MainMenuComponent';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Box, Toolbar, Typography } from '@mui/material';
+import imagenFondo from "../assets/images/cuerda.jpg";
 const MainPage = ({ logged }) => {
 
     const navigate = useNavigate();
@@ -29,11 +31,32 @@ const MainPage = ({ logged }) => {
     }, [])
 
     return (
-        <div>
+        // <div>
+        <Box sx={{
+            backgroundImage: `url(${imagenFondo})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            minHeight: "100vh",
+
+        }}>
             <MainMenuComponent logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />
-            <h1 style={{paddingTop: "100px"}}>Erroak Sartu</h1>
+            <Toolbar />
+            <Typography variant='h3'
+                sx={{
+                    width: { xs: '90%', sm: "30%" },
+                    mx: "auto", my: 4,
+                    borderRadius: "10px",
+                    // backgroundColor: "white",
+                    backgroundColor: '#0072AD',
+                    color: "#8BC000",
+                }}
+            >
+                Intranet Erroak Sartu
+            </Typography>
+            {/* <h1 style={{paddingTop: "100px"}}>Erroak Sartu</h1> */}
             {/* <h3 style={{paddingTop: "100px"}}>Logeado/a: {logeado ? "Si" : "No"}</h3> */}
-        </div>
+        </Box>
+        // </div>
     )
 }
 

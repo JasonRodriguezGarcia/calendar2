@@ -158,7 +158,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             // Llamando a backend para presentar los datos
             try {
                 const response = await fetch(
-                //   `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${start.toISOString()}/${end.toISOString()}`
                   `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventosuser/${user.id}/${start.toISOString()}/${end.toISOString()}`
                 );
                 const data = await response.json();
@@ -324,13 +323,7 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                     console.log("Respuesta backend evento post: ", data)
                     if (data.result === "Evento ya existente") { // PRACTICAMENTE IMPOSIBLE
                         console.log("OJO EVENTO YA EXISTENTE??")
-                        // setErrorMessage("Evento ya existente")
-                        // setDialogError(true)
-                        // return
                     } else if (data.result === "Espacio ya existente") {
-                        // setErrorMessage("Espacio OCUPADO, elegir otro")
-                        // setDialogError(true)
-                        // return
                         alreadyExistSpaces.push(eventDataRepeated)
                         console.log("alreadyExistSpaces: ", alreadyExistSpaces)
                     } else {
@@ -357,9 +350,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         setIsEditing(false)
         setSelectedEvent(null)
         setDialogOpen(true)
-        // setEventDataRepeatStart('')
-        // setEventDataRepeatEnd('')
-        // setDialogOpen(false)
         setDialogRepeatOpen(false)
     }
 
@@ -663,23 +653,13 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         }} />
         <DnDCalendar
             style= {{height: 1000, fontSize: 'clamp(0.75rem, 1vw, 1.2rem)',}}
-                // style={{
-                //     width: '1000',
-                //     height: '100%',
-                //     fontSize: 'clamp(0.75rem, 1vw, 1.2rem)', // Ajuste responsivo
-                // }}
             localizer={localizer}
             culture='es'                                    // días mes, semana, día en español
             events={events}                                 // Personalizando la visualizacion de eventos en el calendario usando el array events
-            // events={events.filter(ev => {
-            //     const day = new Date(ev.start).getDay();
-            //     return day >= 1 && day <= 5; // lunes a viernes
-            // })}
             selectable                                      // habilita la seleccion de celdas
             views={['month', 'work_week', 'day', 'agenda']}
             onView={handleViewChange}
             defaultView='work_week'
-            // defaultView='month'
             step={saltosTiempo}
             timeslots={saltosHora}
             min={horaMinima}                                // Limitación hora mínima
@@ -691,9 +671,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
             // permitir si un evento se puede mover o no a conveniencia mediante una condición
             // draggableAccessor={(event) => event.permiteMover === true}
             resizable={false}                               // No permite ampliar/reducir eventos (su horario)
-            // style={{ height: 700 }}
-            // style={{ height: 1000 }} // cambiado a celdas más altas
-            // style={{ height: "125%" }} // cambiado a celdas más altas
             date={date}
             view={view}
             onNavigate={handleNavigate}
@@ -736,7 +713,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                 previous: 'Ant.',
                 today: 'Hoy',
                 month: 'Mes',
-                //   week: 'Semana',                            // No se usa porque usamos work_week
                 work_week: "Semana",                          // ponemos el texto Semana para work_week, sino aparecería "Work week"
                 day: 'Día',
                 agenda: 'Agenda',
@@ -861,8 +837,6 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
                                 slotProps={{ textField: { fullWidth: true, margin: 'dense' }, sx: { mt: 1 } }} // forma moderna y sin avisos en consola
                             />
                         </Stack>
-
-                    {/* ¿Estás seguro de que deseas Repetir el evento <strong>{selectedEvent?.title}</strong>? */}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleSaveRepeat} color="error" variant="contained">Repetir</Button>

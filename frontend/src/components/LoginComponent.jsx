@@ -20,7 +20,7 @@ import {
 
 } from '@mui/material';
 
-const LoginComponent = ({ logged, setLogged }) => {
+const LoginComponent = ({ logged, setLogged, user, setUser }) => {
 
     const [userName, setUserName] = useState("")
     const [userEmail, setUserEmail] = useState("")
@@ -40,7 +40,6 @@ const LoginComponent = ({ logged, setLogged }) => {
         }
     }, [errorMessage])
 
-    const handleSignUp = () => {}
     const handleUserPassword = (e) => {
         if (e.target.value.length < passwordLength)
             setErrorMessage("Contraseña demasiado corta")
@@ -86,9 +85,16 @@ const LoginComponent = ({ logged, setLogged }) => {
                 } else {
                     // Crear localStorage
                     const resultado = data[0]
-                    localStorage.setItem("id", resultado.usuario_id)
-                    localStorage.setItem("user", resultado.nombre_apellidos)
-                    localStorage.setItem("password", resultado.password)
+                    const usuario = {
+                        id: resultado.usuario_id,
+                        password: resultado.password,
+                        nombre_apellidos: resultado.nombre_apellidos
+                    }
+                    localStorage.setItem("usuario", JSON.stringify(usuario))
+                    setUser(usuario)
+                    // localStorage.setItem("id", resultado.usuario_id)
+                    // localStorage.setItem("user", resultado.nombre_apellidos)
+                    // localStorage.setItem("password", resultado.password)
                     setLogged(true)
                     navigate('/', { replace: true }) // no deja retroceder en el navegador
                 }

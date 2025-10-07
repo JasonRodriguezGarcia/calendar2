@@ -4,10 +4,10 @@ import MainMenuComponent from '../components/MainMenuComponent';
 import { useNavigate } from 'react-router-dom';
 import LoginComponent from '../components/LoginComponent';
 
-const LoginPage = () =>{
+const LoginPage = ({ logged, setLogged, user, setUser }) =>{
     // const navigate = useNavigate();
-    const [logeado, setLogeado] = useState(false)
-    const [usuario, setUsuario] = useState({})
+//    // const [logeado, setLogeado] = useState(false)
+//    // const [usuario, setUsuario] = useState({})
 
     // useEffect(()=> {
     //     const checklogeado = () => {
@@ -54,8 +54,8 @@ const LoginPage = () =>{
 
     return (
         <>
-            <MainMenuComponent logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />
-            <LoginComponent logged={logeado} setLogged={setLogeado} /> {/* user={usuario} setUser={setUsuario} /> */}
+            <MainMenuComponent logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
+            <LoginComponent logged={logged} setLogged={setLogged} user={user} setUser={setUser} /> {/* user={usuario} setUser={setUsuario} /> */}
         </>
     )
 }

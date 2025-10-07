@@ -55,7 +55,7 @@ const saltosHora = 1 // timeslots={4}
 const horaMinima = new Date(1970, 1, 1, 7, 0) // Limitación hora mínima
 const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
 
-const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
+const EventsCalendarComponent = ({ logged, user } ) => {
     
     const [events, setEvents] = useState([])
     const [dialogOpen, setDialogOpen] = useState(false)
@@ -181,9 +181,9 @@ const EventsCalendarComponent = ({ logged, setLogged, user } ) => {
         fetchEventos()
     }, [date, user])
 
-    // Si no está logeado se sale del componente
-    if (!logged) return null    // con esta opción ni siquiera se muestra brevemente EventsCalendarComponent
-        // navigate("/")        // con esta opción se muestra brevemente y luego pasa a "/"
+    // // Si no está logeado se sale del componente
+    // if (!logged) return null    // con esta opción ni siquiera se muestra brevemente EventsCalendarComponent
+    //     // navigate("/")        // con esta opción se muestra brevemente y luego pasa a "/"
 
     const handleNavigate = (newDate) => { // Permite desplazar de fecha del calendario
         setDate(newDate)

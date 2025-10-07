@@ -61,7 +61,7 @@ const tardes_invierno = [
     {tarde_id: 4, descripcion: "Jueves"},
     {tarde_id: 5, descripcion: "Viernes"},
 ]
-const UsersCRUDComponent = ({ logged, setLogged, user, action }) => {
+const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
 
     // const [isValidToken, setIsValidToken] = useState(false)
     // const [userName, setUserName] = useState("")
@@ -345,13 +345,23 @@ const UsersCRUDComponent = ({ logged, setLogged, user, action }) => {
                 // navigate('/')
                 return
             }
-            if (action === "create") {
-                // Crear localStorage
-                localStorage.setItem("id", data.id)
+            const usuario = {
+                id: action === "create" ? data.id : data.usuario_id,
+                password: userPassword,
+                nombre_apellidos: userNombre_Apellidos,
             }
-            localStorage.setItem("user", userNombre_Apellidos)
-            localStorage.setItem("password", userPassword)
+
+            // Crear/modificar localStorage
+            localStorage.setItem("usuario", JSON.stringify(usuario))
+
+            // if (action === "create") {
+            //     // localStorage.setItem("id", data.id)
+            //     usuario.id = data.id
+            // }
+            // localStorage.setItem("user", userNombre_Apellidos)
+            // localStorage.setItem("password", userPassword)
             setLogged(true)
+            setUser(usuario)
             navigate('/', { replace: true })
                 // setIsValidToken(true)
                 // setLogged(true)       

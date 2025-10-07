@@ -73,7 +73,7 @@ const WinterAfternoonsComponent = ({ logged, user }) => {
         console.log("usuarios: ", events, usuarios)
     }, [usuarios])
 
-    if (!logged) return null
+    // if (!logged) return null
 
     return (
     <>

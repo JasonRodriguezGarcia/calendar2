@@ -110,7 +110,8 @@ const HolidaysViewComponent = ({ logged, user }) => {
         // console.log("eventos y usuarios: ", events, usuarios)
         // console.log("actualMonthDays: ", actualMonthDays)
     }, [events, usuarios, actualMonthDays])
-    if (!logged) return null;
+
+    // if (!logged) return null;
 
     return (
     <>

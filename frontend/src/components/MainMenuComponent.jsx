@@ -53,9 +53,10 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                 navigate("/editprofile");
                 break;
             case "Cerrar sesión":
-                localStorage.removeItem("id")
-                localStorage.removeItem("user")
-                localStorage.removeItem("password")
+                // localStorage.removeItem("id")
+                // localStorage.removeItem("user")
+                // localStorage.removeItem("password")
+                localStorage.removeItem("usuario")
                 setLogged(false)
                 setUser({})
                 navigate("/", { replace: true });

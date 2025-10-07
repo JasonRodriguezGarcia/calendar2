@@ -47,7 +47,7 @@ const localizer = dateFnsLocalizer({
     locales,
 });
 
-const HolidaysComponent = ({ logged, setLogged, user } ) => {
+const HolidaysComponent = ({ logged, user } ) => {
 
     const navigate = useNavigate();
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
@@ -145,8 +145,8 @@ const HolidaysComponent = ({ logged, setLogged, user } ) => {
 
     // Esto se tiene que ejecutar detrás de los useEffect
     // Si no está logeado se sale del componente
-    if (!logged) return null    // con esta opción ni siquiera se muestra brevemente EventsCalendarComponent
-        // navigate("/")        // con esta opción se muestra brevemente y luego pasa a "/"
+    // if (!logged) return null    // con esta opción ni siquiera se muestra brevemente EventsCalendarComponent
+    //     // navigate("/")        // con esta opción se muestra brevemente y luego pasa a "/"
 
     const handleNavigate = (newDate) => { // Permite desplazar de fecha del calendario, parámetro newDate que es la fecha a la que se desplaza
         console.log("Navegando a nueva fecha:", newDate);

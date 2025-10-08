@@ -603,12 +603,13 @@ const EventsCalendarComponent = ({ logged, user } ) => {
     };
 
     const handleCopyToClipboard = () => {
-        if (!errorMessage || errorMessage.length === 0) return
+        if (!errorMessageRepeated || errorMessageRepeated.length === 0) return
 
-        const formattedErrors = errorMessage
+        const formattedErrors = errorMessageRepeated
             .map(error => new Date(error.start).toLocaleDateString('es-ES'))
             .join('\n')
-
+        console.log("formattedErrors: ", formattedErrors)
+        debugger
         navigator.clipboard.writeText(formattedErrors)
             .then(() => {
                 console.log('Copiado al portapapeles')

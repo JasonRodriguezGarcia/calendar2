@@ -2,7 +2,8 @@ import MainMenuComponent from '../components/MainMenuComponent';
 import { Navigate, useNavigate } from 'react-router-dom';
 import PasswordRecoveryComponent from '../components/PasswordRecoveryComponent';
 import { Box } from '@mui/material';
-import imagenFondo from "../assets/images/erroak-page.jpeg";
+// import imagenFondo from "../assets/images/erroak-page.jpeg";
+import imagenFondo from "../assets/images/cuerda.jpg";
 
 const PasswordRecoveryPage = ({ logged, setLogged, user, setUser }) =>{
 

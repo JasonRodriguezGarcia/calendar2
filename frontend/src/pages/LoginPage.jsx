@@ -2,7 +2,8 @@ import { Navigate } from 'react-router-dom';
 import MainMenuComponent from '../components/MainMenuComponent';
 import LoginComponent from '../components/LoginComponent';
 import { Box } from '@mui/material';
-import imagenFondo from "../assets/images/erroak-page.jpeg";
+// import imagenFondo from "../assets/images/erroak-page.jpeg";
+import imagenFondo from "../assets/images/cuerda.jpg";
 
 const LoginPage = ({ logged, setLogged, user, setUser }) =>{
 

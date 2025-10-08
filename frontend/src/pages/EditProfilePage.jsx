@@ -2,7 +2,8 @@ import MainMenuComponent from '../components/MainMenuComponent';
 import { Navigate, useNavigate } from 'react-router-dom';
 import UsersCRUDComponent from '../components/UsersCRUDComponent';
 import { Box, Toolbar } from '@mui/material';
-import imagenFondo from "../assets/images/erroak-page.jpeg";
+// import imagenFondo from "../assets/images/erroak-page.jpeg";
+import imagenFondo from "../assets/images/cuerda.jpg";
 
 const EditProfilePage = ({ logged, setLogged, user, setUser }) =>{
 

@@ -1,8 +1,8 @@
 import MainMenuComponent from '../components/MainMenuComponent';
 import { Navigate, useNavigate } from 'react-router-dom';
 import UsersCRUDComponent from '../components/UsersCRUDComponent';
-
-import { Toolbar } from '@mui/material';
+import { Box, Toolbar } from '@mui/material';
+import imagenFondo from "../assets/images/erroak-page.jpeg";
 
 const ProfilePage = ({ logged, setLogged, user, setUser }) =>{
 
@@ -14,9 +14,16 @@ const ProfilePage = ({ logged, setLogged, user, setUser }) =>{
 
     return (
         <>
+        <Box sx={{
+            backgroundImage: `url(${imagenFondo})`,
+            backgroundSize: "cover",
+            minHeight: "100vh",
+            backgroundPosition: "top center",
+        }}>
             <MainMenuComponent logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
             <Toolbar /> {/* Añadiendo Toolbar vacío justo después, para que actúe como "espaciador" */}
             <UsersCRUDComponent logged={logged} setLogged={setLogged} user={user} setUser={setUser} action="read" />
+        </Box>
         </>
     )
 }

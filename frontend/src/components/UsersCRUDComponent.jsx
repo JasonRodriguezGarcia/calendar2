@@ -232,7 +232,7 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
             navigate(`/`, { replace: true });
             return
         }
-        if (userEmail.length < 7) {
+        if (userEmail.length < 7 || !userEmail.includes("@erroak.sartu.org")) {
             setErrorMessage("Introduzca email correcto")
             return
         }
@@ -244,6 +244,7 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
             setErrorMessage("Nombre y Apellidos más largo")
             return
         }
+
         try {
             console.log("paso por hadleSignUp")
             const userTmp = {
@@ -312,7 +313,7 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: '#f0f0f0',
+                // backgroundColor: '#f0f0f0',
                 px: 2,
             }}
         >
@@ -333,6 +334,7 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                     border: "1px solid grey",
                     borderRadius: '10px',
                     boxShadow: '10px 10px 15px 5px grey',
+                backgroundColor: '#f0f0f0',
                 }}
             >
                 <div>

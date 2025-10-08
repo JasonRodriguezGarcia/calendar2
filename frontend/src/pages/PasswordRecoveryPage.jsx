@@ -1,6 +1,8 @@
 import MainMenuComponent from '../components/MainMenuComponent';
 import { Navigate, useNavigate } from 'react-router-dom';
 import PasswordRecoveryComponent from '../components/PasswordRecoveryComponent';
+import { Box } from '@mui/material';
+import imagenFondo from "../assets/images/erroak-page.jpeg";
 
 const PasswordRecoveryPage = ({ logged, setLogged, user, setUser }) =>{
 
@@ -12,8 +14,16 @@ const PasswordRecoveryPage = ({ logged, setLogged, user, setUser }) =>{
 
     return (
         <>
+        <Box sx={{
+            backgroundImage: `url(${imagenFondo})`,
+            backgroundSize: "cover",
+            minHeight: "100vh",
+            backgroundPosition: "top center",
+        }}>
+
             <MainMenuComponent logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
             <PasswordRecoveryComponent logged={logged} setLogged={setLogged} /> {/* user={usuario} setUser={setUsuario} /> */}
+        </Box>
         </>
     )
 }

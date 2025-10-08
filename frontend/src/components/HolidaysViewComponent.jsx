@@ -90,8 +90,8 @@ const HolidaysViewComponent = ({ logged, user }) => {
 
       // Construir filas cuando usuarios esté listo
     useEffect(() => {
-        if (usuarios.length === 0 || events.length === 0) return;
-        // if (usuarios.length === 0) return;
+        // if (events.length === 0) return
+        if (usuarios.length === 0) return
 
         const tempRows = usuarios.map(usuario => {
             // añadir filtro para que filtre también por la fecha del mes en uso en date

@@ -91,7 +91,7 @@ const PasswordRecoveryComponent = ({ logged, setLogged }) => {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: '#f0f0f0',
+                // backgroundColor: '#f0f0f0',
                 px: 2,
             }}
         >
@@ -112,6 +112,7 @@ const PasswordRecoveryComponent = ({ logged, setLogged }) => {
                 border: "1px solid grey",
                 borderRadius: '10px',
                 boxShadow: '10px 10px 15px 5px grey',
+                backgroundColor: '#f0f0f0',
                 }}
             >
                 <Typography variant="h4" component="h3" sx={{ color: "black"}}>

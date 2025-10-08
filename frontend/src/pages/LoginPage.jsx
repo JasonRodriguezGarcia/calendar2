@@ -1,56 +1,13 @@
-import { useState, useEffect } from 'react';
-import EventsCalendarComponent from '../components/EventsCalendarComponent';
+import { Navigate } from 'react-router-dom';
 import MainMenuComponent from '../components/MainMenuComponent';
-import { useNavigate } from 'react-router-dom';
 import LoginComponent from '../components/LoginComponent';
 
 const LoginPage = ({ logged, setLogged, user, setUser }) =>{
-    // const navigate = useNavigate();
-//    // const [logeado, setLogeado] = useState(false)
-//    // const [usuario, setUsuario] = useState({})
 
-    // useEffect(()=> {
-    //     const checklogeado = () => {
-    //         const user = localStorage.getItem("user")
-    //         const password = localStorage.getItem("password")
-    //         console.log("Language localstorage: ", user, password)
-    //         debugger
-    //         if (user!== null && password!== null) {
-    //             // lo busca en backend y si todo ok
-    //             setLogeado(true)
-    //             setUsuario(user)
-    //         }
-    //         else {
-
-    //             setLogeado(false)
-    //             navigate(`/`);
-    //             // localStorage.setItem("user", "Pepe")
-    //             // localStorage.setItem("password", "paswol")
-    //         }
-    //     }
-
-    //     checklogeado()
-    // }, [])
-    // useEffect(()=> {
-    //     const checklogeado = () => {
-    //         const nombre_apellidos = localStorage.getItem("user")
-    //         const password = localStorage.getItem("password")
-    //         console.log("Language localstorage: ", nombre_apellidos, password)
-    //         // debugger
-    //         if (nombre_apellidos!== null && password!== null) {
-    //             // lo busca en backend y si todo ok
-    //             setLogeado(true)
-    //             setUsuario({nombre_apellidos: nombre_apellidos, password: password})
-    //             console.log("Usuario: ", usuario.nombre_apellidos, usuario.password)
-    //         }
-    //         else {
-    //             setLogeado(false)
-    //             navigate(`/`);
-    //         }
-    //     }
-
-    //     checklogeado()
-    // }, [])
+    if (logged)    // con esta opción ni siquiera se muestra brevemente el siguiente Componente
+        // Esto interrumpe el renderizado del componente y lo redirige inmediatamente. 
+        // No se ejecuta código de más, ni se renderiza MainMenuComponent ni el siguiente Componente
+        return <Navigate to="/" replace /> // navigate(`/`, { replace: true }) solo puede ser usado en useEffect
 
     return (
         <>

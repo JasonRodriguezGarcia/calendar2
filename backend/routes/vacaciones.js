@@ -42,10 +42,10 @@ router.get('/vacaciones/count/:user/:anio', async(req, res) => {
 
 // /api/v1/erroak/vacaciones/:user/:year/:month
 // Devuelve los datos de las vacaciones de un usuario en un año y mes
-router.get('/vacaciones/:user/:anio/:mes/:mode', async(req, res) => {
-    const {user, anio, mes, mode} = req.params
-    console.log("Imprimo en getVacaciones: user, anio, mes, mode: ", user, anio, mes, mode)
-    const vacaciones = await getVacaciones(user, anio, mes, mode);
+router.get('/vacaciones/:user/:start/:end/:mode', async(req, res) => {
+    const {user, start, end, mode} = req.params
+    console.log("Imprimo en getVacaciones: user, start, end, mode: ", user, start, end, mode)
+    const vacaciones = await getVacaciones(user, start, end, mode);
     console.log(vacaciones);
     res.json (vacaciones)
 })

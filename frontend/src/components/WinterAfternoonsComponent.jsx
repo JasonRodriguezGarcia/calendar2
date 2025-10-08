@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import {
     Box,
     Stack,
-    Button,
     Typography,
     Toolbar,
     Tooltip,
@@ -13,15 +12,14 @@ import {
     TableHead,
     TableRow,
     useTheme,
-    Paper, 
 } from '@mui/material';
 import VpnKeyIcon from '@mui/icons-material/VpnKey'; // llave
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive'; // sirena
 
 const WinterAfternoonsComponent = ({ logged, user }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER;
-    const theme = useTheme();
 
+    const theme = useTheme();
     const [events, setEvents] = useState([])
     const [usuarios, setUsuarios] = useState([])
     const [headTableDays, setHeadTableDays] = useState([
@@ -49,7 +47,7 @@ const WinterAfternoonsComponent = ({ logged, user }) => {
         const maxUsuarios = Math.max(...columnasPorDia.map(col => col.length))
 
         // Paso 4: Transponer la matriz para que cada fila tenga 5 columnas
-        const filas = [];
+        const filas = []
         for (let i = 0; i < maxUsuarios; i++) {
             const fila = []
             for (let j = 0; j < 5; j++) {
@@ -72,8 +70,6 @@ const WinterAfternoonsComponent = ({ logged, user }) => {
     useEffect(() => {
         console.log("usuarios: ", events, usuarios)
     }, [usuarios])
-
-    // if (!logged) return null
 
     return (
     <>
@@ -122,24 +118,22 @@ const WinterAfternoonsComponent = ({ logged, user }) => {
                             >
                                 {fila.map((el, index) => (
                                     <TableCell key={index} sx={{
-                                        border: '1px solid rgba(224, 224, 224, 1)', // borde completo
-                                        padding: '8px',
-                                        fontSize: {
-                                        xs: '6px',
-                                        sm: '10px',
-                                        md: '14px',
-                                        },
-                                    }}
+                                            border: '1px solid rgba(224, 224, 224, 1)', // borde completo
+                                            padding: '8px',
+                                            fontSize: {
+                                            xs: '6px',
+                                            sm: '10px',
+                                            md: '14px',
+                                            },
+                                        }}
                                     >
                                         {el ? (
                                             <>
                                                 <Box sx={{ display: "flex", flexDirection: "row", alignItems: "start" }}>
                                                     {el.nombre_apellidos}
-                                                    {/* {el.alarma && <AlarmIcon sx={{ fontSize: 16, ml: 0.5 }} />} */}
                                                     {el.alarma && (
                                                         <Tooltip title="Tiene alarma" arrow>
                                                             <NotificationsActiveIcon 
-                                                            // sx={{ fontSize: 16, ml: 0.5, color: "red" }} 
                                                                 sx={{
                                                                     ml: 0.5, 
                                                                     color: "red",
@@ -155,7 +149,6 @@ const WinterAfternoonsComponent = ({ logged, user }) => {
                                                     {el.llave && (
                                                         <Tooltip title="Tiene llave" arrow>
                                                             <VpnKeyIcon 
-                                                            // sx={{ fontSize: 16, ml: 0.5, color: "green" }}
                                                                 sx={{
                                                                     ml: 0.5, 
                                                                     color: "green",
@@ -170,23 +163,21 @@ const WinterAfternoonsComponent = ({ logged, user }) => {
                                                     )}
                                                     -{el.nombre_centro && (
                                                         <Typography
-                                                            // sx={{ fontSize: 16, ml: 0.5, color: "green" }}
-                                                                sx={{
-                                                                    ml: 0.5, 
-                                                                    // color: "green",
-                                                                    fontSize: {
-                                                                    xs: '6px',
-                                                                    sm: '10px',
-                                                                    md: '14px',
-                                                                    },
-                                                                }}
+                                                            sx={{
+                                                                ml: 0.5, 
+                                                                fontSize: {
+                                                                xs: '6px',
+                                                                sm: '10px',
+                                                                md: '14px',
+                                                                },
+                                                            }}
                                                         >
                                                             {el.nombre_centro}
                                                         </Typography>
                                                     )}
                                                 </Box>
-                                            </>
-                                            ) : ""
+                                            </>)
+                                            : ""
                                         }
                                     </TableCell>
                                 ))}

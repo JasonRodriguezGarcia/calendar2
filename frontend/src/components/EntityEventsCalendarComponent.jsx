@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
-import { de, es } from 'date-fns/locale';
+import { es } from 'date-fns/locale';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 import {
@@ -32,7 +32,6 @@ import {
     Grid,
     InputLabel,
     ListItemText,
-    OutlinedInput,
     Select,
     Stack,
     Toolbar, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
@@ -61,12 +60,13 @@ const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
 
 const EntityEventsCalendarComponent = ({ logged, user } ) => {
     
+    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
+    
     const [events, setEvents] = useState([])
     const [allEvents, setAllEvents] = useState([])
     const [dialogOpen, setDialogOpen] = useState(false)
     const [eventData, setEventData] = useState({})
     const [date, setDate] = useState(new Date())
-    // const [view, setView] = useState(Views.WORK_WEEK)     // POR DEFECTO VISTA SEMANA LABORAL
     const [view, setView] = useState(Views.MONTH)     // POR DEFECTO VISTA MES
     const [isEditing, setIsEditing] = useState(false)
     const [selectedEvent, setSelectedEvent] = useState(null)
@@ -86,10 +86,6 @@ const EntityEventsCalendarComponent = ({ logged, user } ) => {
     const [selectedUsuarios, setSelectedUsuarios] = useState([])
     const [selectedProgramas, setSelectedProgramas] = useState([])
     const [selectedEspacios, setSelectedEspacios] = useState([])
-
-    const navigate = useNavigate();
-    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
-
 
     useEffect(() => {
         const getNewEventFormData = async () => {
@@ -192,10 +188,6 @@ const EntityEventsCalendarComponent = ({ logged, user } ) => {
         }
         fetchEventos()
     }, [date, user])
-
-    // // Si no está logeado se sale del componente
-    // if (!logged) return null    // con esta opción ni siquiera se muestra brevemente EventsCalendarComponent
-    //     // navigate("/")        // con esta opción se muestra brevemente y luego pasa a "/"
 
     const handleNavigate = (newDate) => { // Permite desplazar de fecha del calendario
         setDate(newDate)

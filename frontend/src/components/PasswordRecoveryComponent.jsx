@@ -9,25 +9,20 @@ import {
   DialogActions,
   Typography,
   Button,
-  TextField,
-  MenuItem,
   FormControl, 
   FormLabel,
-  InputLabel,
   Input,
-  Select,
   Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 
 } from '@mui/material';
 
 const PasswordRecoveryComponent = ({ logged, setLogged }) => {
+    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
 
-    // const [userName, setUserName] = useState("")
     const [userEmail, setUserEmail] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
     const [dialogRecovery, setDialogRecovery]= useState(false)
     const navigate = useNavigate();
-    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
 
     useEffect(()=> {
         if (errorMessage) {
@@ -37,16 +32,12 @@ const PasswordRecoveryComponent = ({ logged, setLogged }) => {
             return () => clearTimeout(intervalo)
         }
     }, [errorMessage])
-console.log("logged: ", logged)
-useEffect(() => {
-    if (logged) {
-        navigate("/", { replace: true });
-    }
-}, [logged, navigate]); // se ejecuta al menos una vez, justo después del primer render, y también cada vez que logged cambie.
-
-    if (logged) 
-        // navigate("/", { replace: true })
-        return null //Sin el return null, podrías ver el formulario "parpadear" antes de redirigir.
+    console.log("logged: ", logged)
+    useEffect(() => {
+        if (logged) {
+            navigate("/", { replace: true });
+        }
+    }, [logged, navigate]); // se ejecuta al menos una vez, justo después del primer render, y también cada vez que logged cambie.
 
     const handlePasswordRecovery = async (e) => {
         e.preventDefault()
@@ -57,7 +48,6 @@ useEffect(() => {
 
             try {
                 const user = {
-                    // username: userName,
                     useremail: userEmail,
                 }
                 // fetch validate
@@ -77,15 +67,6 @@ useEffect(() => {
                 } else {
                     const {usuario_id} = data[0]
                     setDialogRecovery(true)
-                    // console.log("Recibido password: ", data[0].password)
-                    // // Crear localStorage
-                    // const resultado = data[0]
-                    // localStorage.setItem("id", resultado.usuario_id)
-                    // localStorage.setItem("user", resultado.nombre_apellidos)
-                    // localStorage.setItem("password", resultado.password)
-                    // setLogged(true)
-
-                    // navigate('/', { replace: true })
                 }
 
             } catch (error) {
@@ -118,7 +99,6 @@ useEffect(() => {
                 onSubmit={(e)=> handlePasswordRecovery(e)}
                 sx={{
                 heigth: "100vh",
-                // width: { xs: '90%', sm: 320 },
                 width: { xs: '90%', sm: "30%" },
                 mx: 'auto', // margin left & right
                 my: 4, // margin top & bottom
@@ -132,8 +112,6 @@ useEffect(() => {
                 border: "1px solid grey",
                 borderRadius: '10px',
                 boxShadow: '10px 10px 15px 5px grey',
-                // boxShadow: 5,
-                // backgroundColor: "#339fff"
                 }}
             >
                 <Typography variant="h4" component="h3" sx={{ color: "black"}}>
@@ -154,7 +132,6 @@ useEffect(() => {
                     </Stack>
                 </FormControl>
                 <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 /* margin top */ }}>Recuperar contraseña</Button>
-                {/* <Button type="submit" id="boton2" name="signup" sx={{ mt: 1 }}>SignUP</Button> */}
 
                 {errorMessage &&                 
                     <Typography level="body-sm" color="danger" fontWeight="bold" fontSize="1em">{errorMessage}</Typography>
@@ -166,8 +143,6 @@ useEffect(() => {
                         </Typography>
                     </DialogTitle>
                     <DialogContent>
-                            {/* <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
-                            </Stack> */}
                         <DialogContent>
                             Se ha enviado un link de recuperación de contraseña al correo electrónico {userEmail}.
                         </DialogContent>

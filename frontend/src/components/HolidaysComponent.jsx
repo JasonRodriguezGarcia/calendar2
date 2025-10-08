@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
-// import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { es } from 'date-fns/locale';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
-// import addMonths from 'date-fns/addMonths';
 import {
     startOfWeek,
     endOfWeek,
@@ -18,26 +16,9 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 // MUI
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    TextField,
-    MenuItem,
-    FormControl, 
-    InputLabel,
-    Select,
-    Stack,
     Toolbar,
     Box, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 } from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { es as localeEs } from 'date-fns/locale';
-
-// const DnDCalendar = withDragAndDrop(Calendar);
 const locales = { es };
 const localizer = dateFnsLocalizer({
     format,
@@ -49,17 +30,14 @@ const localizer = dateFnsLocalizer({
 
 const HolidaysComponent = ({ logged, user } ) => {
 
-    const navigate = useNavigate();
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
-
+    
     const [events, setEvents] = useState([]);
     const [eventData, setEventData] = useState({});
     const [date, setDate] = useState(new Date());
     const [view, setView] = useState(Views.MONTH);      // POR DEFECTO VISTA SEMANA LABORAL
-    const [selectedEvent, setSelectedEvent] = useState(null);
-    // const [diasTotalVacaciones, setDiasTotalVacaciones] = useState(0)
     const [diasUsadosVacaciones, setDiasUsadosVacaciones] = useState(0)
-
+    
     const fetchCheckHolidays = async () => {
         // Llamada a la cuenta del año en curso de las vacaciones acumuladas
         try {
@@ -76,23 +54,6 @@ const HolidaysComponent = ({ logged, user } ) => {
         } catch (error) {
             console.error("Error cargando vacaciones/count:", error);
         }
-
-        // A BORRAR MÁS ADELANTE ¿?
-        // Llamando a los datos de vacaciones del usuario del usuario según datos en su perfil 
-        // try {
-        //     const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/holidays/${user.id}/${new Date().getFullYear()}`,
-        //         {
-        //             method: 'GET',
-        //             headers: {'Content-type': 'application/json; charset=UTF-8'}
-        //         }
-        //     )
-        //     const dataHolidays = await response.json();
-        //     console.log("dataHolidays: ", dataHolidays)
-            
-        //     setDiasTotalVacaciones(dataHolidays.dias);
-        // } catch (error) {
-        //     console.error("Error cargando usuariosvacaciones:", error);
-        // }
     }
 
 
@@ -143,11 +104,6 @@ const HolidaysComponent = ({ logged, user } ) => {
         fetchCheckHolidays();
     }, [date, user])
 
-    // Esto se tiene que ejecutar detrás de los useEffect
-    // Si no está logeado se sale del componente
-    // if (!logged) return null    // con esta opción ni siquiera se muestra brevemente EventsCalendarComponent
-    //     // navigate("/")        // con esta opción se muestra brevemente y luego pasa a "/"
-
     const handleNavigate = (newDate) => { // Permite desplazar de fecha del calendario, parámetro newDate que es la fecha a la que se desplaza
         console.log("Navegando a nueva fecha:", newDate);
         setDate(newDate);
@@ -191,10 +147,6 @@ const HolidaysComponent = ({ logged, user } ) => {
             cellColor: "red",
             usuario_id: user.id
         }
-        // SOBRA? ¿?¿?¿?
-        // const backendVacation = {...newVacacion}
-        // backendVacation.start = start.toISOString()
-        // backendVacation.end = end.toISOString()
 
         console.log("newVacacion: ", newVacacion)
         setEventData(newVacacion);
@@ -241,7 +193,6 @@ const HolidaysComponent = ({ logged, user } ) => {
                 {
                     method: "DELETE",
                     headers: {'Content-type': 'application/json; charset=UTF-8'},
-                    // body: JSON.stringify(newVacacion)
                 }
             )
             const data = await response.json()
@@ -273,7 +224,6 @@ const HolidaysComponent = ({ logged, user } ) => {
                     fontSize: '2.8rem',
             }}>
                 <strong>
-                    {/* {event.cellActive ? "Vacaciones" : null} */}
                     V
                 </strong>
             </div>
@@ -281,31 +231,7 @@ const HolidaysComponent = ({ logged, user } ) => {
     }
 
     return (
-        // <div style={{ padding: 20 }}>
-        <Box
-            // sx={{
-            //     display: 'flex',
-            //     flexDirection: 'column',
-            //     height: '100vh', // altura total de la pantalla
-            // }}
-            // sx={
-            //     // width: '150px', // Tamaño fijo para la columna de usuario
-            //     (theme) => ({
-            //         display: 'flex',
-            //         flexDirection: 'column',
-            //         fontSize: {
-            //             xs: '2px',   // móviles
-            //             sm: '10px',  // tablets
-            //             md: '14px',  // escritorio
-            //         },
-            //         height: {
-            //             xs: '100%',   // móviles
-            //             sm: '100vh',  // tablets
-            //             md: '100vh',  // escritorio
-            //         },
-            // })}
-
-        >
+        <Box>
             <Toolbar />
             <h2>VACACIONES AÑO: {date.getFullYear()} (Dias de vac. en uso: {diasUsadosVacaciones})</h2>
             <p>(Clickar en un día para añadir/quitar)</p>
@@ -319,8 +245,6 @@ const HolidaysComponent = ({ logged, user } ) => {
                 onSelectSlot={handleSelectSlot}                 // Crear nuevo evento
                 onSelectEvent={handleSelectEvent}               // Editar evento existente
                 style={{ height: "calc(100vh - 150px)" }}
-                // style= {{height: 1000, fontSize: 'clamp(0.75rem, 1vw, 1.2rem)',}}
-                // style={{ height: 600, width: '33%' }}
                 date={date}
                 view={view}
                 onNavigate={handleNavigate}                     // Cuando el usuario cambia de mes, Calendar ejecuta handleNavigate(newDate).
@@ -348,13 +272,8 @@ const HolidaysComponent = ({ logged, user } ) => {
                     previous: 'Mes Ant.',
                     today: 'Hoy',
                     month: 'Mes',
-                    //   week: 'Semana',                        // No se usa porque usamos work_week
-                    //   work_week: "Semana",                   // ponemos el texto Semana para work_week, sino aparecería "Work week"
-                    //   day: 'Día',
-                    //   agenda: 'Agenda',
                 }}
             />
-        {/* </div> */}
         </Box>
     );
 }

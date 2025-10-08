@@ -5,7 +5,6 @@ import {
   Button,
   Typography,
   Toolbar,
-  Tooltip,
   Table,
   TableContainer,
   TableBody,
@@ -16,14 +15,9 @@ import {
   Paper, 
 } from '@mui/material';
 
-import { es } from 'date-fns/locale';
 import {
-  addDays,
-  format,
-  isSameDay,
   startOfMonth,
   endOfMonth,
-  differenceInCalendarDays,
 } from 'date-fns';
 
 const HolidaysViewComponent = ({ logged, user }) => {
@@ -37,8 +31,10 @@ const HolidaysViewComponent = ({ logged, user }) => {
     const [actualMonthDays, setActualMonthDays] = useState([])
 
     const fetchEventos = async () => {
-        const start = startOfMonth(new Date(date.getFullYear(), date.getMonth() - 1))
-        const end = endOfMonth(new Date(date.getFullYear(), date.getMonth() + 1))
+        console.log("Date: ", date)
+        const start = startOfMonth(date);
+        const end = endOfMonth(date);
+        console.log("user.id: ", user.id)
         try {
             const response = await fetch(
             `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${user.id}/${start.toISOString()}/${end.toISOString()}/all`
@@ -50,68 +46,67 @@ const HolidaysViewComponent = ({ logged, user }) => {
                 end: new Date(vacacion.end),
                 cellColor: vacacion.cell_color,
             }))
+            console.log("Eventos: ", formatted)
             setEvents(formatted)
         } catch (error) {
             console.error("Error cargando vacaciones:", error)
         }
-    };
+    }
 
     const fetchUsuarios = async () => {
         try {
             const response = await fetch(
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuarios`)
             const data = await response.json();
+            console.log("Usuarios: ", data)
             setUsuarios(data)
         } catch (error) {
             console.error("Error cargando vacaciones:", error)
         }
-    };
+    }
+
+    // useEffect(() => {
+    //     fetchUsuarios()
+    //     fetchEventos()
+    // }, [])
 
     useEffect(() => {
-        if (!user?.id) return;
-        fetchEventos();
-        fetchUsuarios();
+        if (!user?.id) return // Sobra ¿?
+        fetchEventos()
+        fetchUsuarios()
         // Obtener fecha actual
         const year = date.getFullYear();
-        const month = date.getMonth(); // OJO: 0 = Enero, 11 = Diciembre
+        const month = date.getMonth() // OJO: 0 = Enero, 11 = Diciembre
 
         // Obtener número de días del mes actual
-        // new Date(año, mes + 1, 0) = último día del mes actual
-        const daysMonth = new Date(year, month + 1, 0).getDate(); 
+        const daysMonth = new Date(year, month + 1, 0).getDate() 
         const tempMonth = []
         for (let index = 0; index < daysMonth; index++) {
-            tempMonth.push(index+1);
+            tempMonth.push(index+1)
         }
         setActualMonthDays([...tempMonth])
-    }, [date, user]);
+    }, [date])
+    // }, [date, user])
 
-      // Construir filas cuando usuarios y eventos estén listos
+      // Construir filas cuando usuarios esté listo
     useEffect(() => {
         if (usuarios.length === 0 || events.length === 0) return;
+        // if (usuarios.length === 0) return;
 
         const tempRows = usuarios.map(usuario => {
-            // debugger
             // añadir filtro para que filtre también por la fecha del mes en uso en date
             // events[0].start podría ser igual a "Fri Aug 01 2025 12:00:00 GMT+0200 (hora de verano de Europa central)"
             // startOfMonth(date) podría ser igual a "Tue Sep 30 2025 23:59:59 GMT+0200 (hora de verano de Europa central)"
-            const eventosUsuario = events.filter(e => e.usuario_id === usuario.usuario_id && e.start >= startOfMonth(date) && e.start <= endOfMonth(date));
+            const eventosUsuario = events.filter(e => e.usuario_id === usuario.usuario_id && e.start >= startOfMonth(date) && e.start <= endOfMonth(date))
 
             return {
-            id: usuario.usuario_id,
-            nombre_apellidos: usuario.nombre_apellidos.slice(0, 15),
-            fechas: eventosUsuario,
-            };
-        });
-        // console.log("tempRows: ", tempRows)
-        setRows(tempRows);
-    }, [usuarios, events]);
-
-    useEffect(() => {
-        // console.log("eventos y usuarios: ", events, usuarios)
-        // console.log("actualMonthDays: ", actualMonthDays)
-    }, [events, usuarios, actualMonthDays])
-
-    // if (!logged) return null;
+                id: usuario.usuario_id,
+                nombre_apellidos: usuario.nombre_apellidos.slice(0, 15),
+                fechas: eventosUsuario,
+            }
+        })
+        setRows(tempRows)
+    }, [usuarios, events])
 
     return (
     <>
@@ -145,7 +140,6 @@ const HolidaysViewComponent = ({ logged, user }) => {
                     <TableHead>
                         <TableRow>
                             <TableCell align="left" sx={
-                                // width: '150px', // Tamaño fijo para la columna de usuario
                                 (theme) => ({
                                     width: {
                                         xs: '20px',   // móviles
@@ -163,7 +157,6 @@ const HolidaysViewComponent = ({ logged, user }) => {
                                 <TableCell key={index} align="center"
                                 /* si el día es domingo =0 o sabado = 6 */
                                     sx= {{ 
-                                        // width: "100%", // esto es incorrecto
                                         padding: '6px',
                                         fontSize: '12px',
                                         backgroundColor : 
@@ -182,10 +175,8 @@ const HolidaysViewComponent = ({ logged, user }) => {
                         {rows.map((row, index) => (
                             <TableRow
                                 key={index}
-                                // sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell component="th" scope="row"  sx={ 
-                                    // width: '150px',
                                     (theme) => ({
                                         width: {
                                             xs: '20px',   // móviles
@@ -208,14 +199,11 @@ const HolidaysViewComponent = ({ logged, user }) => {
                                 {actualMonthDays.map((day, dayIndex) => {
                                     const currentDate = new Date(date.getFullYear(), date.getMonth(), day, 12, 0, 0)
                                     const weekDay = new Date(date.getFullYear(), date.getMonth(), day).getDay()
-                                    // console.log("currendDate: ", currentDate)
                                     const tieneEvento = row.fechas.some(evento => {
-                                        const start = evento.start;
-                                        const end = evento.end;
-                                        // console.log("start:", evento.start)
-                                        return currentDate >= start && currentDate <= end;
-                                    });
-
+                                        const start = evento.start
+                                        const end = evento.end
+                                        return currentDate >= start && currentDate <= end
+                                    })
                                     return (
                                         <TableCell
                                             key={dayIndex}
@@ -234,7 +222,7 @@ const HolidaysViewComponent = ({ logged, user }) => {
                                         >
                                             {tieneEvento ? "V" : ' '}
                                         </TableCell>
-                                    );
+                                    )
                                 })}
                             </TableRow>
                         ))}
@@ -243,7 +231,7 @@ const HolidaysViewComponent = ({ logged, user }) => {
             </TableContainer>
         </Box>
     </>
-  );
-};
+  )
+}
 
 export default HolidaysViewComponent;

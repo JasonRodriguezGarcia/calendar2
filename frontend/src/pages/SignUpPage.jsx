@@ -1,18 +1,13 @@
-import { useState, useEffect } from 'react';
-import EventsCalendarComponent from '../components/EventsCalendarComponent';
 import MainMenuComponent from '../components/MainMenuComponent';
 import { Navigate, useNavigate } from 'react-router-dom';
-// import SignUpComponent from '../components/SignUpComponent';
 import UsersCRUDComponent from '../components/UsersCRUDComponent';
 import { Toolbar } from '@mui/material';
 
 const SignUpPage = ({ logged, setLogged, user, setUser }) =>{
-    // const [logeado, setLogeado] = useState(false)
-    // const [usuario, setUsuario] = useState({})
 
-    if (logged)    // con esta opción ni siquiera se muestra brevemente EventsCalendarComponent
+    if (logged)    // con esta opción ni siquiera se muestra brevemente el componente
         // Esto interrumpe el renderizado del componente y lo redirige inmediatamente. 
-        // No se ejecuta código de más, ni se renderiza MainMenuComponent ni EventsCalendarComponent.
+        // No se ejecuta código de más, ni se renderiza MainMenuComponent ni el otro componente.
         return <Navigate to="/" replace /> // navigate(`/`, { replace: true }) solo puede ser usado en useEffect
 
     return (

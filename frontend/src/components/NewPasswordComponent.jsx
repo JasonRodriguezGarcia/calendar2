@@ -1,40 +1,26 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate, useParams } from 'react-router-dom';
-// import {createContext, useContext} from 'react';
-// import LoginContext from '../context/LoginContext';
 import Box from '@mui/material/Box';
 // MUI
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Typography,
   Button,
-  TextField,
-  MenuItem,
   FormControl, 
   FormLabel,
-  InputLabel,
   Input,
-  Select,
   Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 
 } from '@mui/material';
 
 const NewPasswordComponent = ({ logged, setLogged }) => {
+    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
 
-    // const [isValidToken, setIsValidToken] = useState(false)
-    // const [userId, setUserId] = useParams.id
     const navigate = useNavigate();
     const {id} = useParams()
     console.log("userId: ", id)
     const [newPassword, setNewPassword] = useState("")
-    const [userName, setUserName] = useState("")
-    const [userEmail, setUserEmail] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
 
-    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
 
     useEffect(()=> {
         if (errorMessage) {
@@ -51,10 +37,6 @@ const NewPasswordComponent = ({ logged, setLogged }) => {
         }
     }, [logged, navigate]); // se ejecuta al menos una vez, justo después del primer render, y también cada vez que logged cambie.
 
-    if (logged)
-        // navigate("/", { replace: true })
-        return null //Sin el return null, podrías ver el formulario "parpadear" antes de redirigir.
-
     const handleNewPassword = async (e) => {
         e.preventDefault()
         if (newPassword.length < 10) {
@@ -68,8 +50,6 @@ const NewPasswordComponent = ({ logged, setLogged }) => {
                     newpassword: newPassword,
                 }
                 // fetch validate
-
-                // queda crear backend para crear nueva contraseña y añadir la llama aqui
                 const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/newpassword`,
                     {
                         method: 'POST',
@@ -112,7 +92,6 @@ const NewPasswordComponent = ({ logged, setLogged }) => {
                 onSubmit={(e)=> handleNewPassword(e)}
                 sx={{
                 heigth: "100vh",
-                // width: { xs: '90%', sm: 320 },
                 width: { xs: '90%', sm: "30%" },
                 mx: 'auto', // margin left & right
                 my: 4, // margin top & bottom
@@ -126,8 +105,6 @@ const NewPasswordComponent = ({ logged, setLogged }) => {
                 border: "1px solid grey",
                 borderRadius: '10px',
                 boxShadow: '10px 10px 15px 5px grey',
-                // boxShadow: 5,
-                // backgroundColor: "#339fff"
                 }}
             >
                 <div>
@@ -142,16 +119,13 @@ const NewPasswordComponent = ({ logged, setLogged }) => {
                             id="newpassword"
                             name="newpassword"
                             type="password"
-                            // autoComplete="email"
                             placeholder="Nueva contraseña"
                             fullWidth
                             onChange={(e)=> setNewPassword(e.target.value)}
                         />
                     </Stack>
                 </FormControl>
-
                 <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 /* margin top */ }}>Actualizar contraseña</Button>
-                
                 {errorMessage && 
                     <Typography level="body-sm" color="danger" fontWeight="bold" fontSize="1em">{errorMessage}</Typography>
                 }

@@ -1,4 +1,3 @@
-// import * as React from 'react';
 import { useNavigate , Link } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -12,11 +11,9 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-// import AdbIcon from '@mui/icons-material/Adb';
 import HomeIcon from '@mui/icons-material/Home';
 
 import logo from "../assets/images/erroaksartu.jpg"
-import { useScrollTrigger } from '@mui/material';
 import { useState } from 'react';
 
 const pages = ['Eventos', 'Vacaciones', 'Listados', 'About'];
@@ -28,41 +25,36 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
     const [anchorElList, setAnchorElList] = useState(null);
-    // const [logged, setLogged] = useState(true)
-    // const [userNick, setUserNick] = useState('Rosa')
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
-    };
+    }
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
-    };
+    }
 
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
-    };
+    }
 
     const handleCloseUserMenu = (setting) => {
         switch (setting) {
             case "Ver perfil":
                 // navigate("/profile", { replace: true });
-                navigate("/profile");
-                break;
+                navigate("/profile")
+                break
             case "Modificar perfil":
                 // navigate("/editprofile", { replace: true });
-                navigate("/editprofile");
-                break;
+                navigate("/editprofile")
+                break
             case "Cerrar sesión":
-                // localStorage.removeItem("id")
-                // localStorage.removeItem("user")
-                // localStorage.removeItem("password")
                 localStorage.removeItem("usuario")
                 setLogged(false)
                 setUser({})
-                navigate("/", { replace: true });
-                break;
+                navigate("/", { replace: true })
+                break
             default:
-                break;
+                break
         }
         setAnchorElUser(null);
     };
@@ -72,26 +64,24 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
 
         switch (page) {
             case "Listados":
-                setAnchorElList(event.currentTarget);
-            break;
-                // case "Eventos":
+                setAnchorElList(event.currentTarget)
+                break
             case "Eventos":
                 // navigate("/eventos", { replace: true });
-                navigate("/eventos");
-                break;
-            // case "Vacaciones":
+                navigate("/eventos")
+                break
             case "Vacaciones":
                 // navigate("/holidays", { replace: true });
-                navigate("/holidays");
-                break;
+                navigate("/holidays")
+                break
             case "About":
                 // navigate("/about", { replace: true });
-                navigate("/about");
-                break;
+                navigate("/about")
+                break
             default:
-                break;
+                break
         }
-        setAnchorElNav(null); // cerrar menú móvil si estaba abierto
+        setAnchorElNav(null) // cerrar menú móvil si estaba abierto
     }
 
       // filtramos las páginas y game aparece si estamos logeados
@@ -99,20 +89,16 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
         if (page === "Eventos") return logged
         else if (page === "Vacaciones") return logged       
         else if (page === "Listados") return logged       
-        return true;
+        return true
     });
     
     return (
-        // <AppBar position="fixed" >
         <AppBar position="fixed" sx={{ backgroundColor: '#0072AD' }}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
                     <Typography
                         variant="h6"
                         noWrap
-                        // component="a"
-                        // href="#app-bar-with-responsive-menu"
                         component = {Link} // Usar link en lugar de "a" y "href" para no rerenderizar
                         to="/"
                         sx={{
@@ -134,7 +120,6 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                         fontSize: "3rem",
                                         marginRight: 8,
                                         display: 'flex',
-                                        // color: "white",
                                         color: "#8BC000",
                                         borderRadius: "10px",
                                     }}
@@ -145,8 +130,6 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                     <Typography
                         variant="h"
                         noWrap
-                        // component="a"
-                        // href="#app-bar-with-responsive-menu"
                         component = {Link} // Usar link en lugar de "a" y "href" para no rerenderizar
                         to="https://erroaksartu.org/"
                         sx={{
@@ -204,7 +187,6 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                             {filteredPages.map((page) => (
                                 page === "Listados" ? (
                                     <div key="listados">
-                                        {/* <MenuItem disabled sx={{ fontWeight: 'bold' }}> */}
                                         <MenuItem sx={{ fontWeight: 'bold', color: "slategrey" }}>
                                             <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
                                         </MenuItem>
@@ -212,27 +194,27 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                             <MenuItem
                                                 key={item}
                                                 onClick={() => {
-                                                    setAnchorElNav(null);
+                                                    setAnchorElNav(null)
                                                     // navegación
                                                     switch (item) {
                                                         case "Eventos entidad":
                                                             // navigate("/staffholidays", { replace: true });
-                                                            navigate("/entityevents");
-                                                            break;
+                                                            navigate("/entityevents")
+                                                            break
                                                         case "Vacaciones personal":
                                                             // navigate("/staffholidays", { replace: true });
-                                                            navigate("/staffholidays");
-                                                            break;
+                                                            navigate("/staffholidays")
+                                                            break
                                                         case "Tardes invierno":
                                                             // navigate("/winterafternoons", { replace: true });
-                                                            navigate("/winterafternoons");
-                                                            break;
+                                                            navigate("/winterafternoons")
+                                                            break
                                                         case "Contactos":
                                                             // navigate("/contacts", { replace: true });
-                                                            navigate("/contacts");
-                                                            break;
+                                                            navigate("/contacts")
+                                                            break
                                                         default:
-                                                            break;
+                                                            break
                                                     }
                                                 }}
                                                 sx={{ pl: 4 }}
@@ -254,12 +236,9 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                         </Menu>
                     </Box>
                     {/* LOGO MOVIL */}
-                    {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} /> */}
                     <Typography
                         variant="h5"
                         noWrap
-                        // component="a"
-                        // href="#app-bar-with-responsive-menu"
                         component = {Link} // Usar link en lugar de "a" y "href" para no rerenderizar
                         to="/"
                         sx={{
@@ -280,9 +259,6 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                 <HomeIcon
                                     style={{ 
                                         height: 35, 
-                                        // marginRight: 8, 
-                                        // display: 'flex',
-                                        // color: "white",
                                         color: "#8BC000",
                                         borderRadius: "10px",
                                     }}
@@ -293,8 +269,6 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                     <Typography
                         variant="h5"
                         noWrap
-                        // component="a"
-                        // href="#app-bar-with-responsive-menu"
                         component = {Link} // Usar link en lugar de "a" y "href" para no rerenderizar
                         to="https://erroaksartu.org/"
                         sx={{
@@ -328,7 +302,6 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                         <Button
                             key={page}
                             onClick={(e)=> handleClickedPage(page,e)}
-                            // sx={{ my: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
                             sx={{ my: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
                                 "&:selected": {backgroundColor: "grey"} }}
                         >
@@ -348,27 +321,27 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                             <MenuItem
                                 key={item}
                                 onClick={() => {
-                                    setAnchorElList(null);
+                                    setAnchorElList(null)
                                     // Añade aquí la lógica de navegación por cada item si la tienes
                                     switch (item) {
                                         case "Eventos entidad":
                                             // navigate("/staffholidays", { replace: true });
-                                            navigate("/entityevents");
-                                            break;
+                                            navigate("/entityevents")
+                                            break
                                         case "Vacaciones personal":
                                             // navigate("/staffholidays", { replace: true });
-                                            navigate("/staffholidays");
-                                            break;
+                                            navigate("/staffholidays")
+                                            break
                                         case "Tardes invierno":
                                             // navigate("/winterafternoons", { replace: true });
-                                            navigate("/winterafternoons");
-                                            break;
+                                            navigate("/winterafternoons")
+                                            break
                                         case "Contactos":
                                             // navigate("/contacts", { replace: true });
-                                            navigate("/contacts");
-                                            break;
+                                            navigate("/contacts")
+                                            break
                                         default:
-                                            break;
+                                            break
                                     }
                                 }}
                             >
@@ -383,7 +356,6 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                 {/* User */}
                                 <Typography
                                     variant="body1"
-                                    // sx={{ mx: 2, color: 'white', fontWeight: 'bold', backgroundColor: '#0072AD', px: 1.5, py: 0.5, borderRadius: 1 }}
                                     sx={
                                         (theme) => ({
                                             fontSize: {
@@ -402,7 +374,6 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                 sx={{ p: 0 }}
                                 >
                                     <Avatar alt={user.nombre_apellidos} src="/static/images/avatar/2.jpg" />
-                                    {/* <Avatar alt={user.nombre_apellidos} src="/static/images/personicons/rosa.jpg" /> */}
                                 </IconButton>
                             </Tooltip>
                         </Box >
@@ -438,13 +409,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                     <Box sx={{ flexGrow: 0, display: logged ? 'none' : 'block'}}>
                         <Tooltip title="Darse de alta" arrow>
                             <Button
-                                // onClick={handleSignUp}
-                                // onClick={()=> navigate('/signup', { replace: true })}
                                 onClick={()=> navigate('/signup')}
-                                // sx={{ 
-                                //     m: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
-                                //     "&:selected": {backgroundColor: "grey"}
-                                // }}
                                 sx={
                                     (theme) => ({
                                         fontSize: {
@@ -466,9 +431,6 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                             <Button
                                 // onClick={()=> navigate('/login', { replace: true })}
                                 onClick={()=> navigate('/login')}
-                                // sx={{ m: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
-                                //     "&:selected": {backgroundColor: "grey"}
-                                // }}
                                 sx={
                                     (theme) => ({
                                         fontSize: {
@@ -479,7 +441,6 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                         mr: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
                                     
                                 })}
-
                             >
                                 Iniciar sesión
                             </Button>
@@ -489,6 +450,6 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                 </Toolbar>
             </Container>
         </AppBar>
-    );
+    )
 }
 export default MainMenuComponent;

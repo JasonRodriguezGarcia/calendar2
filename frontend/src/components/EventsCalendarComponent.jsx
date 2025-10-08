@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
@@ -57,6 +56,8 @@ const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
 
 const EventsCalendarComponent = ({ logged, user } ) => {
     
+    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
+    
     const [events, setEvents] = useState([])
     const [dialogOpen, setDialogOpen] = useState(false)
     const [eventData, setEventData] = useState({})
@@ -78,9 +79,6 @@ const EventsCalendarComponent = ({ logged, user } ) => {
     const [dialogError, setDialogError] = useState(false)
     const [dialogRepeatedResultOpen, setDialogRepeatedResultOpen] = useState(false)
     const [errorMessageRepeated, setErrorMessageRepeated] = useState("")
-
-    const navigate = useNavigate();
-    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
 
 
     useEffect(() => {
@@ -180,10 +178,6 @@ const EventsCalendarComponent = ({ logged, user } ) => {
         }
         fetchEventos()
     }, [date, user])
-
-    // // Si no está logeado se sale del componente
-    // if (!logged) return null    // con esta opción ni siquiera se muestra brevemente EventsCalendarComponent
-    //     // navigate("/")        // con esta opción se muestra brevemente y luego pasa a "/"
 
     const handleNavigate = (newDate) => { // Permite desplazar de fecha del calendario
         setDate(newDate)
@@ -643,9 +637,7 @@ const EventsCalendarComponent = ({ logged, user } ) => {
         )}
         {/* <Calendar */}
         <GlobalStyles styles={{ // Cambiando el estilo del día para que al pasar el ratón por encima cambie de color
-            // '.rbc-month-view .rbc-date-cell > *:first-child:hover': {
             '.rbc-month-view .rbc-date-cell > *:first-of-type:hover': {
-                // color: '#1976d2',
                 backgroundColor: 'grey',
                 fontWeight: 'bold',
                 cursor: 'pointer',
@@ -743,7 +735,7 @@ const EventsCalendarComponent = ({ logged, user } ) => {
                         <FormControl fullWidth margin='dense'>
                             <InputLabel id="select-label-espacio_id">Espacio</InputLabel>
                             <Select
-                                // fullWidth
+                                // fullWidth // al ser un FormControl no es necesario ponerlo en sus Select
                                 labelId="select-label-espacio_id"
                                 id="select-espacio_id"
                                 label="Espacio"
@@ -759,7 +751,6 @@ const EventsCalendarComponent = ({ logged, user } ) => {
                         <FormControl fullWidth margin='dense'>
                             <InputLabel id="select-label-programa_id">Programa *</InputLabel>
                             <Select
-                                // fullWidth // al ser un FormControl no es necesario
                                 labelId="select-label-programa_id"
                                 id="select-programa_id"
                                 label="Programa *"

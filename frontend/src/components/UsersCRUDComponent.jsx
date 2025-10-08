@@ -1,19 +1,7 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate } from 'react-router-dom';
-// import {createContext, useContext} from 'react';
-// import LoginContext from '../context/LoginContext';
-// import {
-//     Visibility,
-//     VisibilityOff,
-// }
-// from '@mui/icons-material';
-// MUI
 import {
     Box, 
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
     Typography,
     Button,
     TextField,
@@ -21,8 +9,6 @@ import {
     FormControl, 
     FormControlLabel, 
     FormLabel,
-    IconButton,
-    InputAdornment, 
     InputLabel,
     Input,
     RadioGroup,
@@ -63,12 +49,7 @@ const tardes_invierno = [
 ]
 const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
 
-    // const [isValidToken, setIsValidToken] = useState(false)
-    // const [userName, setUserName] = useState("")
-    // const [userEmail, setUserEmail] = useState("")
-    // const [userPassword, setUserPassword] = useState("")
     const [selectedColor, setSelectedColor] = useState("")
-    const [userId, setUserId] = useState("")
     const [userEmail, setUserEmail] = useState("")
     const [userPassword, setUserPassword] = useState("")
     const [userNombre_Apellidos, setUserNombre_Apellidos] = useState("")
@@ -120,10 +101,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
             } finally {
                 // setLoading(false); // Set loading to false once data is fetched or error occurs
             }
-            // Esperara a que user esté definido
-            // if ((action === "read" || action === "update") && user?.nombre_apellidos) {
-            // debugger
-            // console.log("imprimo user.id: ", user.id)
             if (action === "read" || action === "update")  {
                 const endPoint= `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario/${user.id}`
                 try {
@@ -143,12 +120,9 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                         setErrorMessage("usuario no válido")
                         return
                     } else {
-                        // debugger
-                        // setUserId(dataUser.usuario_id)
                         setUserEmail(dataUser.email)
                         setUserPassword(dataUser.password)
                         setUserNombre_Apellidos(dataUser.nombre_apellidos)
-                        // const movil = dataUser.movil.slice(0, 3) + "-" + dataUser.movil.slice(3)
                         setUserMovil(dataUser.movil)
                         setUserExtension(dataUser.extension)
                         setUserCentro(dataUser.centro_id)
@@ -160,7 +134,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                         setUserObservaciones(dataUser.observaciones)
                         const title = action === "read" ? "Ver perfil" : "Modificar perfil"
                         setFormTitle(title)
-                        // const readOnly = action === "read" ? true : false
                         setFormReadOnly(action === "read")
                     }
 
@@ -237,29 +210,10 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
         else
             setErrorMessage(""); // Limpia el error si ya es válido
     }
-    // const handleUserNickInput = (e) => {
-    // if (e.target.value.length < 5)
-    //     setErrorMessage("Nick demasiado corto")
-    // else
-    //     setUserNickInput(e.target.value) 
-    // }
-
-    const isValidMovil = (movil) => {
-        const regex = /^\d{3}-\d{6}$/;
-        return regex.test(movil);
-    };
 
     const handleUserMovil = (e) => {
         let numbersOnly = e.target.value.replace(/\D/g, '').slice(0, 9); // solo 9 números
         setUserMovil(numbersOnly);
-    //    console.log("numbersOnly: ", numbersOnly)
-    //     // if (numbersOnly.length > 9) return;
-    //     if (numbersOnly.length <= 3) {
-    //         setUserMovil(numbersOnly);
-    //     } else {
-    //         const formatted = `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3)}`;
-    //         setUserMovil(formatted);
-    //     }
     }
 
     const handleUserExtension = (e) => {
@@ -274,13 +228,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
 
     const handleSignUp = async (e) => {
         e.preventDefault()
-        // Borrar localstorage
-        // localStorage.removeItem("user", "Pepe")
-        // localStorage.removeItem("password", "paswol")
-
-        // const buttonSelected = e.nativeEvent.submitter.name
-        // console.log("Pulsado: ", buttonSelected)
-        // if (buttonSelected === "login") {
         if (action === "read") {
             navigate(`/`, { replace: true });
             return
@@ -317,7 +264,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
             console.log("user: ", userTmp)
             const endPoint= action === "create"
                 ? `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario`
-                // : `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario/${user.nombre_apellidos}`
                 : `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario/${user.id}`
             const method = action === "create" ? "POST" : "PUT"
 
@@ -333,16 +279,10 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
             console.log("Respuesta backend: ", data)
             if (data.result === "Email ya existente") {
                 setErrorMessage("Email ya existente")
-                // setIsValidToken(false)
-                // setLogged(false)
-                // navigate('/')
                 return
             }
             if (data.result === "Nombre y apellidos ya existente") {
                 setErrorMessage("Nombre y apellidos ya existente")
-                // setIsValidToken(false)
-                // setLogged(false)
-                // navigate('/')
                 return
             }
             const usuario = {
@@ -353,21 +293,9 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
 
             // Crear/modificar localStorage
             localStorage.setItem("usuario", JSON.stringify(usuario))
-
-            // if (action === "create") {
-            //     // localStorage.setItem("id", data.id)
-            //     usuario.id = data.id
-            // }
-            // localStorage.setItem("user", userNombre_Apellidos)
-            // localStorage.setItem("password", userPassword)
             setLogged(true)
             setUser(usuario)
             navigate('/', { replace: true })
-                // setIsValidToken(true)
-                // setLogged(true)       
-                // setUserNick(data.nick)
-                // console.log("Language localstorage: ", localStorage.getItem(user), localStorage.getItem(password))
-                // navigate(`/profile/${data.token}`);
         } catch (error) {
             // setError(error.message); // Handle errors
             console.log(error.message)
@@ -388,15 +316,10 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                 px: 2,
             }}
         >
-            {/* {isValidToken && isValidToken ? 
-                <h2 style = {{ color: "white"}}>Página de perfil /Profilepage (logged)</h2>
-                : <h2 style = {{ color: "white"}}>No logeado /Not logged in</h2>
-            } */}
             <Box component="form"
                 onSubmit={(e)=> handleSignUp(e)}
                 sx={{
                     heigth: "100vh",
-                    // width: { xs: '90%', sm: 320 },
                     width: { xs: '90%', sm: "30%" },
                     mx: 'auto', // margin left & right
                     my: 4, // margin top & bottom
@@ -410,13 +333,10 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                     border: "1px solid grey",
                     borderRadius: '10px',
                     boxShadow: '10px 10px 15px 5px grey',
-                    // boxShadow: 5,
-                    // backgroundColor: "#339fff"
                 }}
             >
                 <div>
                     <Typography variant="h4" component="h3" sx={{ color: "black"}}>
-                        {/* <b>Alta usuario</b> */}
                         <b>{formTitle}</b>
                     </Typography>
                 </div>
@@ -433,7 +353,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                             fullWidth
                             value={userEmail}
                             disabled={formReadOnly}
-                            // onChange={(e)=> setUserEmail(e.target.value)}
                             onChange={(e)=> handleUserEmail(e)}
                         />
                     </Stack>
@@ -444,7 +363,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                         <Input
                             id="userpassword"
                             name="userpassword"
-                            // type="password"
                             type={showPassword ? 'text' : 'password'}
                             onMouseEnter={() => setShowPassword(true)}
                             onMouseLeave={() => setShowPassword(false)}
@@ -471,7 +389,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                             fullWidth
                             value={userNombre_Apellidos}
                             disabled={formReadOnly}
-                            // onChange={(e)=> setUserNombre_Apellidos(e.target.value)}
                             onChange={(e)=> handleUserNombre_Apellidos(e)}
                         />
                     </Stack>
@@ -488,8 +405,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                             fullWidth
                             value={userMovil}  // esta línea es esencial para poder usarse en la funcion handleUserMovil
                             disabled={formReadOnly}
-                            // disabled
-                            // onChange={(e)=> setUserMovil(e.target.value)}
                             onChange={(e)=> handleUserMovil(e)}
                         />
                     </Stack>
@@ -506,7 +421,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                             fullWidth
                             value={userExtension}
                             disabled={formReadOnly}
-                            // onChange={(e)=> setUserExtension(e.target.value)}
                             onChange={(e)=> handleUserExtension(e)}
                         />
                     </Stack>
@@ -518,7 +432,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                             fullWidth
                             labelId="select-label-centro"
                             id="select-centro"
-                            // label="Centro *"
                             value={userCentro}
                             disabled={formReadOnly}
                             onChange={(e) => setUserCentro(e.target.value)}
@@ -556,7 +469,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                             <FormControlLabel value="true" control={<Radio />} label="Si" disabled={formReadOnly}/>
                             <FormControlLabel value="false" control={<Radio />} label="No"disabled={formReadOnly}/>
                         </RadioGroup>
-
                     </Stack>
                 </FormControl>
                 <FormControl>
@@ -566,7 +478,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                             fullWidth
                             labelId="select-label-turno"
                             id="select-turno"
-                            // label="Turno *"
                             value={userTurno}
                             disabled={formReadOnly}
                             onChange={(e) => setUserTurno(e.target.value)}
@@ -611,7 +522,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                             fullWidth
                             labelId="select-label-tarde_invierno"
                             id="select-tarde_invierno"
-                            // label="Turno *"
                             value={userTarde_Invierno}
                             disabled={formReadOnly}
                             onChange={(e) => setUserTarde_Invierno(e.target.value)}
@@ -619,28 +529,10 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                         >
                             {tardes_invierno.map((tarde) => (
                                 <MenuItem key={tarde.tarde_id} value={tarde.tarde_id}>{tarde.descripcion}</MenuItem>
-
                             ))}
                         </Select>
                     </Stack>
                 </FormControl>
-                {/* <FormControl>
-                    <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="userobservaciones" sx={{ color: "black", minwidth: 100 }}>Observaciones:</FormLabel>
-                        <Input
-                            id="userobservaciones"
-                            name="userobservaciones"
-                            type="text"
-                            autoComplete="observaciones"
-                            placeholder="(máx. 255 car.)"
-                            fullWidth
-                            value={userObservaciones}
-                            disabled={formReadOnly}
-                            // onChange={(e)=> setUserNombre_Apellidos(e.target.value)}
-                            onChange={(e)=> setUserObservaciones(e.target.value)}
-                        />
-                    </Stack>
-                </FormControl> */}
                 <TextField
                     fullWidth
                     label="Observaciones"
@@ -652,7 +544,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                     multiline
                     rows={3}
                 />
-
                 <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 }}>
                     {/* Crear usuario */}
                     {action === "create" 
@@ -662,7 +553,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                             : "Guardar"
                     }
                 </Button>
-
                 {errorMessage &&                 
                     <Typography level="body-sm" color="danger" fontWeight="bold" fontSize="1em">{errorMessage}</Typography>
                 }

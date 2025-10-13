@@ -37,6 +37,7 @@ import {
     Toolbar, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
     Typography,
 } from '@mui/material';
+import { colorOptions } from '../utils/EventColors';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -58,7 +59,7 @@ const saltosHora = 1 // timeslots={4}
 const horaMinima = new Date(1970, 1, 1, 7, 0) // Limitación hora mínima
 const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
 
-const EntityEventsCalendarComponent = ({ logged, user } ) => {
+const EntityEventsCalendarComponent = ({ logged, user, token } ) => {
     
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     
@@ -94,7 +95,10 @@ const EntityEventsCalendarComponent = ({ logged, user } ) => {
                 const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getNewEventFormData`,
                     {
                         method: 'GET',
-                        headers: {'Content-type': 'application/json; charset=UTF-8'}
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-type': 'application/json; charset=UTF-8'
+                        },
                     }
                 )
                 const data = await response.json()
@@ -162,10 +166,16 @@ const EntityEventsCalendarComponent = ({ logged, user } ) => {
             // Llamando a backend para presentar los datos
             try {
                 const response = await fetch(
-                //   `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${start.toISOString()}/${end.toISOString()}`
-                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${start.toISOString()}/${end.toISOString()}/${user.id}`
-                );
-                const data = await response.json();
+                    `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${start.toISOString()}/${end.toISOString()}/${user.id}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-type': 'application/json; charset=UTF-8'
+                        },
+                    }
+                )
+                const data = await response.json()
                 const eventosData = data.map(evento => ({
                     ...evento,
                     start: new Date(evento.start),
@@ -178,7 +188,7 @@ const EntityEventsCalendarComponent = ({ logged, user } ) => {
                 setEvents(filterEvents(eventosData, selectedUsuarios, selectedProgramas, selectedEspacios))
 
             } catch (error) {
-                console.error("Error cargando eventos:", error);
+                console.error("Error cargando eventos:", error)
             }
         }
 
@@ -878,7 +888,7 @@ const EntityEventsCalendarComponent = ({ logged, user } ) => {
 
                     eventPropGetter={(event) => {                   // Estilo visual de cada evento
                         const user = usuarios.find(u => u.usuario_id === event.usuario_id);
-                        const backgroundColor = user?.color || '#BDBDBD';
+                        const backgroundColor = colorOptions[user?.color] || '#BDBDBD';
                         return {    // retornando un style por eso el return tiene {} en lugar de ()
                             style: {
                                 backgroundColor,

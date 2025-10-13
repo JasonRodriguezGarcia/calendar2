@@ -1,0 +1,422 @@
+ENCRIPTACIÓN CON JSONWEBTOKEN
+*****************************
+
+en backend instalar jsonwebtoken
+en frontend instalar jwt-decode para que el App.jsx recupere los datos del usuario al pulsar F5 desencriptando
+    el token y sacando los datos oportunos para llamar a /usuario y establecer usuario en la aplicación
+*****************************
+MIRAR TAMBIÉN EN 
+    https://github.com/chekulhan/Desarrollo-Web/blob/4a2c5a70a1a60d414aacde2a7746a1c19ed9e400/UF1844-Entorno-Servidor/express/09-autenticacion.jwt.md
+
+MECÁNICA DE USO
+✅ ¿Qué deberías hacer?
+1. Enviar la contraseña en texto plano, PERO SOLO POR HTTPS !!!!
+                                        ------------------------
+{
+  "usuario_id": "juan123",
+  "password": "miContraseñaSegura123"
+}
+
+
+Se envía en el body de un POST al backend para iniciar sesión.
+
+🔐 HTTPS se encarga de cifrar todo en tránsito.
+
+Así, nadie en medio (ni hackers, ni ISP, ni redes públicas) puede ver el contenido.
+
+El backend recibirá la contraseña de forma segura para hacer el hash y compararla.
+
+❌ ¿Por qué no deberías hashear la contraseña en frontend?
+1. bcrypt es lento y no está diseñado para ejecutarse en el navegador
+
+Puede bloquear la UI y afectar la experiencia de usuario.
+
+2. El hash se puede interceptar igual que una contraseña
+
+Si envías el hash al backend y lo usas como "clave", ya no es un hash seguro: ahora es un secreto reutilizable, igual de valioso para un atacante.
+
+3. Pierdes control del proceso de autenticación
+
+El servidor debería tener control total sobre la lógica de validación.
+
+🔒 Entonces, ¿cuál es el flujo de login seguro?
+📲 Frontend (React)
+// Ejemplo usando fetch
+const response = await fetch('/api/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    usuario_id: 'juan123',
+    password: 'miContraseñaSegura123'
+  })
+});
+
+🖥️ Backend (Node.js + Express + bcrypt)
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+app.post('/api/login', async (req, res) => {
+  const { usuario_id, password } = req.body;
+
+  const user = await User.findOne({ usuario_id });
+
+  if (!user) return res.status(401).json({ error: 'Usuario no encontrado' });
+
+  const match = await bcrypt.compare(password, user.password_hash);
+
+  if (!match) return res.status(401).json({ error: 'Contraseña incorrecta' });
+
+  const token = jwt.sign(
+    { id: user._id, usuario_id: user.usuario_id },
+    process.env.JWT_SECRET,
+    { expiresIn: '15m' }
+  );
+
+  res.json({ token });
+});
+
+✅ ¿Cómo proteger esa primera llamada?
+
+Siempre usar HTTPS
+
+No enviar datos en la URL
+
+POST con Content-Type: application/json
+
+Validar todo en el backend
+
+(Opcional) Rate limit para evitar fuerza bruta
+
+(Opcional) Añadir reCAPTCHA u otro sistema si recibes mucho tráfico
+
+🧠 Resumen
+Tema	Recomendación
+¿Encriptar contraseña en frontend?	❌ No – Usa HTTPS y envíala tal cual en body
+¿Usar bcrypt en frontend?	❌ No – Solo en el backend
+¿Envío seguro?	✅ Sí, usando HTTPS y método POST
+¿Validación?	✅ Se hace toda en backend con bcrypt
+✅ TL;DR
+
+No es necesario ni recomendable encriptar la contraseña en frontend.
+Usa HTTPS, manda usuario_id y password en el body de un POST, y deja que el backend valide y genere el token JWT.
+
+******************
+EJEMPLO FUNCIONAL DE LOGIN
+******************
+
+vamos a armar un ejemplo funcional completo y seguro de autenticación con:
+
+Frontend: React
+
+Backend: Express.js + bcrypt + JWT
+
+🧱 Estructura general del ejemplo
+
+Usuario ingresa su usuario_id y password en React
+
+Se envía un POST al backend /api/login
+
+Backend valida con bcrypt y genera un JWT
+
+El token se guarda en localStorage
+
+El token se envía en cada llamada protegida (Authorization: Bearer <token>)
+
+El backend protege rutas validando el token con jsonwebtoken
+
+🖥️ BACKEND (Node.js + Express)
+📦 Instalar dependencias
+npm install express bcrypt jsonwebtoken cors dotenv
+
+📄 .env
+JWT_SECRET=mi_super_secreto
+
+📁 server.js
+const express = require('express');
+const cors = require('cors');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Mock de base de datos en memoria
+const users = [
+  {
+    id: 1,
+    usuario_id: 'juan123',
+    password_hash: bcrypt.hashSync('miContraseñaSegura123', 10),
+  }
+];
+
+// 🔐 LOGIN
+app.post('/api/login', async (req, res) => {
+  const { usuario_id, password } = req.body;
+
+  const user = users.find(u => u.usuario_id === usuario_id);
+  if (!user) return res.status(401).json({ error: 'Usuario no encontrado' });
+
+  const isValid = await bcrypt.compare(password, user.password_hash);
+  if (!isValid) return res.status(401).json({ error: 'Contraseña incorrecta' });
+
+  const token = jwt.sign(
+    { id: user.id, usuario_id: user.usuario_id },  //bastaría con un campo id
+    process.env.JWT_SECRET,
+    { expiresIn: '15m' }
+    // { expiresIn: '1h', algorithm: 'HS256' }, // también valdría
+  );
+
+  res.json({ token });
+});
+
+// 🔒 RUTA PROTEGIDA
+app.get('/api/protegido', verifyToken, (req, res) => {
+  res.json({ mensaje: 'Acceso autorizado', usuario: req.user });
+});
+
+// 🧪 Middleware para verificar el token
+function verifyToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) return res.status(401).json({ error: 'Token faltante' });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ error: 'Token inválido o expirado' });
+    req.user = user;
+    next();
+  });
+}
+
+app.listen(3001, () => console.log('Servidor escuchando en http://localhost:3001'));
+
+🌐 FRONTEND (React)
+
+Asumimos que usas create-react-app o similar.
+
+📄 Login.jsx
+import { useState } from 'react';
+
+export default function Login() {
+  const [usuario_id, setUsuarioId] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    const res = await fetch('http://localhost:3001/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usuario_id, password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      localStorage.setItem('token', data.token);
+      alert('Login exitoso');
+    } else {
+      alert('Error: ' + data.error);
+    }
+  };
+
+  return (
+    <div>
+      <h2>Login</h2>
+      <input placeholder="Usuario ID" value={usuario_id} onChange={e => setUsuarioId(e.target.value)} />
+      <input placeholder="Contraseña" type="password" value={password} onChange={e => setPassword(e.target.value)} />
+      <button onClick={handleLogin}>Iniciar sesión</button>
+    </div>
+  );
+}
+
+📄 RutaProtegida.jsx
+import { useEffect, useState } from 'react';
+
+export default function RutaProtegida() {
+  const [mensaje, setMensaje] = useState('');
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    fetch('http://localhost:3001/api/protegido', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          setMensaje(`Error: ${data.error}`);
+        } else {
+          setMensaje(data.mensaje + ' (Usuario: ' + data.usuario.usuario_id + ')');
+        }
+      });
+  }, []);
+
+  return (
+    <div>
+      <h2>Ruta Protegida</h2>
+      <p>{mensaje}</p>
+    </div>
+  );
+}
+
+✅ Resultado
+
+Usuario inicia sesión → token se guarda en localStorage
+
+Rutas protegidas validan el token antes de permitir acceso
+
+Todo el flujo es seguro si usas HTTPS
+
+🔐 Seguridad adicional (recomendado para producción)
+
+Usa cookies seguras (httpOnly) si prefieres mayor protección contra XSS
+
+Implementa expiración de sesión y refresh tokens
+
+Aplica CORS con origen específico
+
+Añade protección contra XSS y CSRF
+
+
+
+*******************
+EJEMPLO DE UN PUT
+*******************
+
+
+Actualizar datos de un usuario con PUT o PATCH es una parte fundamental de cualquier sistema. Vamos a ver:
+
+✅ Flujo completo para actualizar un usuario
+
+Supongamos que el usuario ya inició sesión y tienes un token JWT guardado en localStorage.
+
+🔄 1. Frontend (React)
+Supongamos que quieres permitir al usuario cambiar su nombre y email.
+📄 Componente de edición (EditarUsuario.jsx)
+import { useState, useEffect } from 'react';
+
+export default function EditarUsuario() {
+  const [nombre, setNombre] = useState('');
+  const [email, setEmail] = useState('');
+
+  const token = localStorage.getItem('token');
+
+  // Opcional: cargar datos actuales del usuario
+  useEffect(() => {
+    fetch('http://localhost:3001/api/usuario/me', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        setNombre(data.nombre);
+        setEmail(data.email);
+      });
+  }, []);
+
+  const handleUpdate = async () => {
+    const res = await fetch('http://localhost:3001/api/usuario', {
+      method: 'PUT', // o PATCH si solo cambias una parte
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        nombre,
+        email
+      })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      alert('Usuario actualizado correctamente');
+    } else {
+      alert('Error: ' + data.error);
+    }
+  };
+
+  return (
+    <div>
+      <h2>Editar Usuario</h2>
+      <input value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Nombre" />
+      <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" />
+      <button onClick={handleUpdate}>Guardar cambios</button>
+    </div>
+  );
+}
+
+🖥️ 2. Backend (Express + JWT)
+📄 Ruta PUT /api/usuario
+Requisitos:
+
+Middleware para verificar el token (verifyToken)
+
+Obtener el id del usuario desde el JWT
+
+Validar y actualizar los campos
+
+// ✅ Middleware para proteger rutas
+function verifyToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader?.split(' ')[1];
+
+  if (!token) return res.status(401).json({ error: 'Token faltante' });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ error: 'Token inválido' });
+    req.user = user; // contiene el payload del token
+    next();
+  });
+}
+
+📄 Ruta de actualización
+app.put('/api/usuario', verifyToken, async (req, res) => {
+  const userId = req.user.id;
+  const { nombre, email } = req.body;
+
+  // Aquí simulas una base de datos en memoria (debes adaptar a tu DB real)
+  const user = users.find(u => u.id === userId);
+  if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+  // Validaciones opcionales aquí
+  if (nombre) user.nombre = nombre;
+  if (email) user.email = email;
+
+  res.json({ mensaje: 'Usuario actualizado', user });
+});
+
+🛠️ Notas técnicas
+Aspecto	Recomendación
+Método HTTP	PUT si reemplazas todos los campos, PATCH si solo algunos
+ID del usuario	Obtenido desde el JWT (req.user.id)
+Seguridad	Siempre usar Authorization: Bearer <token>
+Validaciones	Sanitiza y valida en backend los datos recibidos
+Base de datos	Aquí usamos un array users[], pero deberías usar MongoDB, PostgreSQL, etc.
+🧠 Alternativas útiles
+Si quieres permitir editar otro usuario (no el actual):
+
+La ruta puede ser: PUT /api/usuarios/:id
+
+Asegúrate de verificar que el usuario tenga permisos para editar a otro.
+
+✅ TL;DR
+
+En React: Envías un PUT a /api/usuario con token en header y los campos a actualizar en el body.
+
+En backend: Verificas el token, obtienes el id, validas datos y actualizas el usuario.
+
+****************
+****************
+****************
+
+Pasos realizados
+
+En backend
+- crear una variable JWT_SECRET con una cadena secreta
+- crear directorio en backend /middleware
+- dentro crear login.js con la función authenticateToken 
+- en /models/usuariosModel.js añadiremos la generación del jwt en la función postLogin

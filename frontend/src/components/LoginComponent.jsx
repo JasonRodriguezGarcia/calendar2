@@ -76,13 +76,15 @@ const LoginComponent = ({ logged, setLogged, user, setUser }) => {
                 return
             } else {
                 // Crear localStorage
-                const resultado = data[0]
+                // const resultado = data[0]
+                const resultado = data.result
                 const usuario = {
                     id: resultado.usuario_id,
-                    password: resultado.password,
+                    password: resultado.password, // igual sobra ¿?¿?
                     nombre_apellidos: resultado.nombre_apellidos
                 }
-                localStorage.setItem("usuario", JSON.stringify(usuario))
+                // localStorage.setItem("usuario", JSON.stringify(usuario))
+                localStorage.setItem("token", data.token)
                 setUser(usuario)
                 setLogged(true)
                 navigate('/', { replace: true }) // no deja retroceder en el navegador

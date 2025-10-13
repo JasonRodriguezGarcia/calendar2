@@ -112,4 +112,45 @@ Luego añadimos la dirección de correo origen del email
             Una vez añadidos, vuelve a SendGrid y haz clic en "Verify".
             ✅ Importante: Este paso puede tardar un poco en propagarse (hasta 24h), pero normalmente es rápido.
 
+*********************
+PENDING MIRAR !!! 
+En express
+    npm install express-validator (para velidación de rutas)
 
+express-validator es un paquete para Node.js que proporciona middlewares para validar y sanear datos de entrada en aplicaciones Express.js, permitiendo verificar que la información recibida en las peticiones (como el cuerpo, parámetros o query strings) cumple ciertos criterios y transformarla para mejorar la seguridad. Se integra con la biblioteca validator.js y usa una "cadena" de validaciones para definir reglas para cada campo de datos. 
+¿Cómo funciona?
+1. Validación: express-validator permite definir reglas para cada campo que se espera en una petición. Por ejemplo, puedes especificar que un campo de email debe tener un formato de correo electrónico válido, o que un campo de contraseña debe tener una longitud mínima. 
+2. Saneamiento: También incluye funciones para "sanear" los datos, lo cual ayuda a prevenir ataques de seguridad. Esto puede incluir la limpieza de espacios en blanco o la conversión de tipos de datos. 
+3. Middleware: Se integra como middleware en Express.js, lo que significa que se ejecuta antes de que la lógica principal de tu ruta o controlador sea llamada. 
+4. Resultados de la validación: Si las validaciones fallan, express-validator devuelve un objeto con los errores, permitiendo enviarlos de vuelta al cliente o manejar la respuesta adecuadamente. 
+Usos comunes
+Validación de formularios: Asegurar que los datos ingresados en formularios web son correctos antes de procesarlos en el backend. 
+APIs: Verificar que los datos enviados a tu API cumplen los requisitos definidos, como la estructura de un JSON. 
+Seguridad: Prevenir vulnerabilidades como la inyección de código al sanear los datos de entrada. 
+Ejemplo rápido
+JavaScript
+
+const express = require('express');
+const { body, validationResult } = require('express-validator'); // Importa body y validationResult
+
+const app = express();
+
+app.post('/registro', [
+  // Reglas de validación para los campos email y contraseña
+  body('email').isEmail().withMessage('Por favor, introduce un email válido'),
+  body('password').isLength({ min: 5 }).withMessage('La contraseña debe tener al menos 5 caracteres'),
+], (req, res) => {
+  const errors = validationResult(req); // Captura los errores de validación
+
+  if (!errors.isEmpty()) {
+    // Si hay errores, los devuelve al cliente
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  // Si todo está bien, procede con la lógica del registro
+  // ...
+});
+
+app.listen(3000, () => console.log('Servidor en el puerto 3000'));
+En este ejemplo, se usa body() para validar campos en el cuerpo de la petición, se comprueba que el email sea válido y la password tenga al menos 5 caracteres. Si no, se devuelven los errores. 
+*********************

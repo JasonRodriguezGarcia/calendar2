@@ -2,7 +2,7 @@ import ContactsComponent from '../components/ContactsComponent';
 import MainMenuComponent from '../components/MainMenuComponent';
 import { Navigate, useNavigate } from 'react-router-dom';
 
-const ContactsPage = ({ logged, setLogged, user, setUser }) =>{
+const ContactsPage = ({ logged, setLogged, user, setUser, token }) =>{
 
     // Si no está logeado se sale del componente
     if (!logged)    // con esta opción ni siquiera se muestra brevemente EventsCalendarComponent
@@ -13,7 +13,7 @@ const ContactsPage = ({ logged, setLogged, user, setUser }) =>{
     return (
         <>
             <MainMenuComponent logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
-            <ContactsComponent logged={logged} user={user} />
+            <ContactsComponent logged={logged} user={user} token={token} />
         </>
     )
 }

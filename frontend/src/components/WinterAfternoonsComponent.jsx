@@ -16,7 +16,7 @@ import {
 import VpnKeyIcon from '@mui/icons-material/VpnKey'; // llave
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive'; // sirena
 
-const WinterAfternoonsComponent = ({ logged, user }) => {
+const WinterAfternoonsComponent = ({ logged, user, token }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER;
 
     const theme = useTheme();
@@ -30,8 +30,17 @@ const WinterAfternoonsComponent = ({ logged, user }) => {
         try {
             const response = await fetch(
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/winterafternoons`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-type': 'application/json; charset=UTF-8'
+                    }
+                }
+
             )
             const data = await response.json()
+            // const resultado = data.result
         // Paso 1: Inicializar 5 columnas vacías (lunes a viernes)
         const columnasPorDia = Array.from({ length: 5 }, () => [])
 

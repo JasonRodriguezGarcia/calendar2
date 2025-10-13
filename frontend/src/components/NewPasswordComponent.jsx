@@ -19,8 +19,10 @@ const NewPasswordComponent = ({ logged, setLogged }) => {
     const {id} = useParams()
     console.log("userId: ", id)
     const [newPassword, setNewPassword] = useState("")
+    const [newPassword2, setNewPassword2] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
-
+    const [showPassword, setShowPassword] = useState(false)
+    const [minPasswordLength, setMinPasswordLength] = useState(10) // Longitud contraseña
 
     useEffect(()=> {
         if (errorMessage) {
@@ -39,8 +41,16 @@ const NewPasswordComponent = ({ logged, setLogged }) => {
 
     const handleNewPassword = async (e) => {
         e.preventDefault()
-        if (newPassword.length < 10) {
-            setErrorMessage("Contraseña demasiado corta")
+        if (newPassword.length < minPasswordLength) {
+            setErrorMessage("Contraseña1 demasiado corta")
+            return
+        }
+        if (newPassword2.length < minPasswordLength) {
+            setErrorMessage("Contraseña2 demasiado corta")
+            return
+        }
+        if (newPassword !== newPassword2){
+            setErrorMessage("Las contraseñas no coinciden")
             return
         }
 
@@ -76,6 +86,16 @@ const NewPasswordComponent = ({ logged, setLogged }) => {
 
     }
     
+    const handleUserPassword = (e) => {
+        console.log("Seleccionado: ", e.currentTarget)
+        if (e.target.value.length > 15) return;
+        setNewPassword(e.target.value)
+        if (e.target.value.length < minPasswordLength)
+            setErrorMessage("Contraseña demasiado corta")
+        else
+            setErrorMessage(""); // Limpia el error si ya es válido
+    }
+
     return (
         <>
         <Box
@@ -119,10 +139,31 @@ const NewPasswordComponent = ({ logged, setLogged }) => {
                         <Input
                             id="newpassword"
                             name="newpassword"
-                            type="password"
-                            placeholder="Nueva contraseña"
+                            type={showPassword ? 'text' : 'password'}
+                            onMouseEnter={() => setShowPassword(true)}
+                            onMouseLeave={() => setShowPassword(false)}
+                            placeholder={`(mín. ${minPasswordLength} - máx. 15 car.)`}
+                            required
                             fullWidth
+                            value={newPassword}
                             onChange={(e)=> setNewPassword(e.target.value)}
+                        />
+                    </Stack>
+                </FormControl>
+                <FormControl>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <FormLabel htmlFor="newpassword2" sx={{ color: "black", minwidth: 100 }}>Repetir contraseña</FormLabel>
+                        <Input
+                            id="newpassword2"
+                            name="newpassword2"
+                            type={showPassword ? 'text' : 'password'}
+                            onMouseEnter={() => setShowPassword(true)}
+                            onMouseLeave={() => setShowPassword(false)}
+                            placeholder={`(mín. ${minPasswordLength} - máx. 15 car.)`}
+                            required
+                            fullWidth
+                            value={newPassword2}
+                            onChange={(e)=> setNewPassword2(e.target.value)}
                         />
                     </Stack>
                 </FormControl>

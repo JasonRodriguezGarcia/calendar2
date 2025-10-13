@@ -13,7 +13,7 @@ import {
     useTheme,
 } from '@mui/material';
 
-const ContactsComponent = ({ logged, user }) => {
+const ContactsComponent = ({ logged, user, token }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER;
 
     const theme = useTheme();
@@ -23,6 +23,14 @@ const ContactsComponent = ({ logged, user }) => {
         try {
             const response = await fetch(
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuarios`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-type': 'application/json; charset=UTF-8'
+                    }
+                }
+
             )
             const data = await response.json()
             setUsuarios(data)

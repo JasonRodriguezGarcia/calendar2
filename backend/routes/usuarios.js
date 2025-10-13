@@ -1,7 +1,6 @@
 import { Router} from 'express';
+import { authenticateToken } from '../middleware/login.js';
 // import { validateQuery, validateUserId } from '../middleware/users.js';
-// import { authenticateToken } from '../middleware/login.js';
-// import jwt from 'jsonwebtoken';
 import { getUsuarios, postLogin, postRecoveryPassword, postNewPassword, postUsuario, getSignUpFormData, getUsuario,
     putUsuario, getWinterAfternoons } from '../models/usuariosModel.js';
 
@@ -12,9 +11,9 @@ const router = Router()
 
 // /api/v1/erroak/usuarios
 // Conseguir los usuarios que hay en la bbdd
-router.get('/usuarios', async(req, res) => {
-    const usuarios = await getUsuarios();
-    console.log(usuarios);
+router.get('/usuarios', authenticateToken, async(req, res) => {
+    const usuarios = await getUsuarios()
+    console.log(usuarios)
     res.json (usuarios)
 })
 
@@ -23,8 +22,8 @@ router.get('/usuarios', async(req, res) => {
 router.post('/login', async(req, res) => {
     const loginDetails = req.body
     console.log("loginDetails: ", loginDetails)
-    const login = await postLogin(loginDetails);
-    console.log(login);
+    const login = await postLogin(loginDetails)
+    console.log(login)
     res.json (login)
 })
 
@@ -33,8 +32,8 @@ router.post('/login', async(req, res) => {
 router.post('/passwordrecovery', async(req, res) => {
     const recoveryPasswordDetails = req.body
     console.log("recoveryPasswordDetails: ", recoveryPasswordDetails)
-    const recoveryPassword = await postRecoveryPassword(recoveryPasswordDetails);
-    console.log(recoveryPassword);
+    const recoveryPassword = await postRecoveryPassword(recoveryPasswordDetails)
+    console.log(recoveryPassword)
     res.json (recoveryPassword)
 })
 
@@ -43,16 +42,16 @@ router.post('/passwordrecovery', async(req, res) => {
 router.post('/newpassword', async(req, res) => {
     const newPasswordDetails = req.body
     console.log("newPasswordDetails: ", newPasswordDetails)
-    const newPassword = await postNewPassword(newPasswordDetails);
-    console.log(newPassword);
+    const newPassword = await postNewPassword(newPasswordDetails)
+    console.log(newPassword)
     res.json (newPassword)
 })
 
 // /api/v1/erroak/getsignupformdata
 // Conseguir los datos de los select del formulario de alta de un usuario
 router.get('/getSignUpFormData', async(req, res) => {
-    const result = await getSignUpFormData();
-    console.log(result);
+    const result = await getSignUpFormData()
+    console.log(result)
     res.json (result)
 })
 
@@ -61,35 +60,35 @@ router.get('/getSignUpFormData', async(req, res) => {
 router.post('/usuario', async(req, res) => {
     const usuario = req.body
     console.log("Recibido en backend post usuario: ", usuario)
-    const resultUsuario = await postUsuario(usuario);
-    console.log(resultUsuario);
+    const resultUsuario = await postUsuario(usuario)
+    console.log(resultUsuario)
     res.json (resultUsuario)
 })
 
 // /api/v1/erroak/usuario/:id
-router.get('/usuario/:id', async(req, res) => {
+router.get('/usuario/:id', authenticateToken, async(req, res) => {
     const {id} = req.params
     console.log("imprimo id en get usuario: ", id)
-    const resultUsuario = await getUsuario(id);
+    const resultUsuario = await getUsuario(id)
     res.json (resultUsuario)
 })
 
 // /api/v1/erroak/usuario/:id
 // Modificar los datos de un usuario
-router.put('/usuario/:id', async(req, res) => {
+router.put('/usuario/:id', authenticateToken, async(req, res) => {
     const {id} = req.params
     // const id_usuario = req.params.id
     const updatedUser = req.body
     console.log("imprimo id en put usuario/:id : ", id)
-    const resultUsuario = await putUsuario(id, updatedUser);
+    const resultUsuario = await putUsuario(id, updatedUser)
     res.json (resultUsuario)
 })
 
 // /api/v1/erroak/usuarios
 // Conseguir los usuarios que hay en la bbdd
-router.get('/winterafternoons', async(req, res) => {
-    const winterAfternoons = await getWinterAfternoons();
-    console.log(winterAfternoons);
+router.get('/winterafternoons', authenticateToken, async(req, res) => {
+    const winterAfternoons = await getWinterAfternoons()
+    console.log(winterAfternoons)
     res.json (winterAfternoons)
 })
 

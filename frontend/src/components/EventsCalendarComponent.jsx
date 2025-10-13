@@ -33,6 +33,7 @@ import {
     Toolbar, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
     Typography,
 } from '@mui/material';
+import { colorOptions } from "../utils/EventColors";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -54,7 +55,7 @@ const saltosHora = 1 // timeslots={4}
 const horaMinima = new Date(1970, 1, 1, 7, 0) // Limitación hora mínima
 const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
 
-const EventsCalendarComponent = ({ logged, user } ) => {
+const EventsCalendarComponent = ({ logged, user, token } ) => {
     
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     
@@ -84,11 +85,15 @@ const EventsCalendarComponent = ({ logged, user } ) => {
     useEffect(() => {
         const getNewEventFormData = async () => {
             try {
-                // fetch for getting horarios & turnos data
-                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getNewEventFormData`,
+                // fetch for getting Select data
+                const response = await fetch(
+                    `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getNewEventFormData`,
                     {
                         method: 'GET',
-                        headers: {'Content-type': 'application/json; charset=UTF-8'}
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-type': 'application/json; charset=UTF-8'
+                        }
                     }
                 )
                 const data = await response.json()
@@ -156,19 +161,27 @@ const EventsCalendarComponent = ({ logged, user } ) => {
             // Llamando a backend para presentar los datos
             try {
                 const response = await fetch(
-                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventosuser/${user.id}/${start.toISOString()}/${end.toISOString()}`
-                );
-                const data = await response.json();
+                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventosuser/${user.id}/${start.toISOString()}/${end.toISOString()}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-type': 'application/json; charset=UTF-8'
+                        }
+                    }
+
+                )
+                const data = await response.json()
                 const eventosData = data.map(evento => ({
                     ...evento,
                     start: new Date(evento.start),
                     end: new Date(evento.end),
                     color: evento.color,
-                }));
+                }))
                 console.log("imprimo eventosData: ", eventosData)
                 setEvents(eventosData)
             } catch (error) {
-                console.error("Error cargando eventos:", error);
+                console.error("Error cargando eventos:", error)
             }
         }
 
@@ -273,13 +286,14 @@ const EventsCalendarComponent = ({ logged, user } ) => {
             setErrorDialogOpen(true)
             return
         }
-
         const newEvents = []
         let currentDate = new Date(eventDataRepeatStart)      // Copia de eventDataRepatStart
         let endDate = new Date(eventDataRepeatEnd)
         let dayCounter = 0
-        const startHour = selectedEvent.start.getHours()
-        const endHour = selectedEvent.end.getHours()
+        const startHours = selectedEvent.start.getHours()
+        const startMinutes = selectedEvent.start.getMinutes()
+        const endHours = selectedEvent.end.getHours()
+        const endMinutes = selectedEvent.end.getMinutes()
         const alreadyExistSpaces = []
         while (currentDate <= endDate) {
             console.log("Paso por el ciclo")
@@ -287,9 +301,9 @@ const EventsCalendarComponent = ({ logged, user } ) => {
             if (!isWeekend) {
                 const newEventId = eventGenerator()
                 let startSave = new Date(currentDate)
-                startSave.setHours(startHour)
+                startSave.setHours(startHours, startMinutes)
                 let endSave = new Date(currentDate)
-                endSave.setHours(endHour)
+                endSave.setHours(endHours, endMinutes)
                 // Generando el evento DUPLICADO
                 const eventDataRepeated ={
                     event_id: newEventId, 
@@ -309,7 +323,10 @@ const EventsCalendarComponent = ({ logged, user } ) => {
                     const responseRepeated = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/`,
                         {
                             method: "POST",
-                            headers: {'Content-type': 'application/json; charset=UTF-8'},
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-type': 'application/json; charset=UTF-8'
+                            },
                             body: JSON.stringify(eventDataRepeated)
                         }
                     )
@@ -393,7 +410,10 @@ const EventsCalendarComponent = ({ logged, user } ) => {
                 const responseEdit = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${selectedEvent.event_id}`,
                     {
                         method: "PUT",
-                        headers: {'Content-type': 'application/json; charset=UTF-8'},
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-type': 'application/json; charset=UTF-8'
+                        },
                         body: JSON.stringify(eventData)
                     }
                 )
@@ -404,7 +424,6 @@ const EventsCalendarComponent = ({ logged, user } ) => {
                     setDialogError(true)
                     return
                 }
-                debugger
                 if (data.result === "Espacio ya existente") {
                     setErrorMessage("Espacio OCUPADO, elegir otro")
                     setDialogError(true)
@@ -425,10 +444,14 @@ const EventsCalendarComponent = ({ logged, user } ) => {
             // Añadir aqui la llamada a backend para guardar un evento nuevo - eventData
             try {
                 // fetch eventos
-                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento`,
+                const response = await fetch(
+                    `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento`,
                     {
                         method: "POST",
-                        headers: {'Content-type': 'application/json; charset=UTF-8'},
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-type': 'application/json; charset=UTF-8'
+                        },
                         body: JSON.stringify(eventData)
                     }
                 )
@@ -478,10 +501,14 @@ const EventsCalendarComponent = ({ logged, user } ) => {
         // CARGARSE LOS DATOS LOS ATUALIZA A UTC+2
         try {
             // fetch eventos
-            const responseEdit = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${event.event_id}`,
+            const responseEdit = await fetch(
+                `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${event.event_id}`,
                 {
                     method: "PUT",
-                    headers: {'Content-type': 'application/json; charset=UTF-8'},
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-type': 'application/json; charset=UTF-8'
+                    },
                     body: JSON.stringify(updatedEvent)
                 }
             )
@@ -523,10 +550,14 @@ const EventsCalendarComponent = ({ logged, user } ) => {
         try {
             // fetch eventos
             console.log("Evento a borrar: ", selectedEvent.event_id)
-            const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${selectedEvent.event_id}`,
+            const response = await fetch(
+                `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${selectedEvent.event_id}`,
                 {
                     method: "DELETE",
-                    headers: {'Content-type': 'application/json; charset=UTF-8'},
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-type': 'application/json; charset=UTF-8'
+                    }
                 }
             )
             const data = await response.json()
@@ -609,7 +640,6 @@ const EventsCalendarComponent = ({ logged, user } ) => {
             .map(error => new Date(error.start).toLocaleDateString('es-ES'))
             .join('\n')
         console.log("formattedErrors: ", formattedErrors)
-        debugger
         navigator.clipboard.writeText(formattedErrors)
             .then(() => {
                 console.log('Copiado al portapapeles')
@@ -690,7 +720,7 @@ const EventsCalendarComponent = ({ logged, user } ) => {
 
             eventPropGetter={(event) => {                   // Estilo visual de cada evento
                 const user = usuarios.find(u => u.usuario_id === event.usuario_id);
-                const backgroundColor = user?.color || '#BDBDBD';
+                const backgroundColor = colorOptions[user?.color] || '#BDBDBD';
                 return {    // retornando un style por eso el return tiene {} en lugar de ()
                     style: {
                         backgroundColor,

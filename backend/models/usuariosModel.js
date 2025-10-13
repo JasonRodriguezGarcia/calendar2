@@ -1,9 +1,12 @@
 import pool from '../db-pg.js';
 import sgMail from "@sendgrid/mail";
 import dotenv from "dotenv";
+import jwt from 'jsonwebtoken'
 
 dotenv.config(); // Permite usar variables de entorno
+const JWT_SECRET_KEY = process.env.JWT_SECRET
 sgMail.setApiKey(process.env.SENDGRID_APIKEY);
+
 export async function getUsuarios() {
     try {
         const result = await pool.query("SELECT * FROM erroak.usuarios ORDER BY nombre_apellidos;");
@@ -18,11 +21,21 @@ export async function getUsuarios() {
 export async function postLogin(loginDetails) {
     try {
         const { useremail , password } = loginDetails
-        // habría que desencriptar password/token, esto para más adelante
         const result = await pool.query("SELECT * FROM erroak.usuarios WHERE email = $1 AND password = $2;", [useremail, password]);
         console.log("result: ", result)
-        if (result.rows.length > 0) 
-            return result.rows
+        if (result.rows.length > 0) {
+            const usuarioID = result.rows[0].usuario_id
+            const passwordUsuario = result.rows[0].password
+            const emailUsuario = result.rows[0].email
+            const token = jwt.sign(
+                { usuarioID, emailUsuario, passwordUsuario },
+                JWT_SECRET_KEY,
+                // { expiresIn: '1h', algorithm: 'HS256' },
+                { algorithm: 'HS256' },
+            )
+            console.log("JWT: ", token)
+            return ({ result: result.rows[0], token: token })
+        } 
         else
             return ({result: "No encontrado"})
 
@@ -34,14 +47,10 @@ export async function postLogin(loginDetails) {
 
 export async function postRecoveryPassword(recoveryPasswordDetails) {
     try {
-        // const { username, useremail } = recoveryPasswordDetails
         const { useremail } = recoveryPasswordDetails
         console.log("useremail: ", useremail)
         // habría que desencriptar password/token, esto para más adelante
-        // const result = await pool.query("SELECT usuario_id, password FROM erroak.usuarios WHERE nombre_apellidos = $1 AND email = $2",
-        //     [username, useremail]);
         const result = await pool.query("SELECT usuario_id, password, nombre_apellidos FROM erroak.usuarios WHERE email = $1",
-            // [username, useremail]);
             [useremail]);
         console.log("result: ", result)
         if (result.rows.length > 0) {
@@ -51,14 +60,12 @@ export async function postRecoveryPassword(recoveryPasswordDetails) {
             const resetLink = `http://localhost:5173/newpassword/${usuario_id}`
             const msg = {
                     to: useremail,
-                    // from: "tu-correo-verificado@tudominio.com", // debe ser verificado en SendGrid
-                    // from: {"arandia@erroak.sartu.org"}, // debe ser verificado en SendGrid
                     from: "jasonr@erroak.sartu.org", // debe ser verificado en SendGrid
                     subject: "Recuperación de contraseña",
                     // <p>Hola ${username},</p>
                     html: `
                         <p>Hola ${nombre_apellidos},</p>
-                        <p>Has hecho una petición para restablecer tu contraseña:</p>
+                        <p>Desde una web de Sartu has hecho una petición para restablecer tu contraseña:</p>
                         <p>Haz clic en el siguiente enlace para cambiarla:</p>
                         <a href="${resetLink}">${resetLink}</a>
                         <p>Este enlace expirará en 1 hora.</p>
@@ -96,7 +103,6 @@ export async function postNewPassword(newPasswordDetails) {
         console.log("result: ", result.command)
         if (result.rows.length > 0) {
             console.log("Usuario encontrado y CONTRASEÑA actualizada: ", result.rows[0])
-            // return result.rows
             return result.rows[0]  // retornamos el usuario actualizado
         }
         else
@@ -124,10 +130,22 @@ export async function postUsuario(usuario) {
         const result = await pool.query(`INSERT INTO erroak.usuarios
             (email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno, observaciones)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-            RETURNING usuario_id;`, 
+            RETURNING *;`, 
+            // RETURNING usuario_id;`, 
             [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno, observaciones])
         console.log("usuario creado: ", result)
-        return {success: true, message: "OK", id: result.rows[0].usuario_id}
+
+        const usuarioID = result.rows[0].usuario_id
+        const passwordUsuario = result.rows[0].password
+        const emailUsuario = result.rows[0].email
+        const tokenPost = jwt.sign(
+            { usuarioID, emailUsuario, passwordUsuario },
+            JWT_SECRET_KEY,
+            // { expiresIn: '1h', algorithm: 'HS256' },
+            { algorithm: 'HS256' },
+        )
+        console.log("JWT: ", tokenPost)
+        return ({ result: result.rows[0], token: tokenPost })
 
     } catch (err) {
         console.error('Error:', err.message);
@@ -146,8 +164,6 @@ export async function getSignUpFormData() {
         if (!turnos.rows.length)
             return {result: "Error. No hay datos en Turnos"}
 
-        // return {success: true, message: "OK"}
-
         return {centros: centros.rows, turnos: turnos.rows}
 
     } catch (err) {
@@ -158,14 +174,11 @@ export async function getSignUpFormData() {
 
 export async function getUsuario(id) {
     try {
-        // habría que desencriptar password/token, esto para más adelante
-        //
         const result = await pool.query("SELECT * FROM erroak.usuarios WHERE usuario_id = $1", [id]);
         console.log("result getUsuario: ", result)
         if (result.rows.length > 0) {
             console.log("Usuario encontrado en getUsuario: ", result.rows[0])
             return result.rows[0]
-            // return result.rows[0]
         }
         else
             return ({result: "No encontrado"})
@@ -178,9 +191,6 @@ export async function getUsuario(id) {
 
 export async function putUsuario(id, updatedUser) {
     try {
-        // habría que desencriptar password/token, esto para más adelante
-        //
-        // UPDATE erroak.usuarios set activo=true WHERE email = 'pepe2@pepe.com'
         const {
             email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno, observaciones
         } = updatedUser
@@ -201,8 +211,17 @@ export async function putUsuario(id, updatedUser) {
         console.log("result: ", result.command)
         if (result.rows.length > 0) {
             console.log("Usuario encontrado y actualizado: ", result.rows[0])
-            // return result.rows
-            return result.rows[0]  // retornamos el usuario actualizado
+            const usuarioID = result.rows[0].usuario_id
+            const passwordUsuario = result.rows[0].password
+            const emailUsuario = result.rows[0].email
+            const token = jwt.sign(
+                { usuarioID, emailUsuario, passwordUsuario },
+                JWT_SECRET_KEY,
+                // { expiresIn: '1h', algorithm: 'HS256' },
+                { algorithm: 'HS256' },
+            )
+            console.log("JWT: ", token)
+            return ({ result: result.rows[0], token: token })
         }
         else
             return ({result: "No encontrado"})

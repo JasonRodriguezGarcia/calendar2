@@ -5,7 +5,7 @@ import { Box, Toolbar } from '@mui/material';
 // import imagenFondo from "../assets/images/erroak-page.jpeg";
 import imagenFondo from "../assets/images/cuerda.jpg";
 
-const ProfilePage = ({ logged, setLogged, user, setUser }) =>{
+const ProfilePage = ({ logged, setLogged, user, setUser, token }) =>{
 
     // Si no está logeado se sale del componente
     if (!logged)    // con esta opción ni siquiera se muestra brevemente el siguiente componente
@@ -23,7 +23,7 @@ const ProfilePage = ({ logged, setLogged, user, setUser }) =>{
         }}>
             <MainMenuComponent logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
             <Toolbar /> {/* Añadiendo Toolbar vacío justo después, para que actúe como "espaciador" */}
-            <UsersCRUDComponent logged={logged} setLogged={setLogged} user={user} setUser={setUser} action="read" />
+            <UsersCRUDComponent logged={logged} setLogged={setLogged} user={user} setUser={setUser} action="read" token={token}/>
         </Box>
         </>
     )

@@ -5,7 +5,7 @@ import { Box, Toolbar } from '@mui/material';
 // import imagenFondo from "../assets/images/erroak-page.jpeg";
 import imagenFondo from "../assets/images/cuerda.jpg";
 
-const SignUpPage = ({ logged, setLogged, user, setUser }) =>{
+const SignUpPage = ({ logged, setLogged, user, setUser, token }) =>{
 
     if (logged)    // con esta opción ni siquiera se muestra brevemente el componente
         // Esto interrumpe el renderizado del componente y lo redirige inmediatamente. 
@@ -22,7 +22,7 @@ const SignUpPage = ({ logged, setLogged, user, setUser }) =>{
         }}>
             <MainMenuComponent logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
             <Toolbar /> {/* Añadiendo Toolbar vacío justo después, para que actúe como "espaciador" */}
-            <UsersCRUDComponent logged={logged} setLogged={setLogged} user={user} setUser={setUser} action="create" />
+            <UsersCRUDComponent logged={logged} setLogged={setLogged} user={user} setUser={setUser} action="create" token={token}/>
         </Box>
         </>
     )

@@ -20,7 +20,7 @@ import {
   endOfMonth,
 } from 'date-fns';
 
-const HolidaysViewComponent = ({ logged, user }) => {
+const HolidaysViewComponent = ({ logged, user, token }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER;
     const theme = useTheme();
 
@@ -37,7 +37,14 @@ const HolidaysViewComponent = ({ logged, user }) => {
         console.log("user.id: ", user.id)
         try {
             const response = await fetch(
-            `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${user.id}/${start.toISOString()}/${end.toISOString()}/all`
+                `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${user.id}/${start.toISOString()}/${end.toISOString()}/all`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-type': 'application/json; charset=UTF-8'
+                    }
+                }
             )
             const data = await response.json();
             const formatted = data.map(vacacion => ({
@@ -56,7 +63,15 @@ const HolidaysViewComponent = ({ logged, user }) => {
     const fetchUsuarios = async () => {
         try {
             const response = await fetch(
-                `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuarios`)
+                `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuarios`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-type': 'application/json; charset=UTF-8'
+                    }
+                }
+            )
             const data = await response.json();
             console.log("Usuarios: ", data)
             setUsuarios(data)
@@ -112,7 +127,16 @@ const HolidaysViewComponent = ({ logged, user }) => {
     <>
         <Toolbar />
 
-        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}
+            sx={{position: "fixed",  top: 60,
+            left: 0,
+            right: 0,
+            zIndex: 1100, // mayor que AppBar (por defecto en MUI)
+            backgroundColor: 'white',
+            paddingY: 1,
+            paddingX: 2,
+            borderBottom: '1px solid #ddd',}}
+        >
             <Button variant="outlined" onClick={() => {
                 const newDate = new Date(date)
                     newDate.setMonth(date.getMonth() - 1)
@@ -134,9 +158,10 @@ const HolidaysViewComponent = ({ logged, user }) => {
                 Mes Sig.
             </Button>
         </Stack>
+        <Toolbar />
         <Box sx={{ width: "100%", overflowY: "auto"}}>
             <TableContainer sx={{ width: "100%"}}>
-                <Table stickyHeader  sx={{ width: "100%", tableLayout: "fixed"}} aria-label="simple table">
+                <Table stickyHeader sx={{ width: "100%", tableLayout: "fixed"}} aria-label="simple table">
                     <TableHead>
                         <TableRow>
                             <TableCell align="left" sx={

@@ -2,12 +2,10 @@
 import express from "express";
 import path from "path";
 import cors from 'cors';
-// import sgMail from "@sendgrid/mail";
 import { fileURLToPath } from "url";
 import usuariosRouter from './routes/usuarios.js'
 import vacacionesRouter from './routes/vacaciones.js'
 import eventosRouter from './routes/eventos.js'
-// import listingsRouter from './routes/xlistings.js'
 import dotenv from 'dotenv';
 dotenv.config();
 

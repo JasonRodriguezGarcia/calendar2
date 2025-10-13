@@ -17,7 +17,7 @@ import logo from "../assets/images/erroaksartu.jpg"
 import { useState } from 'react';
 
 const pages = ['Eventos', 'Vacaciones', 'Listados', 'About'];
-const lists = ['Eventos entidad', 'Vacaciones personal', 'Tardes invierno', 'Contactos', ]
+const lists = ['Eventos entidad', 'Vacaciones entidad', 'Tardes invierno', 'Contactos', ]
 const settings = ['Ver perfil', 'Modificar perfil', 'Cerrar sesión'];
 
 function MainMenuComponent({ logged, setLogged, user, setUser }) {
@@ -48,7 +48,8 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                 navigate("/editprofile")
                 break
             case "Cerrar sesión":
-                localStorage.removeItem("usuario")
+                // localStorage.removeItem("usuario")
+                localStorage.removeItem("token")
                 setLogged(false)
                 setUser({})
                 navigate("/", { replace: true })
@@ -201,7 +202,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                                             // navigate("/staffholidays", { replace: true });
                                                             navigate("/entityevents")
                                                             break
-                                                        case "Vacaciones personal":
+                                                        case "Vacaciones entidad":
                                                             // navigate("/staffholidays", { replace: true });
                                                             navigate("/staffholidays")
                                                             break
@@ -328,7 +329,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                             // navigate("/staffholidays", { replace: true });
                                             navigate("/entityevents")
                                             break
-                                        case "Vacaciones personal":
+                                        case "Vacaciones entidad":
                                             // navigate("/staffholidays", { replace: true });
                                             navigate("/staffholidays")
                                             break

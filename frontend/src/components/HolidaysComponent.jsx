@@ -28,7 +28,7 @@ const localizer = dateFnsLocalizer({
     locales,
 });
 
-const HolidaysComponent = ({ logged, user } ) => {
+const HolidaysComponent = ({ logged, user, token } ) => {
 
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     
@@ -44,30 +44,33 @@ const HolidaysComponent = ({ logged, user } ) => {
             const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/count/${user.id}/${date.getFullYear()}`,
                 {
                     method: 'GET',
-                    headers: {'Content-type': 'application/json; charset=UTF-8'}
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-type': 'application/json; charset=UTF-8'
+                    }
                 }
             )
-            const dataHolidaysCount = await response.json();
+            const dataHolidaysCount = await response.json()
             console.log("dataHolidaysCount: ", dataHolidaysCount)
             
-            setDiasUsadosVacaciones(parseInt(dataHolidaysCount.count));
+            setDiasUsadosVacaciones(parseInt(dataHolidaysCount.count))
         } catch (error) {
-            console.error("Error cargando vacaciones/count:", error);
+            console.error("Error cargando vacaciones/count:", error)
         }
     }
 
 
     useEffect(()=> {
         // Conseguimos la fecha cuando cambie de mes con los botones Mes Ant. y Mes Sig.
-        const month = date.getMonth() + 1; // 0 = Enero, así que +1
-        const year = date.getFullYear();
+        const month = date.getMonth() + 1 // 0 = Enero, así que +1
+        const year = date.getFullYear()
 
-        console.log("Cargando eventos para:", month, year);
+        console.log("Cargando eventos para:", month, year)
 
         const getVisibleRange = (date) => {         // Para conseguir el rango visible del calendario
-            const start = startOfWeek(startOfMonth(date), { weekStartsOn: 1 });
-            const end = endOfWeek(endOfMonth(date), { weekStartsOn: 1 });
-            return { start, end };
+            const start = startOfWeek(startOfMonth(date), { weekStartsOn: 1 })
+            const end = endOfWeek(endOfMonth(date), { weekStartsOn: 1 })
+            return { start, end }
         };
 
         const fetchEventos = async () => {
@@ -80,33 +83,40 @@ const HolidaysComponent = ({ logged, user } ) => {
             // Llamando a backend para presentar los datos
             try {
                 const response = await fetch(
-                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${user.id}/${start.toISOString()}/${end.toISOString()}/uno`
-                );
-                const data = await response.json();
+                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${user.id}/${start.toISOString()}/${end.toISOString()}/uno`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-type': 'application/json; charset=UTF-8'
+                        }
+                    }
+                )
+                const data = await response.json()
                 const vacacionesData = data.map(vacacion => ({
                     ...vacacion,
                     start: new Date(vacacion.start),
                     end: new Date(vacacion.end),
                     cellColor: vacacion.cell_color,
-                }));
+                }))
                 console.log("imprimo vacacionesData: ", vacacionesData)
-                setEvents(vacacionesData);
+                setEvents(vacacionesData)
             } catch (error) {
-                console.error("Error cargando vacaciones:", error);
+                console.error("Error cargando vacaciones:", error)
             }
         }
 
         if (!user || !user.id) {
-            console.warn("fetchEventos() abortado porque user.id es undefined");
-            return;
+            console.warn("fetchEventos() abortado porque user.id es undefined")
+            return
         }
-        fetchEventos();
-        fetchCheckHolidays();
+        fetchEventos()
+        fetchCheckHolidays()
     }, [date, user])
 
     const handleNavigate = (newDate) => { // Permite desplazar de fecha del calendario, parámetro newDate que es la fecha a la que se desplaza
-        console.log("Navegando a nueva fecha:", newDate);
-        setDate(newDate);
+        console.log("Navegando a nueva fecha:", newDate)
+        setDate(newDate)
     };
 
     // Creando un nuevo evento
@@ -151,17 +161,20 @@ const HolidaysComponent = ({ logged, user } ) => {
         console.log("newVacacion: ", newVacacion)
         setEventData(newVacacion);
         setEvents([...events, newVacacion]);
-// Ya que estamos comenzando y los campos start y end vienen de JavaScript, es recomiendable guardar las fechas en 
+// Ya que estamos comenzando y los campos start y end vienen de JavaScript, es recomendable guardar las fechas en 
 // formato UTC (como .toISOString() en JS) y usar TIMESTAMPTZ en PostgreSQL.
 // Así evitaremos problemas futuros con zonas horarias.
 
-// Llamada a backend para guardar
         try {
+            // Llamada a backend para guardar
             // fetch vacaciones
             const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacacion`,
                 {
                     method: "POST",
-                    headers: {'Content-type': 'application/json; charset=UTF-8'},
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-type': 'application/json; charset=UTF-8'
+                    },
                     body: JSON.stringify(newVacacion)
                 }
             )
@@ -192,7 +205,10 @@ const HolidaysComponent = ({ logged, user } ) => {
             const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacacion/${event.event_id}`,
                 {
                     method: "DELETE",
-                    headers: {'Content-type': 'application/json; charset=UTF-8'},
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-type': 'application/json; charset=UTF-8'
+                    },
                 }
             )
             const data = await response.json()
@@ -203,7 +219,7 @@ const HolidaysComponent = ({ logged, user } ) => {
             }
         } catch (error) {
             // setError(error.message); // Handle errors
-            console.log(error.message)
+            console.log(error)
         } finally {
             // setLoading(false); // Set loading to false once data is fetched or error occurs
         }

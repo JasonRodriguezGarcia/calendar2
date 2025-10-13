@@ -16,28 +16,7 @@ import {
     Select,
     Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 } from '@mui/material';
-import { red, pink, purple, deepPurple, indigo, blue, lightBlue, cyan, teal, green, lightGreen, lime, yellow, amber, orange, deepOrange, brown, grey, blueGrey } from '@mui/material/colors';
-const colorOptions = {
-    // red: red[500],
-    pink: pink[500],
-    purple: purple[500],
-    deepPurple: deepPurple[500],
-    indigo: indigo[500],
-    blue: blue[500],
-    lightBlue: lightBlue[500],
-    cyan: cyan[500],
-    teal: teal[500],
-    green: green[500],
-    lightGreen: lightGreen[500],
-    lime: lime[500],
-    yellow: yellow[500],
-    amber: amber[500],
-    orange: orange[500],
-    deepOrange: deepOrange[500],
-    brown: brown[500],
-    grey: grey[500],
-    blueGrey: blueGrey[500],
-};
+import { colorOptions } from "../utils/EventColors";
 
 const tardes_invierno = [
     {tarde_id: 0, descripcion: "No"},
@@ -47,7 +26,7 @@ const tardes_invierno = [
     {tarde_id: 4, descripcion: "Jueves"},
     {tarde_id: 5, descripcion: "Viernes"},
 ]
-const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
+const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token }) => {
 
     const [selectedColor, setSelectedColor] = useState("")
     const [userEmail, setUserEmail] = useState("")
@@ -72,6 +51,7 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
 
     console.log("prop usuario: ", user)
+    console.log("token: ", token)
 
     useEffect(() => {
         const getData = async () => {
@@ -80,7 +60,10 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                 const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getSignUpFormData`,
                     {
                         method: 'GET',
-                        headers: {'Content-type': 'application/json; charset=UTF-8'}
+                        headers: {
+                            // 'Authorization': `Bearer ${token}`,
+                            'Content-type': 'application/json; charset=UTF-8'
+                        }
                     }
                 )
                 const data = await response.json()
@@ -108,7 +91,10 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                     const responseUser = await fetch(endPoint,
                         {
                             method: "GET",
-                            headers: {'Content-type': 'application/json; charset=UTF-8'}
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-type': 'application/json; charset=UTF-8'
+                            }
                         }
                     )
                     const dataResponseUser = await responseUser.json()
@@ -147,7 +133,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                 setFormReadOnly(false)
             }
         }
-
 
         // Solo continuar si user.id es válido, ya que se llama 2 veces a user
         // 1. user inicia como {} (estado vacío)
@@ -255,8 +240,8 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                 movil: userMovil.replace('-', ''),
                 extension: userExtension,
                 centro_id: userCentro,
-                llave: userLlave === "true",
-                alarma: userAlarma === "true",
+                llave: userLlave,
+                alarma: userAlarma,
                 turno_id: userTurno,
                 color: selectedColor,
                 tarde_invierno: userTarde_Invierno,
@@ -272,28 +257,30 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
             const response = await fetch(endPoint,
                 {
                     method: method,
-                    headers: {'Content-type': 'application/json; charset=UTF-8'},
+                    headers: {
+                        'Authorization': `Bearer ${token}`, // se usará o no
+                        'Content-type': 'application/json; charset=UTF-8'
+                    },
                     body: JSON.stringify(userTmp)
                 }
             )
             const data = await response.json()
             console.log("Respuesta backend: ", data)
-            if (data.result === "Email ya existente") {
+            const resultado = data.result
+            if (resultado === "Email ya existente") {
                 setErrorMessage("Email ya existente")
                 return
             }
-            if (data.result === "Nombre y apellidos ya existente") {
-                setErrorMessage("Nombre y apellidos ya existente")
-                return
-            }
             const usuario = {
-                id: action === "create" ? data.id : data.usuario_id,
+                id: resultado.usuario_id,
+                // id: action === "create" ? resultado : data.usuario_id,
+                // id: resultado.usuario_id,
                 password: userPassword,
                 nombre_apellidos: userNombre_Apellidos,
             }
 
             // Crear/modificar localStorage
-            localStorage.setItem("usuario", JSON.stringify(usuario))
+            localStorage.setItem("token", data.token) // no hace falta un setToken porque el token se carga en "/"
             setLogged(true)
             setUser(usuario)
             navigate('/', { replace: true })
@@ -334,7 +321,7 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action }) => {
                     border: "1px solid grey",
                     borderRadius: '10px',
                     boxShadow: '10px 10px 15px 5px grey',
-                backgroundColor: '#f0f0f0',
+                    backgroundColor: '#f0f0f0',
                 }}
             >
                 <div>

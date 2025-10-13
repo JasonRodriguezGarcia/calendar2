@@ -59,11 +59,11 @@ const EventsCalendarComponent = ({ logged, user, token } ) => {
     
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     
-    const [events, setEvents] = useState([])
+    const [events, setEvents] = useState([])                // todos los eventos del rango actual
     const [dialogOpen, setDialogOpen] = useState(false)
-    const [eventData, setEventData] = useState({})
+    const [eventData, setEventData] = useState({})          // evento actual
     const [date, setDate] = useState(new Date())
-    const [view, setView] = useState(Views.WORK_WEEK)     // POR DEFECTO VISTA SEMANA LABORAL
+    const [view, setView] = useState(Views.WORK_WEEK)       // POR DEFECTO VISTA SEMANA LABORAL
     const [isEditing, setIsEditing] = useState(false)
     const [selectedEvent, setSelectedEvent] = useState(null)
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
@@ -80,7 +80,10 @@ const EventsCalendarComponent = ({ logged, user, token } ) => {
     const [dialogError, setDialogError] = useState(false)
     const [dialogRepeatedResultOpen, setDialogRepeatedResultOpen] = useState(false)
     const [errorMessageRepeated, setErrorMessageRepeated] = useState("")
-
+    const [isRepeatableSpace, setIsRepeatableSpace] = useState(false)
+    const [repeatableSpaces, setRepeatableSpaces] = useState([
+        28 // Exterior
+    ])
 
     useEffect(() => {
         const getNewEventFormData = async () => {
@@ -258,9 +261,11 @@ const EventsCalendarComponent = ({ logged, user, token } ) => {
             start: newStart,
             end: newEnd,
             observaciones: '',
-            color: ''
+            color: '',
+            repetible: false,
         })
         setIsEditing(false)
+        setIsRepeatableSpace(false)
         setSelectedEvent(null)
         setDialogOpen(true)
     };
@@ -269,6 +274,7 @@ const EventsCalendarComponent = ({ logged, user, token } ) => {
     const handleSelectEvent = async (event) => {
         setEventData({ ...event })
         setIsEditing(true)
+        setIsRepeatableSpace(repeatableSpaces.includes(event.espacio_id))
         setSelectedEvent(event)
         setDialogOpen(true)
     };
@@ -313,7 +319,8 @@ const EventsCalendarComponent = ({ logged, user, token } ) => {
                     start: startSave,
                     end: endSave,
                     observaciones: selectedEvent.observaciones,
-                    color: selectedEvent.color
+                    color: selectedEvent.color,
+                    repetible: repeatableSpaces.includes(selectedEvent.espacio_id)
                 }
                 // añadir a backend y dependiendo de si ya esta ocupado se guarda o no
                 // pero hay que pasar la fecha y el espacio_id
@@ -403,6 +410,7 @@ const EventsCalendarComponent = ({ logged, user, token } ) => {
             setErrorDialogOpen(true)
             return
         }
+debugger
         if (isEditing && selectedEvent) {
             // Añadir aqui la llamada a backend para modificar un evento nuevo - selectedEvent.event_id
             try {
@@ -771,7 +779,7 @@ const EventsCalendarComponent = ({ logged, user, token } ) => {
                                 id="select-espacio_id"
                                 label="Espacio"
                                 value={eventData.espacio_id}
-                                onChange={(e) => setEventData({ ...eventData, espacio_id: e.target.value})}
+                                onChange={(e) => setEventData({ ...eventData, espacio_id: e.target.value, repetible: repeatableSpaces.includes(e.target.value)})}
                             >
                                 {espacios.map((espacio) => (
                                     <MenuItem key={espacio.espacio_id} value={espacio.espacio_id}>{espacio.descripcion}</MenuItem>
@@ -822,11 +830,11 @@ const EventsCalendarComponent = ({ logged, user, token } ) => {
                     </Stack>
                 </DialogContent>
                 <DialogActions>
-                    {isEditing && (
-                        <>
-                            <Button onClick={handleDeleteEvent} color="error" variant="contained">Eliminar</Button>
-                            <Button onClick={handleRepeatEvent} variant="contained">Repetir</Button>
-                        </>
+                    {isEditing &&
+                        <Button onClick={handleDeleteEvent} color="error" variant="contained">Eliminar</Button>
+                    }
+                    {isEditing && !isRepeatableSpace && (
+                        <Button onClick={handleRepeatEvent} variant="contained">Repetir</Button>
                     )}
                     <Button onClick={handleSaveEvent} variant="contained">Guardar</Button>
                     <Button onClick={handleCloseDialog} variant="contained">Cancelar</Button>

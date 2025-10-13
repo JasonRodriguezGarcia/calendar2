@@ -49,7 +49,6 @@ export async function postRecoveryPassword(recoveryPasswordDetails) {
     try {
         const { useremail } = recoveryPasswordDetails
         console.log("useremail: ", useremail)
-        // habría que desencriptar password/token, esto para más adelante
         const result = await pool.query("SELECT usuario_id, password, nombre_apellidos FROM erroak.usuarios WHERE email = $1",
             [useremail]);
         console.log("result: ", result)
@@ -95,7 +94,6 @@ export async function postNewPassword(newPasswordDetails) {
     try {
         const { userid, newpassword } = newPasswordDetails
         console.log("userid - newpassword: ", userid, newpassword)
-        // habría que desencriptar password/token, esto para más adelante
         const result = await pool.query(`UPDATE erroak.usuarios SET password = $1 WHERE usuario_id = $2 RETURNING *;`,
             [newpassword, userid]);
         console.log("result: ", result)

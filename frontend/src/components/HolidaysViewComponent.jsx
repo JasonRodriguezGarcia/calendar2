@@ -80,11 +80,6 @@ const HolidaysViewComponent = ({ logged, user, token }) => {
         }
     }
 
-    // useEffect(() => {
-    //     fetchUsuarios()
-    //     fetchEventos()
-    // }, [])
-
     useEffect(() => {
         if (!user?.id) return // Sobra ¿?
         fetchEventos()
@@ -105,7 +100,6 @@ const HolidaysViewComponent = ({ logged, user, token }) => {
 
       // Construir filas cuando usuarios esté listo
     useEffect(() => {
-        // if (events.length === 0) return
         if (usuarios.length === 0) return
 
         const tempRows = usuarios.map(usuario => {

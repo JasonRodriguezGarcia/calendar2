@@ -29,26 +29,28 @@ export async function postEvento(evento) {
     console.log("imprimo evento: ", evento)
     
     try {
-        const { event_id, usuario_id, espacio_id, programa_id, start, end, observaciones, color } = evento
-        const existsEvento = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.eventos WHERE event_id = $1);`, [event_id])
-        console.log("imprimo existsEvento en postEvento: ", existsEvento.rows[0].exists)
-        if (existsEvento.rows[0].exists)
-            return {result: "Evento ya existente"} // Prácticamente imposible
+        const { event_id, usuario_id, espacio_id, programa_id, start, end, observaciones, color, repetible } = evento
+        if (!repetible) {            
+            const existsEvento = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.eventos WHERE event_id = $1);`, [event_id])
+            console.log("imprimo existsEvento en postEvento: ", existsEvento.rows[0].exists)
+            if (existsEvento.rows[0].exists)
+                return {result: "Evento ya existente"} // Prácticamente imposible
 
-        // Si el espacio está ocupado en algún rango de start o end, devolver espacio ocupado
-        const existsEspacio = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.eventos WHERE espacio_id = $1 
-            AND start < $3 AND "end" > $2);`,
-            [espacio_id, start, end])
-        console.log("imprimo existsEvento en postEvento: ", existsEspacio.rows[0].exists)
-        if (existsEspacio.rows[0].exists)
-            return {result: "Espacio ya existente"} // Espacio ocupado en cualquiera de las horas entre start y end
+            // Si el espacio está ocupado en algún rango de start o end, devolver espacio ocupado
+            const existsEspacio = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.eventos WHERE espacio_id = $1 
+                AND start < $3 AND "end" > $2);`,
+                [espacio_id, start, end])
+            console.log("imprimo existsEvento en postEvento: ", existsEspacio.rows[0].exists)
+            if (existsEspacio.rows[0].exists)
+                return {result: "Espacio ya existente"} // Espacio ocupado en cualquiera de las horas entre start y end
+        }
 
         const result = await pool.query(`
             INSERT INTO erroak.eventos
-            (event_id, usuario_id, espacio_id, programa_id, start, "end", observaciones, color)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            (event_id, usuario_id, espacio_id, programa_id, start, "end", observaciones, color, repetible)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
             RETURNING event_id;`, 
-            [event_id, usuario_id, espacio_id, programa_id, start, end, observaciones, color])
+            [event_id, usuario_id, espacio_id, programa_id, start, end, observaciones, color, repetible])
         console.log("Evento cread: ", result)
         return {success: true, message: "OK", id: result.rows[0].event_id}
 
@@ -80,27 +82,29 @@ export async function deleteEvento(event_id) {
 }
 
 export async function putEvento(event_ID, event) {
-    const {event_id, usuario_id, espacio_id, programa_id, start, end, observaciones, color} = event
+    const {event_id, usuario_id, espacio_id, programa_id, start, end, observaciones, color, repetible} = event
     console.log("imprimo evento putEvento: ", event)
     try {
-        const existsEvento = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.eventos WHERE event_id = $1);`, [event_ID])
-        console.log("imprimo existsEvento putEvento: ", existsEvento.rows[0].exists)
-        if (!existsEvento.rows[0].exists)
-            return {result: "Evento event_id NO existente"}
+        if (!repetible) {
+            const existsEvento = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.eventos WHERE event_id = $1);`, [event_ID])
+            console.log("imprimo existsEvento putEvento: ", existsEvento.rows[0].exists)
+            if (!existsEvento.rows[0].exists)
+                return {result: "Evento event_id NO existente"}
 
-        // Si el espacio está ocupado en algún rango de start o end, devolver espacio ocupado
-        const existsEspacio = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.eventos WHERE event_id <> $1 AND espacio_id = $2
-             AND start < $4 AND "end" > $3);`,
-            [event_ID, espacio_id, start, end])
-        console.log("imprimo existsEvento en postEvento: ", existsEspacio.rows[0].exists)
-        if (existsEspacio.rows[0].exists)
-            return {result: "Espacio ya existente"} // Espacio ocupado en cualquiera de las horas entre start y end
+            // Si el espacio está ocupado en algún rango de start o end, devolver espacio ocupado
+            const existsEspacio = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.eventos WHERE event_id <> $1 AND espacio_id = $2
+                AND start < $4 AND "end" > $3);`,
+                [event_ID, espacio_id, start, end])
+            console.log("imprimo existsEvento en postEvento: ", existsEspacio.rows[0].exists)
+            if (existsEspacio.rows[0].exists)
+                return {result: "Espacio ya existente"} // Espacio ocupado en cualquiera de las horas entre start y end
+        }
 
         const result = await pool.query(`
             UPDATE erroak.eventos
-            SET usuario_id = $1, espacio_id = $2, programa_id = $3, start = $4, "end" = $5, observaciones = $6, color = $7
-	        WHERE event_id = $8;`, 
-            [usuario_id, espacio_id, programa_id, start, end, observaciones, color, event_ID])
+            SET usuario_id = $1, espacio_id = $2, programa_id = $3, start = $4, "end" = $5, observaciones = $6, color = $7, repetible = $8
+	        WHERE event_id = $9;`, 
+            [usuario_id, espacio_id, programa_id, start, end, observaciones, color, repetible, event_ID])
         console.log("Evento modificado: ", result)
         return {success: true, message: "OK", id: event_ID}
 

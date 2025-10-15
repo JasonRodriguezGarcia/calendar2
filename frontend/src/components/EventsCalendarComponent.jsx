@@ -55,8 +55,9 @@ const saltosHora = 1 // timeslots={4}
 const horaMinima = new Date(1970, 1, 1, 7, 0) // Limitación hora mínima
 const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
 
-const EventsCalendarComponent = ({ logged, user, token } ) => {
+const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => {
     
+    console.log("Lenguaje seleccionado en EventsCalendarComponent: ", selectedLanguage)
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     
     const [events, setEvents] = useState([])                // todos los eventos del rango actual

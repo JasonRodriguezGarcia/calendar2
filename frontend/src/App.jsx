@@ -16,21 +16,34 @@ import ContactsPage from './pages/ContactsPage';
 import PasswordRecoveryPage from './pages/PasswordRecoveryPage';
 import NewPasswordPage from './pages/NewPasswordPage';
 import EntityEventsCalendarPage from './pages/EntityEventsCalendarPage';
+import PaisVasco from "./assets/images/flags/paisvasco.png"
+import Espana from "./assets/images/flags/espana.png"
+import Francia from "./assets/images/flags/francia.png"
+import ReinoUnido from "./assets/images/flags/ReinoUnido.png"
 
 
 const App = () => {
+    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const [logeado, setLogeado] = useState(false)
     const [usuario, setUsuario] = useState({})
     const [token, setToken] = useState("")
-    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
+    const languagesSelect = [
+        { lang: 'Eus', icon: PaisVasco },
+        { lang: 'Es', icon: Espana },
+        // { lang: 'Fr', icon: Francia },
+        // { lang: 'En', icon: ReinoUnido },
+    ];
+    const [selectedLanguage, setSelectedLanguage] = useState("")
+
 
     // const navigate = useNavigate()
-
-    if (!usuario)
-        <Navigate to="/" replace />
+// Retorna el componente <Navigate>, lo cual permite hacer una redirección efectiva si no hay usuario o no está logeado.
+//  Eso es correcto para manejar acceso restringido en este componente.
+    // if (!usuario || !logeado)
+    //     <Navigate to="/" replace />
         
     useEffect(()=> {
-        const checklogeado = async () => {
+        const checkLogeado = async () => {
             const usuarioToken = localStorage.getItem("token")
             if (usuarioToken) {
                 try {
@@ -56,7 +69,7 @@ const App = () => {
                         }
                     )
                     const data = await response1.json()
-                    console.log("Respuesta backend: ", data)
+                    // console.log("Respuesta backend: ", data)
                     if (data.result === "No encontrado") {
                         setErrorMessage("usuario o contraseña no válidos")
                         return
@@ -72,7 +85,7 @@ const App = () => {
                         localStorage.setItem("token", data.token)
                         setUsuario(usuario)
                         setLogeado(true)
-                        setToken(usuarioToken)
+                        setToken(data.token)
                         // navigate('/', { replace: true }) // no deja retroceder en el navegador
                     }
                 } catch (e) {
@@ -83,38 +96,63 @@ const App = () => {
                 setLogeado(false)
             }
         }
-    
-        checklogeado()
+
+        const checkIdioma = async () => {
+            const usuarioIdioma = localStorage.getItem("idioma")
+            // Las líneas comentadas ponían el idioma directamente en localStorage dentro de checkIdioma, 
+            // y ahora el almacenamiento queda solo en el useEffect que observa selectedLanguage.
+            // Esto mejora la sincronización y evita redundancias.
+            if (usuarioIdioma && languagesSelect.some(languagesSelect => languagesSelect.lang === usuarioIdioma)) {
+                setSelectedLanguage(usuarioIdioma)
+                // localStorage.setItem("idioma", usuarioIdioma)
+            } else {
+                const idiomaPorDefecto = languagesSelect[1].lang // lenguaje por defecto
+                setSelectedLanguage(idiomaPorDefecto)
+                // localStorage.setItem("idioma", idiomaPorDefecto)
+            }
+        }
+
+        checkLogeado()
+        checkIdioma()
     }, [])
+
+    useEffect(() => {
+        if (selectedLanguage) {
+            localStorage.setItem("idioma", selectedLanguage);
+        }
+    }, [selectedLanguage]);
 
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<MainPage logged={logeado} 
-                    setLogged={setLogeado} user={usuario} setUser={setUsuario}/>} />
-                <Route path="/eventos" element={<EventsCalendarPage token={token}
-                    logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/holidays" element={<HolidaysPage token={token}
-                    logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
+                <Route path="/" element={<MainPage 
+                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
+                    logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario}/>} />
+                <Route path="/eventos" element={<EventsCalendarPage 
+                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
+                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
+                <Route path="/holidays" element={<HolidaysPage 
+                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/login" element={<LoginPage 
                     logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/signup" element={<SignUpPage token={token}
-                    logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/profile" element={<ProfilePage token={token}
-                    logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/editprofile" element={<EditProfilePage token={token}
-                    logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/staffholidays" element={<HolidaysViewPage token={token}
-                    logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/winterafternoons" element={<WinterAfternoonsPage token={token}
-                    logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/contacts" element={<ContactsPage token={token}
-                    logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
+                <Route path="/signup" element={<SignUpPage 
+                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
+                <Route path="/profile" element={<ProfilePage 
+                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
+                <Route path="/editprofile" element={<EditProfilePage 
+                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
+                <Route path="/entityevents" element={<EntityEventsCalendarPage 
+                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
+                <Route path="/staffholidays" element={<HolidaysViewPage 
+                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
+                <Route path="/winterafternoons" element={<WinterAfternoonsPage 
+                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
+                <Route path="/contacts" element={<ContactsPage 
+                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/passwordrecovery" element={<PasswordRecoveryPage 
+                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/newpassword/:id" element={<NewPasswordPage 
-                    logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/entityevents" element={<EntityEventsCalendarPage token={token}
                     logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
             </Routes>
         </BrowserRouter>  )

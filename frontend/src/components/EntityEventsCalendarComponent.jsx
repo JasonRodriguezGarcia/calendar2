@@ -59,7 +59,7 @@ const saltosHora = 1 // timeslots={4}
 const horaMinima = new Date(1970, 1, 1, 7, 0) // Limitación hora mínima
 const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
 
-const EntityEventsCalendarComponent = ({ logged, user, token } ) => {
+const EntityEventsCalendarComponent = ({ logged, user, token }) => {
     
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     

@@ -1,30 +1,45 @@
-import { useNavigate , Link } from 'react-router-dom';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import HomeIcon from '@mui/icons-material/Home';
-
-import logo from "../assets/images/erroaksartu.jpg"
 import { useState } from 'react';
+import { useNavigate , Link } from 'react-router-dom';
+import logo from "../assets/images/erroaksartu.jpg"
+import {
+    AppBar,
+    Avatar,
+    Box,
+    Button, 
+    Container,
+    FormControl,
+    Menu,
+    MenuItem,
+    IconButton,
+    Select,
+    Toolbar, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
+    Tooltip, 
+    Typography,
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import HomeIcon from '@mui/icons-material/Home';
+// import PaisVasco from "../assets/images/flags/paisvasco.png"
+// import Espana from "../assets/images/flags/espana.png"
+// import Francia from "../assets/images/flags/francia.png"
+// import ReinoUnido from "../assets/images/flags/ReinoUnido.png"
+
 
 const pages = ['Eventos', 'Vacaciones', 'Listados', 'About'];
 const lists = ['Eventos entidad', 'Vacaciones entidad', 'Tardes invierno', 'Contactos', ]
 const settings = ['Ver perfil', 'Modificar perfil', 'Cerrar sesión'];
+// const languagesSelect = [
+//     { lang: 'Eus', icon: PaisVasco },
+//     { lang: 'Es', icon: Espana },
+//     // { lang: 'Fr', icon: Francia },
+//     // { lang: 'En', icon: ReinoUnido },
+// ];
 
-function MainMenuComponent({ logged, setLogged, user, setUser }) {
+const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect }) => {
     const navigate = useNavigate()
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
     const [anchorElList, setAnchorElList] = useState(null);
+    // const [selectedLanguage, setSelectedLanguage] = useState(languagesSelect[1].lang) // lenguaje por defecto
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -92,11 +107,55 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
         else if (page === "Listados") return logged       
         return true
     });
-    
+
     return (
         <AppBar position="fixed" sx={{ backgroundColor: '#0072AD' }}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
+                    <FormControl variant="standard" fullWidth sx={{width: "100px"}}>
+                        <Select
+                            id="select-usuario_id"
+                            value={selectedLanguage}
+                            disableUnderline
+                            onChange={(e) => setSelectedLanguage(e.target.value)}
+                            sx={{
+                                color: "white",
+                                display: "flex",
+                                width: "100%",
+                                borderRadius: "5px",
+                                "&:hover": {backgroundColor: 'lightgrey', color: "black"},
+                                "&:selected": {backgroundColor: "grey"},
+                                fontSize: {xs: "12px", md:"18px"},
+                                "& .MuiSelect-select": {
+                                    textAlign: "center",  // <- centra el texto seleccionado
+                                    display: "flex",
+                                    justifyContent: "center", // centra horizontalmente el contenido
+                                    alignItems: "center",     // centra verticalmente (opcional)
+                                }
+                            }}
+                            >
+                            {languagesSelect.map((lang, index) => (
+                                <MenuItem 
+                                    sx={{ display: "flex", fontSize: {xs: "12px", md:"18px"}, alignItems: "center", height: "100%" }}
+                                    key={index} value={lang.lang}
+                                >
+                                    <Box sx={{display: "flex", alignItems: "center"}}>
+                                        {lang.lang}
+                                        {/* &nbsp;
+                                        <img 
+                                            src={lang.icon} 
+                                            alt={`bandera-${lang.lang}`}
+                                            style={{ 
+                                                height: 25, 
+                                                width: 30,
+                                                marginRight: 8, 
+                                            }} 
+                                        /> */}
+                                    </Box>
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                     <Typography
                         variant="h6"
                         noWrap
@@ -150,7 +209,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                 alt="logo" 
                                 style={{ 
                                     height: 50, 
-                                    marginRight: 8, 
+                                    marginRight: 16, 
                                     display: 'flex',
                                     borderRadius: "10px",
                                 }} 
@@ -259,7 +318,8 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                             <IconButton color="primary" aria-label="home">
                                 <HomeIcon
                                     style={{ 
-                                        height: 35, 
+                                        height: 30, 
+                                        marginRight: 4,
                                         color: "#8BC000",
                                         borderRadius: "10px",
                                     }}
@@ -290,7 +350,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                 alt="logo"
                                 style={{ 
                                     height: 35, 
-                                    marginRight: 8, 
+                                    marginRight: 18, 
                                     display: 'flex',
                                     borderRadius: "10px",
                                 }} 
@@ -360,7 +420,7 @@ function MainMenuComponent({ logged, setLogged, user, setUser }) {
                                     sx={
                                         (theme) => ({
                                             fontSize: {
-                                                xs: '10px',   // móviles
+                                                xs: '8px',   // móviles
                                                 sm: '10px',  // tablets
                                                 md: '14px',  // escritorio
                                             },

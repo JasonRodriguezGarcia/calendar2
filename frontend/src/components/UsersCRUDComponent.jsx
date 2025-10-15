@@ -211,14 +211,14 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
         setErrorMessage("")
     }
 
-    const handleSignUp = async (e) => {
+    const handleFormSubmit = async (e) => {
         e.preventDefault()
         if (action === "read") {
             navigate(`/`, { replace: true });
             return
         }
-        if (userEmail.length < 7 || !userEmail.includes("@erroak.sartu.org")) {
-            setErrorMessage("Introduzca email correcto")
+        if (userEmail.length < 18 && !userEmail.includes("@erroak.sartu.org")) {
+            setErrorMessage("Introduzca email válido")
             return
         }
         if (userPassword.length < minPasswordLength) {
@@ -305,7 +305,7 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
             }}
         >
             <Box component="form"
-                onSubmit={(e)=> handleSignUp(e)}
+                onSubmit={(e)=> handleFormSubmit(e)}
                 sx={{
                     heigth: "100vh",
                     width: { xs: '90%', sm: "30%" },

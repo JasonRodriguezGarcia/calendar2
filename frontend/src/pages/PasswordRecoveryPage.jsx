@@ -5,7 +5,7 @@ import { Box } from '@mui/material';
 // import imagenFondo from "../assets/images/erroak-page.jpeg";
 import imagenFondo from "../assets/images/cuerda.jpg";
 
-const PasswordRecoveryPage = ({ logged, setLogged, user, setUser }) =>{
+const PasswordRecoveryPage = ({ logged, setLogged, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect }) =>{
 
     if (logged)    // con esta opción ni siquiera se muestra brevemente el componente
         // Esto interrumpe el renderizado del componente y lo redirige inmediatamente. 
@@ -22,8 +22,12 @@ const PasswordRecoveryPage = ({ logged, setLogged, user, setUser }) =>{
             backgroundPosition: "top center",
         }}>
 
-            <MainMenuComponent logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
-            <PasswordRecoveryComponent logged={logged} setLogged={setLogged} /> {/* user={usuario} setUser={setUsuario} /> */}
+            <MainMenuComponent 
+                selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
+                logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
+            <PasswordRecoveryComponent 
+                selectedLanguage={selectedLanguage}
+                logged={logged} setLogged={setLogged} /> {/* user={usuario} setUser={setUsuario} /> */}
         </Box>
         </>
     )

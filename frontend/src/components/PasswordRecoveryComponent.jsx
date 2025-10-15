@@ -16,7 +16,7 @@ import {
 
 } from '@mui/material';
 
-const PasswordRecoveryComponent = ({ logged, setLogged }) => {
+const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
 
     const [userEmail, setUserEmail] = useState("")
@@ -41,40 +41,44 @@ const PasswordRecoveryComponent = ({ logged, setLogged }) => {
 
     const handlePasswordRecovery = async (e) => {
         e.preventDefault()
-        if (userEmail.length === 0) {
-            setErrorMessage("Introduzca email")
+        // if (userEmail.length === 0) {
+        //     setErrorMessage("Introduzca email")
+        //     return
+        // }
+        if (userEmail.length < 18 && !userEmail.includes("@erroak.sartu.org")) {
+            setErrorMessage("Introduzca email válido")
             return
         }
 
-            try {
-                const user = {
-                    useremail: userEmail,
-                }
-                // fetch validate
-                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/passwordrecovery`,
-                    {
-                        method: 'POST',
-                        headers: {'Content-type': 'application/json; charset=UTF-8'},
-                        body: JSON.stringify(user)
-                    }
-                )
-                const data = await response.json()
-                console.log("Respuesta backend: ", data)
-                if (data.result === "No encontrado") {
-                    // setErrorMessage("Nombre usuario o email no válidos")
-                    setErrorMessage("Email no válido")
-                    return
-                } else {
-                    const {usuario_id} = data[0]
-                    setDialogRecovery(true)
-                }
-
-            } catch (error) {
-                // setError(error.message); // Handle errors
-                console.log(error.message)
-            } finally {
-                // setLoading(false); // Set loading to false once data is fetched or error occurs
+        try {
+            const user = {
+                useremail: userEmail,
             }
+            // fetch validate
+            const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/passwordrecovery`,
+                {
+                    method: 'POST',
+                    headers: {'Content-type': 'application/json; charset=UTF-8'},
+                    body: JSON.stringify(user)
+                }
+            )
+            const data = await response.json()
+            console.log("Respuesta backend: ", data)
+            if (data.result === "No encontrado") {
+                // setErrorMessage("Nombre usuario o email no válidos")
+                setErrorMessage("Email no válido")
+                return
+            } else {
+                const {usuario_id} = data[0]
+                setDialogRecovery(true)
+            }
+
+        } catch (error) {
+            // setError(error.message); // Handle errors
+            console.log(error.message)
+        } finally {
+            // setLoading(false); // Set loading to false once data is fetched or error occurs
+        }
 
     }
 

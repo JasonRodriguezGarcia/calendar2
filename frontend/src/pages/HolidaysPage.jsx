@@ -1,8 +1,8 @@
 import HolidaysComponent from '../components/HolidaysComponent';
-import MainMenuComponent from '../components/MainMenuComponent';
+import MenuBarComponent from '../components/MenuBarComponent';
 import { Navigate } from 'react-router-dom';
 
-const HolidaysPage = ({ logged, setLogged, user, setUser, token }) =>{
+const HolidaysPage = ({ logged, setLogged, user, setUser, token, selectedLanguage, setSelectedLanguage, languagesSelect }) =>{
 
     // Si no está logeado se sale del componente
     if (!logged)    // con esta opción ni siquiera se muestra brevemente EventsCalendarComponent
@@ -12,8 +12,12 @@ const HolidaysPage = ({ logged, setLogged, user, setUser, token }) =>{
 
     return (
         <>
-            <MainMenuComponent logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
-            <HolidaysComponent logged={logged} user={user} token={token}/>
+            <MenuBarComponent 
+                selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
+                logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
+            <HolidaysComponent 
+                selectedLanguage={selectedLanguage} 
+                logged={logged} user={user} token={token}/>
         </>
     )
 }

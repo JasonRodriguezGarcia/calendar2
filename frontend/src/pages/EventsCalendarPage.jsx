@@ -1,5 +1,5 @@
 import EventsCalendarComponent from '../components/EventsCalendarComponent';
-import MainMenuComponent from '../components/MainMenuComponent';
+import MainMenuComponent from '../components/MenuBarComponent';
 import { Navigate } from 'react-router-dom';
 
 const EventsCalendarPage = ({ logged, setLogged, user, setUser, token, selectedLanguage, setSelectedLanguage, languagesSelect }) =>{

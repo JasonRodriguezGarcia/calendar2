@@ -1,0 +1,70 @@
+{
+    "mainheader": {
+        "text1": "URTEKO GERTAERAK"
+    },
+    "errordialog": {
+        "message1": "Ekitaldiak lanegunetan bakarrik baimenduta daude.",
+        "message2": "Amaiera-data Hasiera-data baino txikiagoa",
+        "message3": "Gehienezko errepikapenak 30 egun",
+        "message4": "Hasiera ordua Amaiera ordua baino txikiagoa izan behar da.",
+        "message5": {
+            "part1": "Ekitaldiaren ordua goizeko",
+            "part2": "etatik",
+            "part3": "etara izan behar da"
+        },
+        "message6": "Hautatu Erabiltzaile bat",
+        "message7": "Hautatu Espazio bat",
+        "message8": "Hautatu Programa bat",
+        "message9": "Ez dago ezabatzeko gertaera baliozkorik"
+    },
+    "errormessage": {
+        "message1": "OKUPATUTA dagoen espazioa, aukeratu beste bat",
+        "message2": "Denbora-tarte horretan erabiltzen den espazioa"
+    },
+    "actioneventmessage": {
+        "message1": "Gehitu gertaera",
+        "message2": "Editatu gertaera"
+    },
+    "buttontexts": {
+        "text1": "Ezabatu",
+        "text2": "Errepikatu",
+        "text3": "Gorde",
+        "text4": "Utzi",
+        "text5": "Itxi",
+        "text6": "Jarraitu",
+        "text7": "Gertaerak kopiatu"
+    },
+    "dialogtitles": {
+        "title1": "Gertaera ezabatu?",
+        "title2": "Gertaera errepikatu (gehienez 30)",
+        "title3": "Abisua",
+        "title4": "Ezin da gorde",
+        "title5": "Errepikapenaren emaitza"
+    },
+    "dialogcontents": {
+        "formcontrol1": {
+            "inputlabel": "Erabiltzailea",
+            "selectlabel": "Erabiltzailea"
+        },
+        "formcontrol2": {
+            "inputlabel": "Espazioa",
+            "selectlabel": "Espazioa"
+        },
+        "formcontrol3": {
+            "inputlabel": "Programa",
+            "selectlabel": "Programa"
+        },
+        "stackdatetimepickerlabel1": "Hasiera",
+        "stackdatetimepickerlabel2": "Amaiera",
+        "textfield": "Oharrak",
+        "text": "Ziur zaude gertaera ezabatu nahi duzula",
+        "dialogcontent": {
+            "typography1": "Errepikapena gorabeherarik gabe",
+            "typography2": {
+            "text1": "Hasieratik",
+            "text2": "Amaierara"
+            },
+            "typography3": "Errepikapena GORABEHEREKIN"
+        }
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "mainheader": {
+        "text1": "GERTAERAK ERAKUNDEA URTEA"
+    },
+    "grid": {
+        "header": {
+            "text1": "Iragazkiak"
+        },
+        "button1text": "Garbitu iragazkiak"
+    },
+    "stack1formcontrol": {
+        "inputlabel": "Erabiltzaileak",
+        "selectlabel": "Erabiltzaileak"
+    },
+    "stack2formcontrol": {
+        "inputlabel": "Programak",
+        "selectlabel": "Programak"
+    },
+    "stack3formcontrol": {
+        "inputlabel": "Espazioak",
+        "selectlabel": "Espazioak"
+    }
+}

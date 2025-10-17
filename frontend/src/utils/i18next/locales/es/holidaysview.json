@@ -1,0 +1,13 @@
+{
+    "stack": {
+        "button1text": "Mes Ant",
+        "button2text": "Mes Sig",
+        "typography": {
+            "text1": "VACACIONES ENTIDAD",
+            "text2": "Mes"
+        }
+    },
+    "tableheadtablerow": {
+        "cell1text": "USUARIO"
+    }
+}

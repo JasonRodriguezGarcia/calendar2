@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Stack,
@@ -20,9 +21,10 @@ import {
   endOfMonth,
 } from 'date-fns';
 
-const HolidaysViewComponent = ({ logged, user, token }) => {
-    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER;
-    const theme = useTheme();
+const HolidaysViewComponent = ({ logged, user, token, selectedLanguage }) => {
+    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
+    const { t, i18n } = useTranslation("holidaysview")
+    const theme = useTheme()
 
     const [events, setEvents] = useState([])
     const [usuarios, setUsuarios] = useState([])
@@ -136,12 +138,15 @@ const HolidaysViewComponent = ({ logged, user, token }) => {
                     newDate.setMonth(date.getMonth() - 1)
                     setDate(newDate)
                 }}>
-                Mes Ant.
+                {/* Mes Ant. */}
+                {t("stack.button1text")}.
             </Button>
 
             <Typography variant="h6">
-                VACACIONES ENTIDAD: {date.getFullYear()} - 
-                Mes: {date.toLocaleString('es-ES', { month: 'long' }).toUpperCase()}
+                {/* VACACIONES ENTIDAD: {date.getFullYear()} -  */}
+                {t("stack.typography.text1")}: {date.getFullYear()} - 
+                {/* Mes: {date.toLocaleString('es-ES', { month: 'long' }).toUpperCase()} */}
+                &nbsp;{t("stack.typography.text2")}: {date.toLocaleString('es-ES', { month: 'long' }).toUpperCase()}
             </Typography>
 
             <Button variant="outlined" onClick={() => {
@@ -149,7 +154,8 @@ const HolidaysViewComponent = ({ logged, user, token }) => {
                     newDate.setMonth(date.getMonth() + 1)
                     setDate(newDate)
                 }}>
-                Mes Sig.
+                {/* Mes Sig. */}
+                {t("stack.button2text")}.
             </Button>
         </Stack>
         <Toolbar />
@@ -171,7 +177,9 @@ const HolidaysViewComponent = ({ logged, user, token }) => {
                                         md: '14px',  // escritorio
                                     },
                                 borderRight: '1px solid rgba(0, 0, 0, 0.12)'
-                            })}>Usuario</TableCell>
+                            })}>
+                                <b>USUARIO</b>
+                            </TableCell>
                             {actualMonthDays.map((actualMonthDay, index) => (
                                 <TableCell key={index} align="center"
                                 /* si el día es domingo =0 o sabado = 6 */

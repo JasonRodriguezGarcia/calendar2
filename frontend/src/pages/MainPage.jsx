@@ -1,4 +1,4 @@
-import MainMenuComponent from '../components/MainMenuComponent';
+import MenuBarComponent from '../components/MenuBarComponent';
 import { Box, Toolbar } from '@mui/material';
 import imagenFondo from "../assets/images/cuerda.jpg";
 import imagenLogo1 from "../assets/images/erroak_logo-1.png";
@@ -25,7 +25,7 @@ const MainPage = ({ logged, setLogged, user, setUser, selectedLanguage, setSelec
                 minHeight: "25vh",
                 backgroundPosition: "center",
             }}></Box>
-            <MainMenuComponent 
+            <MenuBarComponent 
                 selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                 logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
             <Box sx={{

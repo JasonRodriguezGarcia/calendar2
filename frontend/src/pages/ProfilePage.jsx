@@ -1,4 +1,4 @@
-import MainMenuComponent from '../components/MainMenuComponent';
+import MainMenuComponent from '../components/MenuBarComponent';
 import { Navigate, useNavigate } from 'react-router-dom';
 import UsersCRUDComponent from '../components/UsersCRUDComponent';
 import { Box, Toolbar } from '@mui/material';

@@ -1,0 +1,10 @@
+{
+    "stacktypography": "CONTACTOS",
+    "tableheadtablerow": {
+        "celltext1": "Nombre",
+        "celltext2": "Email",
+        "celltext3": "Movil Empresa",
+        "celltext4": "Extension",
+        "celltext5": "Observaciones"
+    }
+}

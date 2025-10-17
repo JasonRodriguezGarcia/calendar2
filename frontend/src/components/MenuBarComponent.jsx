@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate , Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import logo from "../assets/images/erroaksartu.jpg"
 import {
     AppBar,
@@ -24,9 +25,9 @@ import HomeIcon from '@mui/icons-material/Home';
 // import ReinoUnido from "../assets/images/flags/ReinoUnido.png"
 
 
-const pages = ['Eventos', 'Vacaciones', 'Listados', 'About'];
-const lists = ['Eventos entidad', 'Vacaciones entidad', 'Tardes invierno', 'Contactos', ]
-const settings = ['Ver perfil', 'Modificar perfil', 'Cerrar sesión'];
+// const pages = ['Eventos', 'Vacaciones', 'Listados', 'About'];
+// const lists = ['Eventos entidad', 'Vacaciones entidad', 'Tardes invierno', 'Contactos', ]
+// const settings = ['Ver perfil', 'Modificar perfil', 'Cerrar sesión'];
 // const languagesSelect = [
 //     { lang: 'Eus', icon: PaisVasco },
 //     { lang: 'Es', icon: Espana },
@@ -39,8 +40,19 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
     const [anchorElList, setAnchorElList] = useState(null);
-    // const [selectedLanguage, setSelectedLanguage] = useState(languagesSelect[1].lang) // lenguaje por defecto
+    const { t, i18n } = useTranslation("menubar")
+    const pages = [t("pages.eventos"), t("pages.vacaciones"), t("pages.listados"), 'About']
+    const lists = [t("lists.eventosentidad"), t("lists.vacacionesentidad"), t("lists.tardesinvierno"), t("lists.contactos")]
+    const settings = [t("settings.verperfil"), t("settings.modificarperfil"), t("settings.cerrarsesión")];
 
+    // useEffect(() => {
+    //     i18n.changeLanguage(selectedLanguage)
+
+    // }, [])
+    // const mainMenu = t('mainmenu', {returnObjects: true})
+
+    console.log("18next mainmenu: ", t("eventos"))
+    
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
     }
@@ -79,18 +91,22 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
         console.log("Página pulsada:", page);
 
         switch (page) {
-            case "Listados":
+            case t("pages.listados"):
+            // case "Listados":
                 setAnchorElList(event.currentTarget)
                 break
-            case "Eventos":
+            case t("pages.eventos"):
+            // case "Eventos":
                 // navigate("/eventos", { replace: true });
                 navigate("/eventos")
                 break
-            case "Vacaciones":
+            case t("pages.vacaciones"):
+            // case "Vacaciones":
                 // navigate("/holidays", { replace: true });
                 navigate("/holidays")
                 break
-            case "About":
+            case t("pages.about"):
+            // case "About":
                 // navigate("/about", { replace: true });
                 navigate("/about")
                 break
@@ -102,22 +118,32 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
 
       // filtramos las páginas y game aparece si estamos logeados
     const filteredPages = pages.filter(page => {
-        if (page === "Eventos") return logged
-        else if (page === "Vacaciones") return logged       
-        else if (page === "Listados") return logged       
+        // if (page === "Eventos") return logged
+        // else if (page === "Vacaciones") return logged       
+        // else if (page === "Listados") return logged       
+        if (page === t("pages.eventos")) return logged
+        else if (page === t("pages.vacaciones")) return logged       
+        else if (page === t("pages.listados")) return logged       
         return true
-    });
+    })
+
+    const handleLanguage = (e) => {
+        const selection = e.target.value
+        setSelectedLanguage(selection)
+        i18n.changeLanguage(selection)      
+    }
 
     return (
         <AppBar position="fixed" sx={{ backgroundColor: '#0072AD' }}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
+                {/* Select Lenguaje */}
                     <FormControl variant="standard" fullWidth sx={{width: "100px"}}>
                         <Select
-                            id="select-usuario_id"
+                            id="select-language"
                             value={selectedLanguage}
                             disableUnderline
-                            onChange={(e) => setSelectedLanguage(e.target.value)}
+                            onChange={handleLanguage}
                             sx={{
                                 color: "white",
                                 display: "flex",
@@ -156,6 +182,7 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
                             ))}
                         </Select>
                     </FormControl>
+                {/* Icono Home */}
                     <Typography
                         variant="h6"
                         noWrap
@@ -171,8 +198,8 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
                             textDecoration: 'none',
                         }}
                     >
-                        {/* LOGO */}
-                        <Tooltip title="Inicio">
+                        {/* <Tooltip title="Inicio"> */}
+                        <Tooltip title={t("tooltipstext.text1")}>
                             <IconButton color="primary" aria-label="home">
                                 <HomeIcon
                                     style={{ 
@@ -187,6 +214,7 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
                             </IconButton>
                         </Tooltip>
                     </Typography>
+                {/* Logo Sartu */}
                     <Typography
                         variant="h"
                         noWrap
@@ -202,8 +230,8 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
                             textDecoration: 'none',
                         }}
                     >
-                        {/* LOGO */}
-                        <Tooltip title="Página web Erroak Sartu">
+                        {/* <Tooltip title="Página web Erroak Sartu"> */}
+                        <Tooltip title={t("tooltipstext.text2")}>
                             <img 
                                 src={logo} 
                                 alt="logo" 
@@ -245,7 +273,8 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
                             sx={{ display: { xs: 'block', md: 'none' } }}
                         >
                             {filteredPages.map((page) => (
-                                page === "Listados" ? (
+                                // page === "Listados" ? (
+                                page === t("pages.listados") ? (
                                     <div key="listados">
                                         <MenuItem sx={{ fontWeight: 'bold', color: "slategrey" }}>
                                             <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
@@ -257,19 +286,20 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
                                                     setAnchorElNav(null)
                                                     // navegación
                                                     switch (item) {
-                                                        case "Eventos entidad":
+                                                        case t("lists.eventosentidad"):
+                                                            // case "Eventos entidad":
                                                             // navigate("/staffholidays", { replace: true });
                                                             navigate("/entityevents")
                                                             break
-                                                        case "Vacaciones entidad":
+                                                        case t("lists.vacacionesentidad"):
                                                             // navigate("/staffholidays", { replace: true });
                                                             navigate("/staffholidays")
                                                             break
-                                                        case "Tardes invierno":
+                                                        case t("lists.tardesinvierno"):
                                                             // navigate("/winterafternoons", { replace: true });
                                                             navigate("/winterafternoons")
                                                             break
-                                                        case "Contactos":
+                                                        case t("lists.contactos"):
                                                             // navigate("/contacts", { replace: true });
                                                             navigate("/contacts")
                                                             break
@@ -295,7 +325,7 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
                             ))}
                         </Menu>
                     </Box>
-                    {/* LOGO MOVIL */}
+                {/* Icono Home */}
                     <Typography
                         variant="h5"
                         noWrap
@@ -313,8 +343,8 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
                             justifyItems: 'left'
                         }}
                     >
-                        {/* LOGO */}
-                        <Tooltip title="Inicio">
+                        {/* <Tooltip title="Inicio"> */}
+                        <Tooltip title={t("tooltipstext.text1")}>
                             <IconButton color="primary" aria-label="home">
                                 <HomeIcon
                                     style={{ 
@@ -327,6 +357,7 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
                             </IconButton>
                         </Tooltip>
                     </Typography>
+                {/* Logo Sartu */}
                     <Typography
                         variant="h5"
                         noWrap
@@ -343,8 +374,8 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
                             textDecoration: 'none',
                         }}
                     >
-                        {/* LOGO */}
-                        <Tooltip title="Página web Erroak Sartu">
+                        {/* <Tooltip title="Página web Erroak Sartu"> */}
+                        <Tooltip title={t("tooltipstext.text2")}>
                             <img 
                                 src={logo} 
                                 alt="logo"
@@ -370,7 +401,7 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
                         </Button>
                         ))}
                     </Box>
-                {/* subMENU DE LISTADOS */}
+            {/* subMENU DE LISTADOS */}
                     <Menu
                         anchorEl={anchorElList}
                         open={Boolean(anchorElList)}
@@ -385,19 +416,23 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
                                     setAnchorElList(null)
                                     // Añade aquí la lógica de navegación por cada item si la tienes
                                     switch (item) {
-                                        case "Eventos entidad":
+                                        case t("lists.eventosentidad"):
+                                        // case "Eventos entidad":
                                             // navigate("/staffholidays", { replace: true });
                                             navigate("/entityevents")
                                             break
-                                        case "Vacaciones entidad":
+                                        case t("lists.vacacionesentidad"):
+                                        // case "Vacaciones entidad":
                                             // navigate("/staffholidays", { replace: true });
                                             navigate("/staffholidays")
                                             break
-                                        case "Tardes invierno":
+                                        case t("lists.tardesinvierno"):
+                                        // case "Tardes invierno":
                                             // navigate("/winterafternoons", { replace: true });
                                             navigate("/winterafternoons")
                                             break
-                                        case "Contactos":
+                                        case t("lists.contactos"):
+                                        // case "Contactos":
                                             // navigate("/contacts", { replace: true });
                                             navigate("/contacts")
                                             break
@@ -427,10 +462,12 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
                                             color: 'white', fontWeight: 'bold', backgroundColor: '#0072AD', px: 1.5, py: 0.5, borderRadius: 1 
                                     })}
                                 >
-                                    Usuario/a: {user.nombre_apellidos}
+                                    {/* Usuario/a: {user.nombre_apellidos} */}
+                                    {t("loggedusertitletext")}: {user.nombre_apellidos}
                                 </Typography>
                             </Box>
-                            <Tooltip title="Abrir configuración">
+                            {/* <Tooltip title="Abrir configuración"> */}
+                            <Tooltip title={t("tooltipstext.text3")}>
                                 <IconButton onClick={handleOpenUserMenu}
                                 sx={{ p: 0 }}
                                 >
@@ -468,7 +505,9 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
 
             {/* Usuario no logeado */}
                     <Box sx={{ flexGrow: 0, display: logged ? 'none' : 'block'}}>
-                        <Tooltip title="Darse de alta" arrow>
+                        {/* <Tooltip title="Darse de alta" arrow> */}
+                        <Tooltip title={t("tooltipstext.text4")} arrow>
+
                             <Button
                                 onClick={()=> navigate('/signup')}
                                 sx={
@@ -482,13 +521,15 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
                                     
                                 })}
                             >
-                                Alta usuario/a
+                                {/* Alta usuario/a */}
+                                {t("notloggedusertitletexts.text1")}
                             </Button>
                         </Tooltip>
                     </Box>
 
                     <Box sx={{ flexGrow: 0, display: logged ? 'none' : 'block'}}>
-                        <Tooltip title="Iniciar sesión" arrow>
+                        {/* <Tooltip title="Iniciar sesión" arrow> */}
+                        <Tooltip title={t("tooltipstext.text5")} arrow>
                             <Button
                                 // onClick={()=> navigate('/login', { replace: true })}
                                 onClick={()=> navigate('/login')}
@@ -503,7 +544,8 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
                                     
                                 })}
                             >
-                                Iniciar sesión
+                                {/* Iniciar sesión */}
+                                {t("notloggedusertitletexts.text2")}
                             </Button>
 
                         </Tooltip>

@@ -1,0 +1,32 @@
+{
+    "eventos": "EventosTEST",
+    "pages": { 
+        "eventos": "Eventos",
+        "vacaciones": "Vacaciones",
+        "listados": "Listados",
+        "about": "About"
+    },
+    "lists": {
+        "eventosentidad": "Eventos entidad",
+        "vacacionesentidad": "Vacaciones entidad",
+        "tardesinvierno": "Tardes invierno",
+        "contactos": "Contactos"
+    },
+    "settings": {
+        "verperfil": "Ver perfil",
+        "modificarperfil": "Modificar perfil",
+        "cerrarsesión": "Cerrar sesión"
+    },
+    "loggedusertitletext": "Usuario/a",
+    "notloggedusertitletexts": {
+        "text1": "Alta usuario/a",
+        "text2": "Iniciar sesion"
+    },
+    "tooltipstext": {
+        "text1": "Inicio",
+        "text2": "Página web Erroak Sartu",
+        "text3": "Abrir configuración",
+        "text4": "Darse de alta",
+        "text5": "Iniciar sesión"
+    }
+}

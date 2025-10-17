@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import MainMenuComponent from '../components/MainMenuComponent';
+import MainMenuComponent from '../components/MenuBarComponent';
 import LoginComponent from '../components/LoginComponent';
 import { Box } from '@mui/material';
 // import imagenFondo from "../assets/images/erroak-page.jpeg";

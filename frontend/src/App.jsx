@@ -3,6 +3,8 @@ import { jwtDecode } from 'jwt-decode';
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Navigate, useNavigate } from 'react-router-dom';
+import './utils/i18next/i18n';  // Path is relative to the current file in App.jsx
+import { useTranslation } from 'react-i18next';
 import EventsCalendarPage from './pages/EventsCalendarPage';
 import HolidaysPage from './pages/HolidaysPage';
 import MainPage from './pages/MainPage';
@@ -28,13 +30,13 @@ const App = () => {
     const [usuario, setUsuario] = useState({})
     const [token, setToken] = useState("")
     const languagesSelect = [
-        { lang: 'Eus', icon: PaisVasco },
-        { lang: 'Es', icon: Espana },
+        { lang: 'eu', icon: PaisVasco },
+        { lang: 'es', icon: Espana },
         // { lang: 'Fr', icon: Francia },
         // { lang: 'En', icon: ReinoUnido },
     ];
     const [selectedLanguage, setSelectedLanguage] = useState("")
-
+    const { t, i18n } = useTranslation("menubar")
 
     // const navigate = useNavigate()
 // Retorna el componente <Navigate>, lo cual permite hacer una redirección efectiva si no hay usuario o no está logeado.
@@ -104,6 +106,8 @@ const App = () => {
             // Esto mejora la sincronización y evita redundancias.
             if (usuarioIdioma && languagesSelect.some(languagesSelect => languagesSelect.lang === usuarioIdioma)) {
                 setSelectedLanguage(usuarioIdioma)
+                i18n.changeLanguage(usuarioIdioma)
+
                 // localStorage.setItem("idioma", usuarioIdioma)
             } else {
                 const idiomaPorDefecto = languagesSelect[1].lang // lenguaje por defecto
@@ -132,6 +136,7 @@ const App = () => {
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/holidays" element={<HolidaysPage 
+                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/login" element={<LoginPage 
                     logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
@@ -142,12 +147,16 @@ const App = () => {
                 <Route path="/editprofile" element={<EditProfilePage 
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/entityevents" element={<EntityEventsCalendarPage 
+                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/staffholidays" element={<HolidaysViewPage 
+                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/winterafternoons" element={<WinterAfternoonsPage 
+                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/contacts" element={<ContactsPage 
+                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/passwordrecovery" element={<PasswordRecoveryPage 
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}

@@ -1,0 +1,163 @@
+
+npm install i18next react-i18next i18next-http-backend i18next-browser-languagedetector
+
+USANDO
+    npm install i18next react-i18next
+    en el directorio crear el archivo i18n.js con su configuración
+        /src/utils/i18next
+
+// i18n.js (or similar file)
+import i18next from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import enTranslations from './locales/en.json';
+import esTranslations from './locales/es.json';
+
+i18next
+  .use(initReactI18next) // passes i18n down to react-i18next
+  .init({
+    resources: {
+      en: {
+        translation: enTranslations,
+      },
+      es: {
+        translation: esTranslations,
+      },
+    },
+    lng: 'en', // default language
+    fallbackLng: 'en', // fallback language in case of missing translations
+    interpolation: {
+      escapeValue: false, // react already safes from xss
+    },
+  });
+
+En /utiles/locales/, tendrás archivos de diferentes idiomas, como en.json y es.json:
+    {
+        "welcome_message": "Bienvenido a la Aplicación React"
+    }
+
+En index.js o App.js, incluir la referencia a i18n.js para poder usarlo en la aplicación:
+    import './utils/i18next/i18n';  // Path is relative to the current file (App.jsx)
+
+
+
+***********************
+***********************
+***********************
+CAMBIO A 
+
+en el directorio crear el archivo i18n.js con su configuración
+    /src/utils/i18next/locales
+
+// /src/utils/i18next/locales/i18n.js
+// Importa traducciones
+import loginEs from '../locales/es/login.json';
+import navbarEs from '../locales/es/navbar.json';
+import footerEs from '../locales/es/footer.json';
+import profileEs from '../locales/es/profile.json';
+
+import loginEu from '../locales/eu/login.json';
+import navbarEu from '../locales/eu/navbar.json';
+import footerEu from '../locales/eu/footer.json';
+import profileEu from '../locales/eu/profile.json';
+
+i18n
+  .use(initReactI18next)
+  .init({
+    resources: {
+      es: {
+        login: loginEs,
+        navbar: navbarEs,
+        footer: footerEs,
+        profile: profileEs,
+      },
+      eu: {
+        login: loginEu,
+        navbar: navbarEu,
+        footer: footerEu,
+        profile: profileEu,
+      },
+    },
+    lng: 'es', // idioma por defecto
+    fallbackLng: 'es',
+    ns: ['login', 'navbar', 'footer', 'profile'], // namespaces
+    defaultNS: 'login',
+    interpolation: {
+      escapeValue: false,
+    },
+  });
+
+export default i18n;
+
+
+Crearemos los ficheros con los idiomas para cada página web en /es y /eu
+
+{
+    "eventos": "EventosTEST",
+    "pages": { 
+        "eventos": "Eventos",
+        "vacaciones": "Vacaciones",
+        "listados": "Listados",
+        "about": "About"
+    },
+    "lists": {
+        "eventosentidad": "Eventos entidad",
+        "vacacionesentidad": "Vacaciones entidad",
+        "tardesinvierno": "Tardes invierno",
+        "contactos": "Contactos"
+    },
+    "settings": {
+        "verperfil": "Ver perfil",
+        "modificarperfil": "Modificar perfil",
+        "cerrarsesión": "Cerrar sesión"
+    },
+    "loggedusertitletext": "Usuario/a",
+    "notloggedusertitletexts": {
+        "text1": "Alta usuario/a",
+        "text2": "Iniciar sesion"
+    },
+    "tooltipstext": {
+        "text1": "Inicio",
+        "text2": "Página web Erroak Sartu",
+        "text3": "Abrir configuración",
+        "text4": "Darse de alta",
+        "text5": "Iniciar sesión"
+    }
+}
+
+En /eu
+
+{
+    "eventos": "EkitaldiakTEST",
+    "pages": { 
+        "eventos": "Ekitaldiak",
+        "vacaciones": "Oporrak",
+        "listados": "Zerrenak",
+        "about": "About"
+    },
+    "lists": {
+        "eventosentidad": "Entitate gertaerak",
+        "vacacionesentidad": "Entitatearen oporrak",
+        "tardesinvierno": "Neguko arratsaldeak",
+        "contactos": "Kontaktuak"
+    },
+    "settings": {
+        "verperfil": "Ikusi profila",
+        "modificarperfil": "Aldatu profila",
+        "cerrarsesión": "Saioa itxi"
+    },
+    "loggedusertitletext": "Erabiltzailea",
+    "notloggedusertitletexts": {
+        "text1": "Erabiltzaile handia",
+        "text2": "Hasi saioa"
+    },
+    "tooltipstext": {
+        "text1": "Hasi",
+        "text2": "Erroak Sarturen webgunea",
+        "text3": "Ireki ezarpenak",
+        "text4": "Izena eman",
+        "text5": "Hasi saioa"
+    }
+}
+
+
+

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
+import { useTranslation } from 'react-i18next';
 import { es } from 'date-fns/locale';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
@@ -28,7 +29,7 @@ const localizer = dateFnsLocalizer({
     locales,
 });
 
-const HolidaysComponent = ({ logged, user, token } ) => {
+const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
 
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     
@@ -37,7 +38,10 @@ const HolidaysComponent = ({ logged, user, token } ) => {
     const [date, setDate] = useState(new Date());
     const [view, setView] = useState(Views.MONTH);      // POR DEFECTO VISTA SEMANA LABORAL
     const [diasUsadosVacaciones, setDiasUsadosVacaciones] = useState(0)
+    const { t, i18n } = useTranslation("holidays")
     
+    console.log("selectedLanguage", selectedLanguage)
+
     const fetchCheckHolidays = async () => {
         // Llamada a la cuenta del año en curso de las vacaciones acumuladas
         try {
@@ -249,8 +253,10 @@ const HolidaysComponent = ({ logged, user, token } ) => {
     return (
         <Box>
             <Toolbar />
-            <h2>VACACIONES AÑO: {date.getFullYear()} (Dias de vac. en uso: {diasUsadosVacaciones})</h2>
-            <p>(Clickar en un día para añadir/quitar)</p>
+            {/* <h2>VACACIONES AÑO: {date.getFullYear()} (Dias de vac. en uso: {diasUsadosVacaciones})</h2> */}
+            {/* <p>(Clickar en un día para añadir/quitar)</p> */}
+            <h2>{t("mainheader.text1")}: {date.getFullYear()} ({t("mainheader.text2")}: {diasUsadosVacaciones})</h2>
+            <p>({t("mainheader.text3")})</p>
 
             <Calendar
                 localizer={localizer}

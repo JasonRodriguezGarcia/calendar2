@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Box,
     Stack,
@@ -16,15 +17,17 @@ import {
 import VpnKeyIcon from '@mui/icons-material/VpnKey'; // llave
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive'; // sirena
 
-const WinterAfternoonsComponent = ({ logged, user, token }) => {
+const WinterAfternoonsComponent = ({ logged, user, token, selectedLanguage }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER;
+    const { t, i18n } = useTranslation("winterafternoons")
 
     const theme = useTheme();
     const [events, setEvents] = useState([])
     const [usuarios, setUsuarios] = useState([])
-    const [headTableDays, setHeadTableDays] = useState([
-        "Lunes", "Martes", "Miércoles", "Jueves", "Viernes"
-    ])
+    // const [headTableDays, setHeadTableDays] = useState([
+    //     "Lunes", "Martes", "Miércoles", "Jueves", "Viernes"
+    // ])
+    const [headTableDays, setHeadTableDays] = useState([])
 
     const fetchUsuarios = async () => {
         try {
@@ -80,13 +83,25 @@ const WinterAfternoonsComponent = ({ logged, user, token }) => {
         console.log("usuarios: ", events, usuarios)
     }, [usuarios])
 
+    useEffect(() => {
+        const dias = [
+            t("headtabledays.day1"),
+            t("headtabledays.day2"),
+            t("headtabledays.day3"),
+            t("headtabledays.day4"),
+            t("headtabledays.day5")
+        ]
+        setHeadTableDays(dias)
+    }, [selectedLanguage])
+
     return (
     <>
         <Toolbar />
 
         <Stack direction="row" justifyContent="center" alignItems="center" mb={3}>
             <Typography variant="h6">
-                TARDES DE INVIERNO
+                {/* TARDES DE INVIERNO */}
+                {t("stacktypography")}
             </Typography>
 
         </Stack>

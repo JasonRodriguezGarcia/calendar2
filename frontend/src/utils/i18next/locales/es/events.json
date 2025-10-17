@@ -1,0 +1,70 @@
+{
+    "mainheader": {
+        "text1": "EVENTOS AÑO"
+    },
+    "errordialog": {
+        "message1": "Solo se permiten eventos en días laborales",
+        "message2": "Fecha Fin menor que fecha Inicio",
+        "message3": "Máximo repeticiones 30 días",
+        "message4": "La hora de inicio debe ser menor que la hora de fin",
+        "message5": {
+            "part1": "La hora del evento debe estar entre",
+            "part2": "hrs y",
+            "part3": "hrs (dentro del mismo día)"
+        },
+        "message6": "Seleccionar un Usuario",
+        "message7": "Seleccionar un Espacio",
+        "message8": "Seleccionar un Programa",
+        "message9": "No hay evento válido para eliminar"
+    },
+    "errormessage": {
+        "message1": "Espacio OCUPADO, elegir otro",
+        "message2": "Espacio en uso en ese rango de tiempo"
+    },
+    "actioneventmessage": {
+        "message1": "Agregar evento",
+        "message2": "Editar evento"
+    },
+    "buttontexts": {
+        "text1": "Eliminar",
+        "text2": "Repetir",
+        "text3": "Guardar",
+        "text4": "Cancelar",
+        "text5": "Cerrar",
+        "text6": "Continuar",
+        "text7": "Copiar incidencias"
+    },
+    "dialogtitles": {
+        "title1": "¿Eliminar evento?",
+        "title2": "Repetir evento (max. 30)",
+        "title3": "Advertencia",
+        "title4": "No se puede guardar",
+        "title5": "Resultado Repetición"
+    },
+    "dialogcontents": {
+        "formcontrol1": {
+            "inputlabel": "Usuario",
+            "selectlabel": "Usuario"
+        },
+        "formcontrol2": {
+            "inputlabel": "Espacio",
+            "selectlabel": "Espacio"
+        },
+        "formcontrol3": {
+            "inputlabel": "Programa",
+            "selectlabel": "Programa"
+        },
+        "stackdatetimepickerlabel1": "Inicio",
+        "stackdatetimepickerlabel2": "Fin",
+        "textfield": "Observaciones",
+        "text": "¿Estás seguro de que deseas eliminar el evento",
+        "dialogcontent": {
+            "typography1": "Repetición sin incidencias",
+            "typography2": {
+                "text1": "Desde",
+                "text2": "Hasta"
+            },
+            "typography3": "Repetición CON incidencias"
+        }
+    }
+}

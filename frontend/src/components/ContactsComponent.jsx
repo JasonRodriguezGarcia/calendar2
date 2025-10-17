@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Box,
     Stack,
@@ -13,8 +14,9 @@ import {
     useTheme,
 } from '@mui/material';
 
-const ContactsComponent = ({ logged, user, token }) => {
+const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER;
+    const { t, i18n } = useTranslation("contacts")
 
     const theme = useTheme();
     const [usuarios, setUsuarios] = useState([])
@@ -54,7 +56,8 @@ const ContactsComponent = ({ logged, user, token }) => {
 
         <Stack direction="row" justifyContent="center" alignItems="center" mb={3}>
             <Typography variant="h6">
-                CONTACTOS
+                {/* CONTACTOS */}
+                {t("stacktypography")}
             </Typography>
 
         </Stack>
@@ -82,7 +85,8 @@ const ContactsComponent = ({ logged, user, token }) => {
                                     fontWeight: 'bold',
                                 })}
                             >
-                                Nombre
+                                {/* Nombre */}
+                                {t("tableheadtablerow.celltext1")}
                             </TableCell>
                             <TableCell align="center"
                                 sx= {
@@ -102,7 +106,8 @@ const ContactsComponent = ({ logged, user, token }) => {
                                     fontWeight: 'bold',
                                 })}
                             >
-                                Email
+                                {/* Email */}
+                                {t("tableheadtablerow.celltext2")}
                             </TableCell>
                             <TableCell align="center"
                                 sx= {
@@ -122,7 +127,8 @@ const ContactsComponent = ({ logged, user, token }) => {
                                     fontWeight: 'bold',
                                 })}
                             >
-                                Movil Empresa
+                                {/* Movil Empresa */}
+                                {t("tableheadtablerow.celltext3")}
                             </TableCell>
                             <TableCell align="center"
                                 sx= {
@@ -142,7 +148,8 @@ const ContactsComponent = ({ logged, user, token }) => {
                                     fontWeight: 'bold',
                                 })}
                             >
-                                Extension
+                                {/* Extension */}
+                                {t("tableheadtablerow.celltext4")}
                             </TableCell>
                             <TableCell align="center"
                                 sx= {
@@ -162,7 +169,8 @@ const ContactsComponent = ({ logged, user, token }) => {
                                     fontWeight: 'bold',
                                 })}
                             >
-                                Observaciones
+                                {/* Observaciones */}
+                                {t("tableheadtablerow.celltext5")}
                             </TableCell>
 
                         </TableRow>

@@ -1,0 +1,23 @@
+{
+    "mainheader": {
+        "text1": "EVENTOS ENTIDAD AÑO"
+    },
+    "grid": {
+        "header": {
+            "text1": "Filtros"
+        },
+        "button1text": "Borrar filtros"
+    },
+    "stack1formcontrol": {
+        "inputlabel": "Usuarios",
+        "selectlabel": "Usuarios"
+    },
+    "stack2formcontrol": {
+        "inputlabel": "Programas",
+        "selectlabel": "Programas"
+    },
+    "stack3formcontrol": {
+        "inputlabel": "Espacios",
+        "selectlabel": "Espacios"
+    }
+}

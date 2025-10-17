@@ -71,7 +71,7 @@ const App = () => {
                         }
                     )
                     const data = await response1.json()
-                    // console.log("Respuesta backend: ", data)
+                    console.log("Respuesta backend: ", data)
                     if (data.result === "No encontrado") {
                         setErrorMessage("usuario o contraseña no válidos")
                         return
@@ -139,12 +139,16 @@ const App = () => {
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/login" element={<LoginPage 
+                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/signup" element={<SignUpPage 
+                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/profile" element={<ProfilePage 
+                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/editprofile" element={<EditProfilePage 
+                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/entityevents" element={<EntityEventsCalendarPage 
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
@@ -162,6 +166,7 @@ const App = () => {
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/newpassword/:id" element={<NewPasswordPage 
+                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
             </Routes>
         </BrowserRouter>  )

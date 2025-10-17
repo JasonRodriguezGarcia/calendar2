@@ -1,15 +1,15 @@
-import MainMenuComponent from '../components/MenuBarComponent';
+import MenuBarComponent from '../components/MenuBarComponent';
 import { Navigate, useNavigate } from 'react-router-dom';
 import NewPasswordComponent from '../components/NewPasswordComponent';
 import { Box } from '@mui/material';
 // import imagenFondo from "../assets/images/erroak-page.jpeg";
 import imagenFondo from "../assets/images/cuerda.jpg";
 
-const NewPasswordPage = ({ logged, setLogged, user, setUser }) =>{
+const NewPasswordPage = ({ logged, setLogged, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect }) =>{
 
     if (logged)    // con esta opción ni siquiera se muestra brevemente el componente
         // Esto interrumpe el renderizado del componente y lo redirige inmediatamente. 
-        // No se ejecuta código de más, ni se renderiza MainMenuComponent ni el otro componente.
+        // No se ejecuta código de más, ni se renderiza MenuBarComponent ni el otro componente.
         return <Navigate to="/" replace /> // navigate(`/`, { replace: true }) solo puede ser usado en useEffect
 
     return (
@@ -20,8 +20,12 @@ const NewPasswordPage = ({ logged, setLogged, user, setUser }) =>{
             minHeight: "100vh",
             backgroundPosition: "top center",
         }}>
-            <MainMenuComponent logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
-            <NewPasswordComponent logged={logged} setLogged={setLogged} /> {/* user={usuario} setUser={setUsuario} /> */}
+            <MenuBarComponent 
+                selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
+                logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
+            <NewPasswordComponent 
+                selectedLanguage={selectedLanguage}
+                logged={logged} setLogged={setLogged} /> {/* user={usuario} setUser={setUsuario} /> */}
         </Box>
         </>
     )

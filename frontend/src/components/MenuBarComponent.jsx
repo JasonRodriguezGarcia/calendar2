@@ -35,7 +35,7 @@ import HomeIcon from '@mui/icons-material/Home';
 //     // { lang: 'En', icon: ReinoUnido },
 // ];
 
-const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect }) => {
+const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect }) => {
     const navigate = useNavigate()
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
@@ -43,7 +43,7 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
     const { t, i18n } = useTranslation("menubar")
     const pages = [t("pages.eventos"), t("pages.vacaciones"), t("pages.listados"), 'About']
     const lists = [t("lists.eventosentidad"), t("lists.vacacionesentidad"), t("lists.tardesinvierno"), t("lists.contactos")]
-    const settings = [t("settings.verperfil"), t("settings.modificarperfil"), t("settings.cerrarsesión")];
+    const settings = [t("settings.verperfil"), t("settings.modificarperfil"), t("settings.cerrarsesion")];
 
     // useEffect(() => {
     //     i18n.changeLanguage(selectedLanguage)
@@ -66,15 +66,18 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
 
     const handleCloseUserMenu = (setting) => {
         switch (setting) {
-            case "Ver perfil":
+            case t("settings.verperfil"):
+                // case "Ver perfil":
                 // navigate("/profile", { replace: true });
                 navigate("/profile")
                 break
-            case "Modificar perfil":
+            case t("settings.modificarperfil"):
+            // case "Modificar perfil":
                 // navigate("/editprofile", { replace: true });
                 navigate("/editprofile")
                 break
-            case "Cerrar sesión":
+            case t("settings.cerrarsesion"):
+            // case "Cerrar sesión":
                 // localStorage.removeItem("usuario")
                 localStorage.removeItem("token")
                 setLogged(false)
@@ -555,4 +558,4 @@ const MainMenuComponent = ({ logged, setLogged, user, setUser, selectedLanguage,
         </AppBar>
     )
 }
-export default MainMenuComponent;
+export default MenuBarComponent;

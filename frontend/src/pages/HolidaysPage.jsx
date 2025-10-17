@@ -7,7 +7,7 @@ const HolidaysPage = ({ logged, setLogged, user, setUser, token, selectedLanguag
     // Si no está logeado se sale del componente
     if (!logged)    // con esta opción ni siquiera se muestra brevemente EventsCalendarComponent
         // Esto interrumpe el renderizado del componente y lo redirige inmediatamente. 
-        // No se ejecuta código de más, ni se renderiza MainMenuComponent ni EventsCalendarComponent.
+        // No se ejecuta código de más, ni se renderiza MenuBarComponent ni EventsCalendarComponent.
         return <Navigate to="/" replace />
 
     return (

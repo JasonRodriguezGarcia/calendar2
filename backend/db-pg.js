@@ -23,23 +23,23 @@ const { Pool } = pkg;
 
 const pool = new Pool({
     // uncomment for deployment
-  user: process.env.DATABASE_USER,
-  host: process.env.DATABASE_HOST,
-  database: process.env.DATABASE_DATABASE,
-  password: process.env.DATABASE_PASSWORD,
-  port: process.env.DATABASE_PORT,
-  ssl: {
-    rejectUnauthorized: false
-  }
+//   user: process.env.DATABASE_USER,
+//   host: process.env.DATABASE_HOST,
+//   database: process.env.DATABASE_DATABASE,
+//   password: process.env.DATABASE_PASSWORD,
+//   port: process.env.DATABASE_PORT,
+//   ssl: {
+//     rejectUnauthorized: false
+//   }
 
-//     // uncomment for development
-//   user: 'postgres.slipxykygueybdeveqtx',
-//   host: 'aws-0-eu-west-3.pooler.supabase.com',
-//   database: 'postgres',
-//   password: '1Jason2Rosita4',
-//   port: 5432,
-//   max: 10,              // Optional: max connections in pool (default 10)
-//   idleTimeoutMillis: 30000, // Optional: close idle clients after 30 seconds
+    // uncomment for development
+  user: 'postgres.slipxykygueybdeveqtx',
+  host: 'aws-0-eu-west-3.pooler.supabase.com',
+  database: 'postgres',
+  password: '1Jason2Rosita4',
+  port: 5432,
+  max: 10,              // Optional: max connections in pool (default 10)
+  idleTimeoutMillis: 30000, // Optional: close idle clients after 30 seconds
 
 });
 // console.log ("imprimo pool: ", pool)

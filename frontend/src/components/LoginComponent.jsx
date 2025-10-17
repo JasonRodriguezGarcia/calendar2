@@ -19,6 +19,7 @@ const LoginComponent = ({ logged, setLogged, user, setUser }) => {
     const [userEmail, setUserEmail] = useState("")
     const [userPassword, setUserPassword] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
+    const [showPassword, setShowPassword] = useState(false)
     const [passwordLength, setPasswordLength] = useState(10) // Longitud contraseña
 
     const navigate = useNavigate();
@@ -98,7 +99,7 @@ const LoginComponent = ({ logged, setLogged, user, setUser }) => {
         }
 
     }
-    
+
     return (
         <>
         <Box
@@ -154,9 +155,12 @@ const LoginComponent = ({ logged, setLogged, user, setUser }) => {
                         <Input
                             id="userpassword"
                             name="userpassword"
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
+                            onMouseEnter={() => setShowPassword(true)}
+                            onMouseLeave={() => setShowPassword(false)}
                             autoComplete="password"
                             placeholder={`(mín. ${passwordLength} caracteres)`}
+                            required
                             fullWidth
                             onChange={(e)=> handleUserPassword(e)}
                         />

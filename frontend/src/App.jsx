@@ -21,7 +21,7 @@ import EntityEventsCalendarPage from './pages/EntityEventsCalendarPage';
 import PaisVasco from "./assets/images/flags/paisvasco.png"
 import Espana from "./assets/images/flags/espana.png"
 import Francia from "./assets/images/flags/francia.png"
-import ReinoUnido from "./assets/images/flags/ReinoUnido.png"
+import ReinoUnido from "./assets/images/flags/reinounido.png"
 
 
 const App = () => {

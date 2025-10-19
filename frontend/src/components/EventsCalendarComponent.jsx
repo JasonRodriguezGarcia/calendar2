@@ -806,6 +806,7 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                 work_week: t("calendar.workweek"),                          // ponemos el texto Semana para work_week, sino aparecería "Work week"
                 day: t("calendar.day"),
                 agenda: t("calendar.agenda"),
+                noEventsInRange: t("calendar.noeventsinrange"),
                 showMore: t("calendar.showmore")
 
             }}

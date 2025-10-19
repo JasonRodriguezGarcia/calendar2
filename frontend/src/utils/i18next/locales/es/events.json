@@ -75,6 +75,7 @@
         "workweek": "Semana",
         "day": "Día",
         "agenda": "Agenda",
+        "noeventsinrange": "No hay eventos en este periodo de tiempo",
         "showmore": "+{{count}} gehiago"
     }
 }

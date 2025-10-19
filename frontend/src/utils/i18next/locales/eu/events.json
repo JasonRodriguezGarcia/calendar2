@@ -75,6 +75,7 @@
         "workweek": "Lan astea",
         "day": "Eguna",
         "agenda": "Agenda",
+        "noeventsinrange": "Ez dago gertaerarik tarte honetan.",
         "showmore": "+{{count}} gehiago"
     }
 }

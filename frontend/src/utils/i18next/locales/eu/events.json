@@ -66,5 +66,15 @@
             },
             "typography3": "Errepikapena GORABEHEREKIN"
         }
+    },
+    "calendar": {
+        "next": "Hur.",
+        "previous": "Aur.",
+        "today": "Gaur",
+        "month": "Hila",
+        "workweek": "Lan astea",
+        "day": "Eguna",
+        "agenda": "Agenda",
+        "showmore": "+{{count}} gehiago"
     }
 }

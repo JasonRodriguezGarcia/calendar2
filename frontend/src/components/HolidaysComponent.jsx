@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { useTranslation } from 'react-i18next';
-import { es } from 'date-fns/locale';
+import { es, eu } from 'date-fns/locale';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 import {
@@ -20,7 +20,7 @@ import {
     Toolbar,
     Box, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 } from '@mui/material';
-const locales = { es };
+const locales = { es, eu };
 const localizer = dateFnsLocalizer({
     format,
     parse,
@@ -260,7 +260,8 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
 
             <Calendar
                 localizer={localizer}
-                culture='es'                                    // días mes, semana, día en español
+                // culture='es'                                    // días mes, semana, día en español
+                culture={selectedLanguage}                                    // días mes, semana, día en español
                 events={events}                                 // Personalizando la visualizacion de eventos en el calendario
                 selectable="single"                             // habilita la seleccion de celdas SOLO DE 1 EN 1, SIN RANGOS
                 views={{month: true}}                           // Solo vista mensual permitida
@@ -290,10 +291,18 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
                     }
                 }}
                 messages={{
-                    next: 'Mes Sig.',
-                    previous: 'Mes Ant.',
-                    today: 'Hoy',
-                    month: 'Mes',
+                    // next: 'Mes Sig.',
+                    // previous: 'Mes Ant.',
+                    // today: 'Hoy',
+                    // month: 'Mes',
+                    next: t("calendar.next"),
+                    previous: t("calendar.previous"),
+                    today: t("calendar.today"),
+                    month: t("calendar.month"),
+                    // work_week: t("calendar.workweek"),                          // ponemos el texto Semana para work_week, sino aparecería "Work week"
+                    // day: t("calendar.day"),
+                    // agenda: t("calendar.agenda"),
+                    // showMore: t("calendar.showmore")
                 }}
             />
         </Box>

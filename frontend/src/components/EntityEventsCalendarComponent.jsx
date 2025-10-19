@@ -39,14 +39,14 @@ import {
     Typography,
 } from '@mui/material';
 import { colorOptions } from '../utils/EventColors';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { es as localeEs } from 'date-fns/locale';
+// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+// import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+// import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+// import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+// import { es as localeEs } from 'date-fns/locale';
 
 const DnDCalendar = withDragAndDrop(Calendar);
-const locales = { es };
+const locales = { es, eu };
 const localizer = dateFnsLocalizer({
   format,
   parse,
@@ -860,10 +860,12 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
                     //     minHeight: 'calc(100vh - 64px)',  // resta la altura del menu
                     }} 
                     localizer={localizer}
-                    culture='es'                                    // días mes, semana, día en español
+                    // culture='es'                                 // días mes, semana, día en español
+                    culture={selectedLanguage}                      // días mes, semana, día en el idioma selecionado
                     events={events}                                 // Personalizando la visualizacion de eventos en el calendario usando el array events
-                    // selectable                                      // habilita la seleccion de celdas
-                    views={['month', 'work_week', 'day', 'agenda']}
+                    // selectable                                   // habilita la seleccion de celdas
+                    // views={['month', 'work_week', 'day', 'agenda']}
+                    views={['month', 'work_week', 'day']}           // sin agenda ya que filtra mal¿?
                     onView={handleViewChange}
                     // defaultView='work_week'
                     defaultView='month'
@@ -911,13 +913,21 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
                         }
                     }}
                     messages={{
-                        next: 'Sig.',
-                        previous: 'Ant.',
-                        today: 'Hoy',
-                        month: 'Mes',
-                        work_week: "Semana",                       // ponemos el texto Semana para work_week, sino aparecería "Work week"
-                        day: 'Día',
-                        agenda: 'Agenda',
+                        // next: 'Sig.',
+                        // previous: 'Ant.',
+                        // today: 'Hoy',
+                        // month: 'Mes',
+                        // work_week: "Semana",                       // ponemos el texto Semana para work_week, sino aparecería "Work week"
+                        // day: 'Día',
+                        // agenda: 'Agenda',
+                        next: t("calendar.next"),
+                        previous: t("calendar.previous"),
+                        today: t("calendar.today"),
+                        month: t("calendar.month"),
+                        work_week: t("calendar.workweek"),                          // ponemos el texto Semana para work_week, sino aparecería "Work week"
+                        day: t("calendar.day"),
+                        // agenda: t("calendar.agenda"),
+                        showMore: t("calendar.showmore")
                     }}
                 />
             </Grid>

@@ -3,7 +3,7 @@ import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { useTranslation } from 'react-i18next';
-import { es } from 'date-fns/locale';
+import { es, eu } from 'date-fns/locale';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 import {
@@ -40,16 +40,18 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { es as localeEs } from 'date-fns/locale';
+import { eu as localeEu } from 'date-fns/locale';
 
 const DnDCalendar = withDragAndDrop(Calendar);
-const locales = { es };
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
-  getDay,
-  locales,
-});
+// const locales = { es };
+// const locales = { eu: localeEu };
+// const localizer = dateFnsLocalizer({
+//   format,
+//   parse,
+//   startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
+//   getDay,
+//   locales,
+// });
 
 const saltosTiempo = 60 // step={15}
 const saltosHora = 1 // timeslots={4}
@@ -58,7 +60,6 @@ const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
 
 const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => {
     
-    console.log("Lenguaje seleccionado en EventsCalendarComponent: ", selectedLanguage)
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("events")
     
@@ -89,6 +90,24 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
     const [repeatableSpaces, setRepeatableSpaces] = useState([
         28 // Exterior
     ])
+    const locales = { es: localeEs, eu: localeEu };
+    const [localizer, setLocalizer] = useState(null); // null al inicio
+
+    useEffect(() => {
+        const currentLocale = locales[selectedLanguage] || localeEs;
+
+        const newLocalizer = dateFnsLocalizer({
+        format: (date, formatStr, options) =>
+            format(date, formatStr, { ...options, locale: currentLocale }),
+        parse: (value, formatStr, options) =>
+            parse(value, formatStr, new Date(), { ...options, locale: currentLocale }),
+        startOfWeek: (date) => startOfWeek(date, { locale: currentLocale }),
+        getDay,
+        locales
+        });
+
+        setLocalizer(newLocalizer);
+    }, [selectedLanguage]);
 
 
     useEffect(() => {
@@ -205,6 +224,8 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
             setActionEventMessage([t("actioneventmessage.message1"), t("actioneventmessage.message2")])
     }, [selectedLanguage])
     
+  if (!localizer) return null; // o loader si quieres
+
     const handleNavigate = (newDate) => { // Permite desplazar de fecha del calendario
         setDate(newDate)
     };
@@ -241,7 +262,6 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
 
         return Math.round(resta / dia)
     }
-
 
     // Creando un nuevo evento
     const handleSelectSlot = ({ start, end }) => {
@@ -716,7 +736,8 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
         <DnDCalendar
             style= {{height: 1000, fontSize: 'clamp(0.75rem, 1vw, 1.2rem)',}}
             localizer={localizer}
-            culture='es'                                    // días mes, semana, día en español
+            // culture='es'                                    // días mes, semana, día en español
+            culture={selectedLanguage}                         // días mes, semana, día en español
             events={events}                                 // Personalizando la visualizacion de eventos en el calendario usando el array events
             selectable                                      // habilita la seleccion de celdas
             views={['month', 'work_week', 'day', 'agenda']}
@@ -771,17 +792,27 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                 }
             }}
             messages={{
-                next: 'Sig.',
-                previous: 'Ant.',
-                today: 'Hoy',
-                month: 'Mes',
-                work_week: "Semana",                          // ponemos el texto Semana para work_week, sino aparecería "Work week"
-                day: 'Día',
-                agenda: 'Agenda',
+                // next: 'Sig.',
+                // previous: 'Ant.',
+                // today: 'Hoy',
+                // month: 'Mes',
+                // work_week: "Semana",                          // ponemos el texto Semana para work_week, sino aparecería "Work week"
+                // day: 'Día',
+                // agenda: 'Agenda',
+                next: t("calendar.next"),
+                previous: t("calendar.previous"),
+                today: t("calendar.today"),
+                month: t("calendar.month"),
+                work_week: t("calendar.workweek"),                          // ponemos el texto Semana para work_week, sino aparecería "Work week"
+                day: t("calendar.day"),
+                agenda: t("calendar.agenda"),
+                showMore: t("calendar.showmore")
+
             }}
         />
 
-        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeEs}>
+        {/* <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeEs}> */}
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeEu}>
             <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth>
                 {/* <DialogTitle>{!isEditing ? actionEventMessage[0] : actionEventMessage[1]} evento</DialogTitle> */}
                 <DialogTitle>{!isEditing ? actionEventMessage[0] : actionEventMessage[1]}</DialogTitle>

@@ -19,5 +19,15 @@
     "stack3formcontrol": {
         "inputlabel": "Espazioak",
         "selectlabel": "Espazioak"
+    },
+    "calendar": {
+        "next": "Hur.",
+        "previous": "Aur.",
+        "today": "Gaur",
+        "month": "Hila",
+        "workweek": "Lan astea",
+        "day": "Eguna",
+        "agenda": "Agenda",
+        "showmore": "+{{count}} gehiago"
     }
 }

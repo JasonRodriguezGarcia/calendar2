@@ -19,5 +19,15 @@
     "stack3formcontrol": {
         "inputlabel": "Espacios",
         "selectlabel": "Espacios"
+    },
+    "calendar": {
+        "next": "Sig.",
+        "previous": "Ant.",
+        "today": "Hoy",
+        "month": "Mes",
+        "workweek": "Semana",
+        "day": "Día",
+        "agenda": "Agenda",
+        "showmore": "+{{count}} gehiago"
     }
 }

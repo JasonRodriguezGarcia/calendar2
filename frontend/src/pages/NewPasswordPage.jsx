@@ -25,7 +25,7 @@ const NewPasswordPage = ({ logged, setLogged, user, setUser, selectedLanguage, s
                 logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
             <NewPasswordComponent 
                 selectedLanguage={selectedLanguage}
-                logged={logged} setLogged={setLogged} /> {/* user={usuario} setUser={setUsuario} /> */}
+                logged={logged} /> {/* user={usuario} setUser={setUsuario} /> */}
         </Box>
         </>
     )

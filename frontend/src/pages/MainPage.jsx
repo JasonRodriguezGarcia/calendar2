@@ -6,7 +6,7 @@ import imagenLogo2 from "../assets/images/sartu_logo-1.png";
 
 const MainPage = ({ logged, setLogged, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect }) => {
 
-    console.log("Lenguaje seleccionado: ", selectedLanguage)
+    // console.log("Lenguaje seleccionado: ", selectedLanguage)
     return (
         <Box sx={{
             backgroundImage: `url(${imagenFondo})`,

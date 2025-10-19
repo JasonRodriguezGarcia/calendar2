@@ -1,0 +1,27 @@
+{
+    "error": {
+        "message1": "Contraseña demasiado corta",
+        "message2": "Introduzca email",
+        "message3": "Introduzca contraseña",
+        "message4": "Usuario o contraseña no válidos"
+    },
+    "box": {
+        "typography": "Inicio de sesión",
+        "formcontrol1": {
+            "formlabel": "Email",
+            "placeholder": "Email usuario"
+        },
+        "formcontrol2": {
+            "formlabel": "Contraseña",
+            "placeholder": {
+                "text1": "mín",
+                "text2": "caracteres"
+            }
+        },
+        "buttontext": "Iniciar sesión",
+        "stack": {
+            "typography": "¿Olvidaste la contraseña?",
+            "buttontext": "Recuperar contraseña"
+        }
+    }
+}

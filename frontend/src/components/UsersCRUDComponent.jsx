@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
     Box, 
     Typography,
@@ -18,16 +19,19 @@ import {
 } from '@mui/material';
 import { colorOptions } from "../utils/EventColors";
 
-const tardes_invierno = [
-    {tarde_id: 0, descripcion: "No"},
-    {tarde_id: 1, descripcion: "Lunes"},
-    {tarde_id: 2, descripcion: "Martes"},
-    {tarde_id: 3, descripcion: "Miércoles"},
-    {tarde_id: 4, descripcion: "Jueves"},
-    {tarde_id: 5, descripcion: "Viernes"},
-]
-const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token }) => {
+const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, selectedLanguage }) => {
+    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
+    const { t, i18n } = useTranslation("userscrud")
 
+    // const tardesInvierno = [
+        // {tarde_id: 0, descripcion: "No"},
+        // {tarde_id: 1, descripcion: "Lunes"},
+        // {tarde_id: 2, descripcion: "Martes"},
+        // {tarde_id: 3, descripcion: "Miércoles"},
+        // {tarde_id: 4, descripcion: "Jueves"},
+        // {tarde_id: 5, descripcion: "Viernes"},
+    // ]
+    const [tardesInvierno, setTardesInvierno] = useState([])
     const [selectedColor, setSelectedColor] = useState("")
     const [userEmail, setUserEmail] = useState("")
     const [userPassword, setUserPassword] = useState("")
@@ -48,7 +52,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
     const [showPassword,setShowPassword] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
     const navigate = useNavigate();
-    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
 
     console.log("prop usuario: ", user)
     console.log("token: ", token)
@@ -78,7 +81,7 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
                     setCentros(data.centros)
                     setTurnos(data.turnos)
                 }
-                    
+
             } catch (error) {
                 console.log(error.message)
             } finally {
@@ -118,7 +121,8 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
                         setSelectedColor(dataUser.color)
                         setUserTarde_Invierno(dataUser.tarde_invierno)
                         setUserObservaciones(dataUser.observaciones)
-                        const title = action === "read" ? "Ver perfil" : "Modificar perfil"
+                        // const title = action === "read" ? "Ver perfil" : "Modificar perfil"
+                        const title = action === "read" ? t("action.text1") : t("action.text2")
                         setFormTitle(title)
                         setFormReadOnly(action === "read")
                     }
@@ -129,7 +133,8 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
                     // setLoading(false); // Set loading to false once data is fetched or error occurs
                 }
             } else {
-                setFormTitle('Alta usuari@')
+                // setFormTitle('Alta usuari@')
+                setFormTitle(t("formtitle"))
                 setFormReadOnly(false)
             }
         }
@@ -156,6 +161,24 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
     // Así nos aseguramos de que cuando user cambie desde '' a { nombre_apellidos, password }, el useEffect se dispare de nuevo 
     // y haga el fetch correctamente.
 
+    useEffect(() =>{
+        setTardesInvierno([
+            {tarde_id: 0, descripcion: t("tardesinvierno.descripcion0")},
+            {tarde_id: 1, descripcion: t("tardesinvierno.descripcion1")},
+            {tarde_id: 2, descripcion: t("tardesinvierno.descripcion2")},
+            {tarde_id: 3, descripcion: t("tardesinvierno.descripcion3")},
+            {tarde_id: 4, descripcion: t("tardesinvierno.descripcion4")},
+            {tarde_id: 5, descripcion: t("tardesinvierno.descripcion5")},
+        ])
+        const title = action === "read" 
+            ? t("action.text1") 
+            : action === "update"
+                ?t("action.text2")
+                :t("formtitle")
+        setFormTitle(title)
+
+    }, [selectedLanguage])
+
     useEffect(() => {
         if (errorMessage) {
             const intervalo = setTimeout(() => {
@@ -173,7 +196,8 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
         if (e.target.value.length > 50) return;
         setUserEmail(e.target.value)
         if (e.target.value.length < 7)
-            setErrorMessage("Email demasiado corto")
+            // setErrorMessage("Email demasiado corto")
+            setErrorMessage(t("error.message1"))
         else
             setErrorMessage(""); // Limpia el error si ya es válido
     }
@@ -182,7 +206,8 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
         if (e.target.value.length > 15) return;
         setUserPassword(e.target.value)
         if (e.target.value.length < minPasswordLength)
-            setErrorMessage("Contraseña demasiado corta")
+            // setErrorMessage("Contraseña demasiado corta")
+            setErrorMessage(t("error.message2"))
         else
             setErrorMessage(""); // Limpia el error si ya es válido
     }
@@ -191,7 +216,8 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
         if (e.target.value.length > 50) return;
         setUserNombre_Apellidos(e.target.value)
         if (e.target.value.length < 7)
-            setErrorMessage("Nombre y Apellidos demasiado cortos")
+            // setErrorMessage("Nombre y Apellidos demasiado cortos")
+            setErrorMessage(t("error.message3"))
         else
             setErrorMessage(""); // Limpia el error si ya es válido
     }
@@ -205,7 +231,8 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
         let numbersOnly = e.target.value.replace(/\D/g, '').slice(0, 3); // solo 3 números
         setUserExtension(numbersOnly)
         if (e.target.value > 3) {
-            setErrorMessage("Máx. caracteres alcanzado")
+            // setErrorMessage("Máx. caracteres alcanzado")
+            setErrorMessage(t("error.message4"))
             return
         }
         setErrorMessage("")
@@ -218,15 +245,18 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
             return
         }
         if (userEmail.length < 18 && !userEmail.includes("@erroak.sartu.org")) {
-            setErrorMessage("Introduzca email válido")
+            // setErrorMessage("Introduzca email válido")
+            setErrorMessage(t("error.message5"))
             return
         }
         if (userPassword.length < minPasswordLength) {
-            setErrorMessage("Introduzca contraseña más larga")
+            // setErrorMessage("Introduzca contraseña más larga")
+            setErrorMessage()
             return
         }
         if (userNombre_Apellidos.length < 8) {
-            setErrorMessage("Nombre y Apellidos más largo")
+            // setErrorMessage("Nombre y Apellidos más largo")
+            setErrorMessage()
             return
         }
 
@@ -268,7 +298,8 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
             console.log("Respuesta backend: ", data)
             const resultado = data.result
             if (resultado === "Email ya existente") {
-                setErrorMessage("Email ya existente")
+                // setErrorMessage("Email ya existente")
+                setErrorMessage(t("error.message8"))
                 return
             }
             const usuario = {
@@ -331,13 +362,15 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
                 </div>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>Email</FormLabel>
+                        {/* <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>Email</FormLabel> */}
+                        <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol1.formlabel")}:</FormLabel>
                         <Input
                             id="useremail"
                             name="useremail"
                             type="email"
                             autoComplete="email"
-                            placeholder="(min 7 - max. 50 car.)"
+                            // placeholder="(min. 18 - max. 50 car.)"
+                            placeholder={t("box.formcontrol1.placeholder")}
                             required
                             fullWidth
                             value={userEmail}
@@ -348,7 +381,8 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} justifyContent="left" alignItems="center">
-                        <FormLabel htmlFor="userpassword" sx={{ color: "black", minwidth: 100 }}>Contraseña</FormLabel>
+                        {/* <FormLabel htmlFor="userpassword" sx={{ color: "black", minwidth: 100 }}>Contraseña</FormLabel> */}
+                        <FormLabel htmlFor="userpassword" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol2.formlabel")}:</FormLabel>
                         <Input
                             id="userpassword"
                             name="userpassword"
@@ -356,7 +390,8 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
                             onMouseEnter={() => setShowPassword(true)}
                             onMouseLeave={() => setShowPassword(false)}
                             autoComplete="password"
-                            placeholder={`(mín. ${minPasswordLength} - máx. 15 car.)`}
+                            // placeholder={`(mín. ${minPasswordLength} - máx. 15 car.)`}
+                            placeholder={`(${t("box.formcontrol2.placeholder.text1")}. ${minPasswordLength} - ${t("box.formcontrol2.placeholder.text2")}.)`}
                             required
                             fullWidth
                             value={userPassword}
@@ -367,13 +402,15 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="usernombre_apellidos" sx={{ color: "black", minwidth: 100 }}>Nombre y apellido:</FormLabel>
+                        {/* <FormLabel htmlFor="usernombre_apellidos" sx={{ color: "black", minwidth: 100 }}>Nombre y apellido:</FormLabel> */}
+                        <FormLabel htmlFor="usernombre_apellidos" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol3.formlabel")}:</FormLabel>
                         <Input
                             id="usernombre_apellidos"
                             name="usernombre_apellidos"
                             type="text"
                             autoComplete="nombre_apellidos"
-                            placeholder="(mín. 7 - máx. 50 car.)"
+                            // placeholder="(mín. 7 - máx. 50 car.)"
+                            placeholder={t("box.formcontrol3.placeholder")}
                             required
                             fullWidth
                             value={userNombre_Apellidos}
@@ -384,13 +421,14 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="usermovil" sx={{ color: "black", minwidth: 100 }}>Movil Empresa:</FormLabel>
+                        <FormLabel htmlFor="usermovil" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol4.formlabel")}:</FormLabel>
                         <Input
                             id="usermovil"
                             name="usermovil"
                             type="text"
                             autoComplete="movil"
-                            placeholder="Ej.: 699616161 (9 dígitos)"
+                            // placeholder="Ej.: 699616161 (9 dígitos)"
+                            placeholder={t("box.formcontrol4.placeholder")}
                             fullWidth
                             value={userMovil}  // esta línea es esencial para poder usarse en la funcion handleUserMovil
                             disabled={formReadOnly}
@@ -400,13 +438,13 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="userextension" sx={{ color: "black", minwidth: 100 }}>Extension</FormLabel>
+                        <FormLabel htmlFor="userextension" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol5.formlabel")}:</FormLabel>
                         <Input
                             id="userextension"
                             name="userextension"
                             type="text"
                             autoComplete="extension"
-                            placeholder="(máx. 3 car.)"
+                            placeholder={t("box.formcontrol5.placeholder")}
                             fullWidth
                             value={userExtension}
                             disabled={formReadOnly}
@@ -416,7 +454,7 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="usercentro" sx={{ color: "black", minwidth: 100 }}>Centro</FormLabel>
+                        <FormLabel htmlFor="usercentro" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol6.formlabel")}:</FormLabel>
                         <Select
                             fullWidth
                             labelId="select-label-centro"
@@ -434,7 +472,8 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="userllave" sx={{ color: "black", minwidth: 100 }}>Llave</FormLabel>
+                        {/* <FormLabel htmlFor="userllave" sx={{ color: "black", minwidth: 100 }}>Llave</FormLabel> */}
+                        <FormLabel htmlFor="userllave" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol7.formlabel")}:</FormLabel>
                         <RadioGroup
                             row //  esto los pone en horizontal
                             aria-labelledby="demo-radio-buttons-group-label-llave"
@@ -443,10 +482,12 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
                             value={userLlave}
                             onChange={(e)=> setUserLlave(e.target.value)}
                         >
-                            <FormControlLabel value="true" control={<Radio />} label="Si" disabled={formReadOnly}/>
-                            <FormControlLabel value="false" control={<Radio />} label="No" disabled={formReadOnly}/>
+                            {/* <FormControlLabel value="true" control={<Radio />} label="Si" disabled={formReadOnly}/>
+                            <FormControlLabel value="false" control={<Radio />} label="No" disabled={formReadOnly}/> */}
+                            <FormControlLabel value="true" control={<Radio />} label={t("box.formcontrol7.radio.label1")} disabled={formReadOnly}/>
+                            <FormControlLabel value="false" control={<Radio />} label={t("box.formcontrol7.radio.label2")} disabled={formReadOnly}/>
                         </RadioGroup>
-                        <FormLabel htmlFor="useralarma" sx={{ color: "black", minwidth: 100 }}>Alarma</FormLabel>
+                        <FormLabel htmlFor="useralarma" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol8.formlabel")}:</FormLabel>
                         <RadioGroup
                             row //  esto los pone en horizontal
                             aria-labelledby="demo-radio-buttons-group-label-alarma"
@@ -455,18 +496,21 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
                             value={userAlarma}
                             onChange={(e)=> setUserAlarma(e.target.value)}
                         >
-                            <FormControlLabel value="true" control={<Radio />} label="Si" disabled={formReadOnly}/>
-                            <FormControlLabel value="false" control={<Radio />} label="No"disabled={formReadOnly}/>
+                            {/* <FormControlLabel value="true" control={<Radio />} label="Si" disabled={formReadOnly}/>
+                            <FormControlLabel value="false" control={<Radio />} label="No"disabled={formReadOnly}/> */}
+                            <FormControlLabel value="true" control={<Radio />} label={t("box.formcontrol8.radio.label1")} disabled={formReadOnly}/>
+                            <FormControlLabel value="false" control={<Radio />} label={t("box.formcontrol8.radio.label2")} disabled={formReadOnly}/>
                         </RadioGroup>
                     </Stack>
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="userturno" sx={{ color: "black", minwidth: 100 }}>Turno</FormLabel>
+                        {/* <FormLabel htmlFor="userturno" sx={{ color: "black", minwidth: 100 }}>Turno</FormLabel> */}
+                        <FormLabel htmlFor="selectturno" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol9.formlabel")}:</FormLabel>
                         <Select
                             fullWidth
                             labelId="select-label-turno"
-                            id="select-turno"
+                            id="selectturno"
                             value={userTurno}
                             disabled={formReadOnly}
                             onChange={(e) => setUserTurno(e.target.value)}
@@ -479,44 +523,51 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
                     </Stack>
                 </FormControl>
                 <FormControl fullWidth margin="dense">
-                    <InputLabel id="color-select-label">Color</InputLabel>
-                    <Select
-                        labelId="color-select-label"
-                        value={selectedColor}
-                        disabled={formReadOnly}
-                        label="Color"
-                        onChange={handleChangeColor}
-                    >
-                        {Object.entries(colorOptions).map(([name, hex]) => (
-                            <MenuItem key={name} value={name}>
-                                <Box
-                                    sx={{
-                                        width: 20,
-                                        height: 20,
-                                        backgroundColor: hex,
-                                        display: 'inline-block',
-                                        borderRadius: '50%',
-                                        marginRight: 1,
-                                }}
-                            />
-                                {name}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        {/* <InputLabel id="color-select-label">Color</InputLabel> */}
+                        {/* <InputLabel id="color-select-label">{t("box.formcontrol10.inputlabel")}</InputLabel> */}
+                        <FormLabel htmlFor="selectedcolor" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol10.formlabel")}:</FormLabel>
+                        <Select
+                            fullWidth
+                            labelId="color-select-label"
+                            id="selectedcolor"
+                            value={selectedColor}
+                            disabled={formReadOnly}
+                            // label="Color"
+                            onChange={handleChangeColor}
+                        >
+                            {Object.entries(colorOptions).map(([name, hex]) => (
+                                <MenuItem key={name} value={name}>
+                                    <Box
+                                        sx={{
+                                            width: 20,
+                                            height: 20,
+                                            backgroundColor: hex,
+                                            display: 'inline-block',
+                                            borderRadius: '50%',
+                                            marginRight: 1,
+                                    }}
+                                />
+                                    {name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </Stack>
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="usertarde_invierno" sx={{ color: "black", minwidth: 100 }}>Tarde Invierno</FormLabel>
+                        {/* <FormLabel htmlFor="usertarde_invierno" sx={{ color: "black", minwidth: 100 }}>Tarde Invierno</FormLabel> */}
+                        <FormLabel htmlFor="usertarde_invierno" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol11.formlabel")}:</FormLabel>
                         <Select
                             fullWidth
                             labelId="select-label-tarde_invierno"
-                            id="select-tarde_invierno"
+                            id="usertarde_invierno"
                             value={userTarde_Invierno}
                             disabled={formReadOnly}
                             onChange={(e) => setUserTarde_Invierno(e.target.value)}
                             required
                         >
-                            {tardes_invierno.map((tarde) => (
+                            {tardesInvierno.map((tarde) => (
                                 <MenuItem key={tarde.tarde_id} value={tarde.tarde_id}>{tarde.descripcion}</MenuItem>
                             ))}
                         </Select>
@@ -524,7 +575,8 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
                 </FormControl>
                 <TextField
                     fullWidth
-                    label="Observaciones"
+                    // label="Observaciones"
+                    label={t("box.textfieldlabel")}
                     name="observaciones"
                     value={userObservaciones}
                     disabled={formReadOnly}
@@ -536,10 +588,14 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token })
                 <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 }}>
                     {/* Crear usuario */}
                     {action === "create" 
-                        ?"Crear"
+                        // ?"Crear"
+                        // :  action == "read" 
+                        //     ? "Cerrar" 
+                        //     : "Guardar"
+                        ? t("box.button.text1")
                         :  action == "read" 
-                            ? "Cerrar" 
-                            : "Guardar"
+                            ? t("box.button.text2") 
+                            : t("box.button.text3")
                     }
                 </Button>
                 {errorMessage &&                 

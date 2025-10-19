@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
 // MUI
 import {
@@ -12,8 +13,9 @@ import {
 
 } from '@mui/material';
 
-const NewPasswordComponent = ({ logged, setLogged }) => {
+const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
+    const { t, i18n } = useTranslation("newpassword")
 
     const navigate = useNavigate();
     const {id} = useParams()
@@ -33,24 +35,21 @@ const NewPasswordComponent = ({ logged, setLogged }) => {
         }
     }, [errorMessage])
 
-    useEffect(() => {
-        if (logged) {
-            navigate("/", { replace: true });
-        }
-    }, [logged, navigate]); // se ejecuta al menos una vez, justo después del primer render, y también cada vez que logged cambie.
-
     const handleNewPassword = async (e) => {
         e.preventDefault()
         if (newPassword.length < minPasswordLength) {
-            setErrorMessage("Contraseña1 demasiado corta")
+            // setErrorMessage("Contraseña1 demasiado corta")
+            setErrorMessage(t("error.message1"))
             return
         }
         if (newPassword2.length < minPasswordLength) {
-            setErrorMessage("Contraseña2 demasiado corta")
+            // setErrorMessage("Contraseña2 demasiado corta")
+            setErrorMessage(t("error.message2"))
             return
         }
         if (newPassword !== newPassword2){
-            setErrorMessage("Las contraseñas no coinciden")
+            // setErrorMessage("Las contraseñas no coinciden")
+            setErrorMessage(t("error.message3"))
             return
         }
 
@@ -70,7 +69,7 @@ const NewPasswordComponent = ({ logged, setLogged }) => {
                 const data = await response.json()
                 console.log("Respuesta backend: ", data)
                 if (data.result === "No encontrado") {
-                    setErrorMessage("Id usuario no válido")
+                    setErrorMessage(t("error.message4"))
                     return
                 } else {
                     // console.log("Recibido newpassword: ", data)
@@ -86,16 +85,6 @@ const NewPasswordComponent = ({ logged, setLogged }) => {
 
     }
     
-    const handleUserPassword = (e) => {
-        console.log("Seleccionado: ", e.currentTarget)
-        if (e.target.value.length > 15) return;
-        setNewPassword(e.target.value)
-        if (e.target.value.length < minPasswordLength)
-            setErrorMessage("Contraseña demasiado corta")
-        else
-            setErrorMessage(""); // Limpia el error si ya es válido
-    }
-
     return (
         <>
         <Box
@@ -128,21 +117,22 @@ const NewPasswordComponent = ({ logged, setLogged }) => {
                 backgroundColor: '#f0f0f0',
                 }}
             >
-                <div>
-                    <Typography variant="h4" component="h3" sx={{ color: "black"}}>
-                        <b>Nueva Contraseña</b>
-                    </Typography>
-                </div>
+                <Typography variant="h4" component="h3" sx={{ color: "black"}}>
+                    {/* <b>Nueva Contraseña</b> */}
+                    <b>{t("boxform.typography")}</b>
+                </Typography>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="newpassword" sx={{ color: "black", minwidth: 100 }}>Nueva contraseña</FormLabel>
+                        {/* <FormLabel htmlFor="newpassword" sx={{ color: "black", minwidth: 100 }}>Nueva contraseña</FormLabel> */}
+                        <FormLabel htmlFor="newpassword" sx={{ color: "black", minwidth: 100 }}>{t("boxform.formcontrol1.formlabel")}</FormLabel>
                         <Input
                             id="newpassword"
                             name="newpassword"
                             type={showPassword ? 'text' : 'password'}
                             onMouseEnter={() => setShowPassword(true)}
                             onMouseLeave={() => setShowPassword(false)}
-                            placeholder={`(mín. ${minPasswordLength} - máx. 15 car.)`}
+                            // placeholder={`(mín. ${minPasswordLength} - máx. 15 car.)`}
+                            placeholder={`(${t("boxform.formcontrol1.placeholder.text1")}. ${minPasswordLength} - ${t("boxform.formcontrol1.placeholder.text2")})`}
                             required
                             fullWidth
                             value={newPassword}
@@ -152,14 +142,15 @@ const NewPasswordComponent = ({ logged, setLogged }) => {
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="newpassword2" sx={{ color: "black", minwidth: 100 }}>Repetir contraseña</FormLabel>
+                        <FormLabel htmlFor="newpassword2" sx={{ color: "black", minwidth: 100 }}>{t("boxform.formcontrol2.formlabel")}</FormLabel>
                         <Input
                             id="newpassword2"
                             name="newpassword2"
                             type={showPassword ? 'text' : 'password'}
                             onMouseEnter={() => setShowPassword(true)}
                             onMouseLeave={() => setShowPassword(false)}
-                            placeholder={`(mín. ${minPasswordLength} - máx. 15 car.)`}
+                            // placeholder={`(mín. ${minPasswordLength} - máx. 15 car.)`}
+                            placeholder={`(${t("boxform.formcontrol2.placeholder.text1")}. ${minPasswordLength} - ${t("boxform.formcontrol2.placeholder.text2")})`}
                             required
                             fullWidth
                             value={newPassword2}

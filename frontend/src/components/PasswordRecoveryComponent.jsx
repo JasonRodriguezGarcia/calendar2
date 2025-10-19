@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
 // MUI
 import {
@@ -18,6 +19,7 @@ import {
 
 const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
+    const { t, i18n } = useTranslation("passwordrecovery")
 
     const [userEmail, setUserEmail] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
@@ -41,12 +43,9 @@ const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
 
     const handlePasswordRecovery = async (e) => {
         e.preventDefault()
-        // if (userEmail.length === 0) {
-        //     setErrorMessage("Introduzca email")
-        //     return
-        // }
         if (userEmail.length < 18 && !userEmail.includes("@erroak.sartu.org")) {
-            setErrorMessage("Introduzca email válido")
+            // setErrorMessage("Introduzca email válido")
+            setErrorMessage(t("error.message1"))
             return
         }
 
@@ -65,8 +64,8 @@ const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
             const data = await response.json()
             console.log("Respuesta backend: ", data)
             if (data.result === "No encontrado") {
-                // setErrorMessage("Nombre usuario o email no válidos")
-                setErrorMessage("Email no válido")
+                // setErrorMessage("Email no válido")
+                setErrorMessage(t("error.message2"))
                 return
             } else {
                 const {usuario_id} = data[0]
@@ -120,23 +119,26 @@ const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
                 }}
             >
                 <Typography variant="h4" component="h3" sx={{ color: "black"}}>
-                    <b>Recuperar Contraseña</b>
+                    <b>{t("boxtypography")}</b>
                 </Typography>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>Email</FormLabel>
+                        {/* <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>Email</FormLabel> */}
+                        <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>{t("boxformcontrol.formlabel")}</FormLabel>
                         <Input
                             id="useremail"
                             name="useremail"
                             type="email"
                             autoComplete="email"
-                            placeholder="Email usuario/a"
+                            // placeholder="Email usuario/a"
+                            placeholder={t("boxformcontrol.placeholder")}
                             fullWidth
                             onChange={(e)=> setUserEmail(e.target.value)}
                         />
                     </Stack>
                 </FormControl>
-                <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 /* margin top */ }}>Recuperar contraseña</Button>
+                {/* <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 }}>Recuperar contraseña</Button> */}
+                <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 }}>{t("boxbutton")}</Button>
 
                 {errorMessage &&                 
                     <Typography level="body-sm" color="danger" fontWeight="bold" fontSize="1em">{errorMessage}</Typography>
@@ -144,15 +146,17 @@ const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
                 <Dialog open={dialogRecovery} onClose={handleRecovery}>
                     <DialogTitle>
                         <Typography variant="h4">
-                            Recuperar contraseña
+                            {/* Recuperar contraseña */}
+                            {t("boxdialog.title")}
                         </Typography>
                     </DialogTitle>
                     <DialogContent>
                         <DialogContent>
-                            Se ha enviado un link de recuperación de contraseña al correo electrónico {userEmail}.
+                            {/* Se ha enviado un link de recuperación de contraseña al correo electrónico {userEmail}. */}
+                            {t("boxdialog.content")} {userEmail}
                         </DialogContent>
                         <DialogActions>
-                            <Button onClick={handleRecovery} variant="contained">Continuar</Button>
+                            <Button onClick={handleRecovery} variant="contained">{t("boxdialog.button")}</Button>
                         </DialogActions>
                     </DialogContent>
                 </Dialog>

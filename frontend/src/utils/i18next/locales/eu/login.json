@@ -1,0 +1,27 @@
+{
+  "error": {
+    "message1": "Pasahitza laburregia da",
+    "message2": "Emaila sartu",
+    "message3": "Pasahitza sartu",
+    "message4": "Erabiltzailea edo pasahitza baliogabea da"
+  },
+  "box": {
+    "typography": "Saio-hasiera",
+    "formcontrol1": {
+      "formlabel": "Emaila",
+      "placeholder": "Erabiltzailearen emaila"
+    },
+    "formcontrol2": {
+      "formlabel": "Pasahitza",
+      "placeholder": {
+        "text1": "gutx.",
+        "text2": "karaktere"
+      }
+    },
+    "buttontext": "Saioa hasi",
+    "stack": {
+      "typography": "Pasahitza ahaztu duzu?",
+      "buttontext": "Pasahitza berreskuratu"
+    }
+  }
+}

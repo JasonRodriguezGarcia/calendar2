@@ -24,7 +24,9 @@ const SignUpPage = ({ logged, setLogged, user, setUser, token, selectedLanguage,
                 selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                 logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
             <Toolbar /> {/* Añadiendo Toolbar vacío justo después, para que actúe como "espaciador" */}
-            <UsersCRUDComponent logged={logged} setLogged={setLogged} user={user} setUser={setUser} action="create" token={token}/>
+            <UsersCRUDComponent 
+                selectedLanguage={selectedLanguage}
+                logged={logged} setLogged={setLogged} user={user} setUser={setUser} action="create" token={token}/>
         </Box>
         </>
     )

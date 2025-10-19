@@ -1,32 +1,32 @@
 {
-    "eventos": "EkitaldiakTEST",
-    "pages": { 
-        "eventos": "Ekitaldiak",
+    "eventos": "GertaerakTEST",
+    "pages": {
+        "eventos": "Gertaerak",
         "vacaciones": "Oporrak",
-        "listados": "Zerrenak",
-        "about": "About"
+        "listados": "Zerrendak",
+        "about": "Honi buruz"
     },
     "lists": {
-        "eventosentidad": "Entitate gertaerak",
-        "vacacionesentidad": "Entitatearen oporrak",
+        "eventosentidad": "Erakundeko gertaerak",
+        "vacacionesentidad": "Erakundeko oporrak",
         "tardesinvierno": "Neguko arratsaldeak",
         "contactos": "Kontaktuak"
     },
     "settings": {
-        "verperfil": "Ikusi profila",
-        "modificarperfil": "Aldatu profila",
+        "verperfil": "Profila ikusi",
+        "modificarperfil": "Profila aldatu",
         "cerrarsesion": "Saioa itxi"
     },
     "loggedusertitletext": "Erabiltzailea",
     "notloggedusertitletexts": {
-        "text1": "Erabiltzaile handia",
-        "text2": "Hasi saioa"
+        "text1": "Erabiltzaile berria",
+        "text2": "Saioa hasi"
     },
     "tooltipstext": {
-        "text1": "Hasi",
-        "text2": "Erroak Sarturen webgunea",
-        "text3": "Ireki ezarpenak",
-        "text4": "Izena eman",
-        "text5": "Hasi saioa"
+        "text1": "Hasiera",
+        "text2": "Erroaken webgunea",
+        "text3": "Ezarpenak ireki",
+        "text4": "Erregistratu",
+        "text5": "Saioa hasi"
     }
 }

@@ -1,0 +1,82 @@
+{
+  "error": {
+    "message1": "Emaila laburregia da",
+    "message2": "Pasahitza laburregia da",
+    "message3": "Izena eta abizenak laburregiak dira",
+    "message4": "Karaktere kopuru maximoa gaindituta",
+    "message5": "Baliozko emaila sartu",
+    "message6": "Pasahitz luzeagoa sartu",
+    "message7": "Izena eta abizenak luzeagoak izan behar dira",
+    "message8": "Emaila lehendik existitzen da"
+  },
+  "tardesinvierno": {
+    "descripcion0": "Ez",
+    "descripcion1": "Astelehena",
+    "descripcion2": "Asteartea",
+    "descripcion3": "Asteazkena",
+    "descripcion4": "Osteguna",
+    "descripcion5": "Ostirala"
+  },
+  "action": {
+    "text1": "Profila ikusi",
+    "text2": "Profila aldatu"
+  },
+  "formtitle": "Erabiltzaile berria",
+  "box": {
+    "formcontrol1": {
+      "formlabel": "Emaila",
+      "placeholder": "(gutx. 18 - geh. 50 karaktere)"
+    },
+    "formcontrol2": {
+      "formlabel": "Pasahitza",
+      "placeholder": {
+        "text1": "gutx.",
+        "text2": "geh. 15 karaktere"
+      }
+    },
+    "formcontrol3": {
+      "formlabel": "Izena eta abizena",
+      "placeholder": "(gutx. 7 - geh. 50 karaktere)"
+    },
+    "formcontrol4": {
+      "formlabel": "Enpresako mugikorra",
+      "placeholder": "Adib.: 699616161 (9 digitu)"
+    },
+    "formcontrol5": {
+      "formlabel": "Luzapena",
+      "placeholder": "(geh. 3 karaktere)"
+    },
+    "formcontrol6": {
+      "formlabel": "Zentroa"
+    },
+    "formcontrol7": {
+      "formlabel": "Giltza",
+      "radio": {
+        "label1": "Bai",
+        "label2": "Ez"
+      }
+    },
+    "formcontrol8": {
+      "formlabel": "Alarma",
+      "radio": {
+        "label1": "Bai",
+        "label2": "Ez"
+      }
+    },
+    "formcontrol9": {
+      "formlabel": "Txanda"
+    },
+    "formcontrol10": {
+      "formlabel": "Kolorea"
+    },
+    "formcontrol11": {
+      "formlabel": "Neguko arratsaldea"
+    },
+    "textfieldlabel": "Oharrak",
+    "button": {
+      "text1": "Sortu",
+      "text2": "Itxi",
+      "text3": "Gorde"
+    }
+  }
+}

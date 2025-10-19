@@ -1,0 +1,82 @@
+{
+    "error": {
+        "message1": "Email demasiado corto",
+        "message2": "Contraseña demasiado corta",
+        "message3": "Nombre y Apellidos demasiado cortos",
+        "message4": "Máx. caracteres alcanzado",
+        "message5": "Introduzca email válido",
+        "message6": "Introduzca contraseña más larga",
+        "message7": "Nombre y Apellidos más largo",
+        "message8": "Email ya existente"
+    },
+    "tardesinvierno": {
+        "descripcion0": "No",
+        "descripcion1": "Lunes",
+        "descripcion2": "Martes",
+        "descripcion3": "Miércoles",
+        "descripcion4": "Jueves",
+        "descripcion5": "Viernes"
+    },
+    "action": {
+        "text1": "Ver perfil",
+        "text2": "Modificar perfil"
+    },
+    "formtitle": "Alta usuario/a",
+    "box": {
+        "formcontrol1": {
+            "formlabel": "Email",
+            "placeholder": "(min. 18 - max. 50 car.)"
+        },
+        "formcontrol2": {
+            "formlabel": "Contraseña",
+            "placeholder": {
+                "text1": "mín",
+                "text2": "máx. 15 caract."
+            }
+        },
+        "formcontrol3": {
+            "formlabel": "Nombre y apellido",
+            "placeholder": "(mín. 7 - máx. 50 car.)"
+        },
+        "formcontrol4": {
+            "formlabel": "Movil Empresa",
+            "placeholder": "Ej.: 699616161 (9 dígitos)"
+        },
+        "formcontrol5": {
+            "formlabel": "Extension",
+            "placeholder": "(máx. 3 car.)"
+        },
+        "formcontrol6": {
+            "formlabel": "Centro"
+        },
+        "formcontrol7": {
+            "formlabel": "Llave",
+            "radio": {
+                "label1": "Si",
+                "label2": "No"
+            }
+        },
+        "formcontrol8": {
+            "formlabel": "Alarma",
+            "radio": {
+                "label1": "Si",
+                "label2": "No"
+            }
+        },
+        "formcontrol9": {
+            "formlabel": "Turno"
+        },
+        "formcontrol10": {
+            "formlabel": "Color"
+        },
+        "formcontrol11": {
+            "formlabel": "Tarde Invierno"
+        },
+        "textfieldlabel": "Observaciones",
+        "button": {
+            "text1": "Crear",
+            "text2": "Cerrar",
+            "text3": "Guardar"
+        }
+    }
+}

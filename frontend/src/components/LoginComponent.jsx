@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
 // MUI
 import {
@@ -12,8 +13,9 @@ import {
 
 } from '@mui/material';
 
-const LoginComponent = ({ logged, setLogged, user, setUser }) => {
+const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, selectedLanguage }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
+    const { t, i18n } = useTranslation("login")
 
     const [userName, setUserName] = useState("")
     const [userEmail, setUserEmail] = useState("")
@@ -35,7 +37,8 @@ const LoginComponent = ({ logged, setLogged, user, setUser }) => {
 
     const handleUserPassword = (e) => {
         if (e.target.value.length < passwordLength)
-            setErrorMessage("Contraseña demasiado corta")
+            // setErrorMessage("Contraseña demasiado corta")
+            setErrorMessage(t("error.message1"))
         else
             setUserPassword(e.target.value)
     }
@@ -48,11 +51,13 @@ const LoginComponent = ({ logged, setLogged, user, setUser }) => {
             navigate('/passwordrecovery', { replace: true }) // no deja retroceder en el navegador
         }
         if (userEmail.length === 0) {
-            setErrorMessage("Introduzca email")
+            // setErrorMessage("Introduzca email")
+            setErrorMessage(t("error.message2"))
             return
         }
         if (userPassword.length === 0) {
-            setErrorMessage("Introduzca contraseña")
+            // setErrorMessage("Introduzca contraseña")
+            setErrorMessage(t("error.message3"))
             return
         }
         
@@ -73,7 +78,8 @@ const LoginComponent = ({ logged, setLogged, user, setUser }) => {
             const data = await response.json()
             console.log("Respuesta backend: ", data)
             if (data.result === "No encontrado") {
-                setErrorMessage("usuario o contraseña no válidos")
+                // setErrorMessage("usuario o contraseña no válidos")
+                setErrorMessage(t("error.message4"))
                 return
             } else {
                 // Crear localStorage
@@ -86,8 +92,10 @@ const LoginComponent = ({ logged, setLogged, user, setUser }) => {
                 }
                 // localStorage.setItem("usuario", JSON.stringify(usuario))
                 localStorage.setItem("token", data.token)
+                console.log("token hadleLogin: :", data.token)
                 setUser(usuario)
                 setLogged(true)
+                setToken(data.token)
                 navigate('/', { replace: true }) // no deja retroceder en el navegador
             }
 
@@ -129,21 +137,24 @@ const LoginComponent = ({ logged, setLogged, user, setUser }) => {
                     border: "1px solid grey",
                     borderRadius: '10px',
                     boxShadow: '10px 10px 15px 5px grey',
-                backgroundColor: '#f0f0f0',
+                    backgroundColor: '#f0f0f0',
                 }}
             >
                 <Typography variant="h4" component="h3" sx={{ color: "black"}}>
-                    <b>Inicio de sesión</b>
+                    {/* <b>Inicio de sesión</b> */}
+                    <b>{t("box.typography")}</b>
                 </Typography>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>Email</FormLabel>
+                        {/* <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>Email</FormLabel> */}
+                        <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol1.formlabel")}</FormLabel>
                         <Input
                             id="useremail"
                             name="useremail"
                             type="email"
                             autoComplete="email"
-                            placeholder="Email usuario"
+                            // placeholder="Email usuario"
+                            placeholder={t("box.formcontrol1.placeholder")}
                             fullWidth
                             onChange={(e)=> setUserEmail(e.target.value)}
                         />
@@ -151,7 +162,8 @@ const LoginComponent = ({ logged, setLogged, user, setUser }) => {
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} justifyContent="left" alignItems="center">
-                        <FormLabel htmlFor="userpassword" sx={{ color: "black", minwidth: 100 }}>Contraseña</FormLabel>
+                        {/* <FormLabel htmlFor="userpassword" sx={{ color: "black", minwidth: 100 }}>Contraseña</FormLabel> */}
+                        <FormLabel htmlFor="userpassword" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol2.formlabel")}</FormLabel>
                         <Input
                             id="userpassword"
                             name="userpassword"
@@ -159,14 +171,14 @@ const LoginComponent = ({ logged, setLogged, user, setUser }) => {
                             onMouseEnter={() => setShowPassword(true)}
                             onMouseLeave={() => setShowPassword(false)}
                             autoComplete="password"
-                            placeholder={`(mín. ${passwordLength} caracteres)`}
-                            required
+                            // placeholder={`(mín. ${passwordLength} caracteres)`}
+                            placeholder={`(${t("box.formcontrol2.placeholder.text1")}. ${passwordLength} ${t("box.formcontrol2.placeholder.text2")})`}
                             fullWidth
                             onChange={(e)=> handleUserPassword(e)}
                         />
                     </Stack>
                 </FormControl>
-                <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 /* margin top */ }}>Iniciar sesión</Button>
+                <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 /* margin top */ }}>{t("box.buttontext")}</Button>
                 {errorMessage && 
                     <Typography level="body-sm" color="danger" fontWeight="bold" fontSize="1em">{errorMessage}</Typography>
                 }
@@ -174,9 +186,10 @@ const LoginComponent = ({ logged, setLogged, user, setUser }) => {
                     <Typography
                         sx={{ fontSize: 'sm', alignSelf: 'center' }}
                         >
-                        ¿Olvidaste la contraseña?
+                        {/* ¿Olvidaste la contraseña? */}
+                        {t("box.stack.typography")}
                     </Typography>
-                    <Button type="submit" id="boton2" name="passwordrecover" sx={{ mt: 1 /* margin top */ }}>Recuperar contraseña</Button>
+                    <Button type="submit" id="boton2" name="passwordrecover" sx={{ mt: 1 /* margin top */ }}>{t("box.stack.buttontext")}</Button>
                 </Stack>
             </Box>
         </Box>

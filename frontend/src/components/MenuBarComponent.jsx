@@ -41,7 +41,7 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
     const [anchorElUser, setAnchorElUser] = useState(null);
     const [anchorElList, setAnchorElList] = useState(null);
     const { t, i18n } = useTranslation("menubar")
-    const pages = [t("pages.eventos"), t("pages.vacaciones"), t("pages.listados"), 'About']
+    const pages = [t("pages.eventos"), t("pages.vacaciones"), t("pages.listados"), t("pages.about")]
     const lists = [t("lists.eventosentidad"), t("lists.vacacionesentidad"), t("lists.tardesinvierno"), t("lists.contactos")]
     const settings = [t("settings.verperfil"), t("settings.modificarperfil"), t("settings.cerrarsesion")];
 
@@ -51,7 +51,7 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
     // }, [])
     // const mainMenu = t('mainmenu', {returnObjects: true})
 
-    console.log("18next mainmenu: ", t("eventos"))
+    // console.log("18next mainmenu: ", t("eventos"))
     
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -169,7 +169,7 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
                                     key={index} value={lang.lang}
                                 >
                                     <Box sx={{display: "flex", alignItems: "center"}}>
-                                        {lang.lang}
+                                        {lang.lang.toUpperCase()}
                                         {/* &nbsp;
                                         <img 
                                             src={lang.icon} 

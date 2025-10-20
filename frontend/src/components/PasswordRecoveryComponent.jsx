@@ -44,7 +44,6 @@ const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
     const handlePasswordRecovery = async (e) => {
         e.preventDefault()
         if (userEmail.length < 18 && !userEmail.includes("@erroak.sartu.org")) {
-            // setErrorMessage("Introduzca email válido")
             setErrorMessage(t("error.message1"))
             return
         }
@@ -64,7 +63,6 @@ const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
             const data = await response.json()
             console.log("Respuesta backend: ", data)
             if (data.result === "No encontrado") {
-                // setErrorMessage("Email no válido")
                 setErrorMessage(t("error.message2"))
                 return
             } else {
@@ -94,7 +92,6 @@ const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                // backgroundColor: '#f0f0f0',
                 px: 2,
             }}
         >
@@ -123,21 +120,18 @@ const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
                 </Typography>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        {/* <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>Email</FormLabel> */}
                         <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>{t("boxformcontrol.formlabel")}</FormLabel>
                         <Input
                             id="useremail"
                             name="useremail"
                             type="email"
                             autoComplete="email"
-                            // placeholder="Email usuario/a"
                             placeholder={t("boxformcontrol.placeholder")}
                             fullWidth
                             onChange={(e)=> setUserEmail(e.target.value)}
                         />
                     </Stack>
                 </FormControl>
-                {/* <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 }}>Recuperar contraseña</Button> */}
                 <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 }}>{t("boxbutton")}</Button>
 
                 {errorMessage &&                 
@@ -146,13 +140,11 @@ const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
                 <Dialog open={dialogRecovery} onClose={handleRecovery}>
                     <DialogTitle>
                         <Typography variant="h4">
-                            {/* Recuperar contraseña */}
                             {t("boxdialog.title")}
                         </Typography>
                     </DialogTitle>
                     <DialogContent>
                         <DialogContent>
-                            {/* Se ha enviado un link de recuperación de contraseña al correo electrónico {userEmail}. */}
                             {t("boxdialog.content")} {userEmail}
                         </DialogContent>
                         <DialogActions>

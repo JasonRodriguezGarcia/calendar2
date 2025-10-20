@@ -22,12 +22,7 @@ import { GlobalStyles } from '@mui/material'; // para cambiar el estilo del día
 import {
     Box,
     Checkbox,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
     Button,
-    TextField,
     MenuItem,
     FormControl, 
     Grid,
@@ -39,11 +34,6 @@ import {
     Typography,
 } from '@mui/material';
 import { colorOptions } from '../utils/EventColors';
-// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-// import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-// import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-// import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-// import { es as localeEs } from 'date-fns/locale';
 
 const DnDCalendar = withDragAndDrop(Calendar);
 const locales = { es, eu };
@@ -67,24 +57,12 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
     
     const [events, setEvents] = useState([])
     const [allEvents, setAllEvents] = useState([])
-    const [dialogOpen, setDialogOpen] = useState(false)
-    const [eventData, setEventData] = useState({})
     const [date, setDate] = useState(new Date())
     const [view, setView] = useState(Views.MONTH)     // POR DEFECTO VISTA MES
-    const [isEditing, setIsEditing] = useState(false)
-    const [selectedEvent, setSelectedEvent] = useState(null)
-    const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
-    const [errorDialogOpen, setErrorDialogOpen] = useState(false)
-    const [errorDialogMessage, setErrorDialogMessage] = useState('')
     const [usuarios, setUsuarios] = useState([])
     const [espacios, setEspacios] = useState([])
     const [programas, setProgramas] = useState([])
-    const [dialogRepeatOpen, setDialogRepeatOpen] = useState(false)
-    const [eventDataRepeatStart, setEventDataRepeatStart] = useState('')
-    const [eventDataRepeatEnd, setEventDataRepeatEnd] = useState('')
     const [errorMessage, setErrorMessage] = useState("") // SE USA PERO NO SE MUESTRA, SE PODRÍA BORRAR
-    const [dialogError, setDialogError] = useState(false)
-    const [dialogRepeatedResultOpen, setDialogRepeatedResultOpen] = useState(false)
     const [selectedUsuarios, setSelectedUsuarios] = useState([])
     const [selectedProgramas, setSelectedProgramas] = useState([])
     const [selectedEspacios, setSelectedEspacios] = useState([])
@@ -184,7 +162,6 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
                     color: evento.color,
                 }));
                 console.log("imprimo eventosData: ", eventosData)
-                // setEvents(eventosData)
                 setAllEvents(eventosData)
                 setEvents(filterEvents(eventosData, selectedUsuarios, selectedProgramas, selectedEspacios))
 
@@ -213,412 +190,6 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
         }
     };
 
-    // const eventGenerator = () => {
-    //     // Generar un ID único combinando timestamp + aleatorio
-    //     let newEventIdGenerated = Date.now() + Math.floor(Math.random() * 100000)
-
-    //     // Asegurarse que no se repita ID
-    //     while (events.some(e => e.event_id === newEventIdGenerated)) {
-    //         newEventIdGenerated = Date.now() + Math.floor(Math.random() * 100000)
-    //     }
-
-    //     return newEventIdGenerated
-
-    // }
-    // const restaDias = (finicial, ffinal) => {
-    //     const dia = 1000 * 60 * 60 * 24; // Milisegundos en un día
-
-    //     // Normalizar las fechas para ignorar la hora
-    //     const fechaInicial = new Date(finicial)
-    //     const fechaFinal = new Date(ffinal)
-    //     fechaInicial.setHours(0, 0, 0, 0)
-    //     fechaFinal.setHours(0, 0, 0, 0)
-    //     const resta = fechaFinal - fechaFinal
-
-    //     return Math.round(resta / dia)
-    // }
-
-
-    // Creando un nuevo evento
-    // const handleSelectSlot = ({ start, end }) => {
-
-    //     const newStart = start
-    //     const newEnd = end
-    //     // En vista "month" el "end" es por defecto un día mas, le restamos un día
-    //     if (view === "month") {
-    //         newEnd.setDate(end.getDate() -1) // resto un día
-    //     }
-
-    //     const isWeekend = newStart.getDay() === 0 || newStart.getDay() === 6
-
-    //     if (isWeekend) {
-    //         setErrorDialogMessage('Solo se permiten eventos en días laborales.')
-    //         setErrorDialogOpen(true)
-    //         return
-    //     }
-
-    //     let newEventId = eventGenerator()
-    //     // Generando el evento
-    //     setEventData({
-    //         event_id: newEventId, 
-    //         usuario_id: user.id,
-    //         espacio_id: '',
-    //         programa_id: '',
-    //         start: newStart,
-    //         end: newEnd,
-    //         observaciones: '',
-    //         color: ''
-    //     })
-    //     setIsEditing(false)
-    //     setSelectedEvent(null)
-    //     setDialogOpen(true)
-    // };
-
-    // Editando un evento
-    // // const handleSelectEvent = async (event) => {
-    // //     if (user.id === 12341234) {
-    // //         setEventData({ ...event })
-    // //         setIsEditing(true)
-    // //         setSelectedEvent(event)
-    // //         setDialogOpen(true)
-    // //     }
-    // // };
-
-    // const handleSaveRepeat = async () => { 
-    //     console.log("Repetir !!", selectedEvent, eventDataRepeatStart, eventDataRepeatEnd)
-    //     if (eventDataRepeatEnd < eventDataRepeatStart) {
-    //         setErrorDialogMessage(`Fecha Fin menor que fecha Inicio`)
-    //         setErrorDialogOpen(true)
-    //         return
-    //     }
-    //     // Permitir repetir 30 dias máximo
-    //     if(restaDias(eventDataRepeatStart, eventDataRepeatEnd) > 30) {
-    //         setErrorDialogMessage(`Maximo repeticiones 30 días`)
-    //         setErrorDialogOpen(true)
-    //         return
-    //     }
-
-    //     const newEvents = []
-    //     let currentDate = new Date(eventDataRepeatStart)      // Copia de eventDataRepatStart
-    //     let endDate = new Date(eventDataRepeatEnd)
-    //     let dayCounter = 0
-    //     const startHour = selectedEvent.start.getHours()
-    //     const endHour = selectedEvent.end.getHours()
-    //     const alreadyExistSpaces = []
-    //     while (currentDate <= endDate) {
-    //         console.log("Paso por el ciclo")
-    //         const isWeekend = currentDate.getDay() === 0 || currentDate.getDay() === 6
-    //         if (!isWeekend) {
-    //             const newEventId = eventGenerator()
-    //             let startSave = new Date(currentDate)
-    //             startSave.setHours(startHour)
-    //             let endSave = new Date(currentDate)
-    //             endSave.setHours(endHour)
-    //             // Generando el evento DUPLICADO
-    //             const eventDataRepeated ={
-    //                 event_id: newEventId, 
-    //                 usuario_id: user.id,
-    //                 espacio_id: selectedEvent.espacio_id,
-    //                 programa_id: selectedEvent.programa_id,
-    //                 start: startSave,
-    //                 end: endSave,
-    //                 observaciones: selectedEvent.observaciones,
-    //                 color: selectedEvent.color
-    //             }
-    //             // añadir a backend y dependiendo de si ya esta ocupado se guarda o no
-    //             // pero hay que pasar la fecha y el espacio_id
-    //             // se responde a backend con el resultado para que se añada a o no a newEvents
-    //             try {
-    //                 // fetch eventos
-    //                 const responseRepeated = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/`,
-    //                     {
-    //                         method: "POST",
-    //                         headers: {'Content-type': 'application/json; charset=UTF-8'},
-    //                         body: JSON.stringify(eventDataRepeated)
-    //                     }
-    //                 )
-    //                 const data = await responseRepeated.json()
-    //                 console.log("Respuesta backend evento post: ", data)
-    //                 if (data.result === "Evento ya existente") { // PRACTICAMENTE IMPOSIBLE
-    //                     console.log("OJO EVENTO YA EXISTENTE??")
-    //                     // setErrorMessage("Evento ya existente")
-    //                     // setDialogError(true)
-    //                     // return
-    //                 } else if (data.result === "Espacio ya existente") {
-    //                     // setErrorMessage("Espacio OCUPADO, elegir otro")
-    //                     // setDialogError(true)
-    //                     // return
-    //                     alreadyExistSpaces.push(eventDataRepeated)
-    //                     console.log("alreadyExistSpaces: ", alreadyExistSpaces)
-    //                 } else {
-    //                     // Busca en eventos el evento seleccionado y lo reemplaza por eventData
-    //                     setEvents(events.map(ev => ev.event_id === selectedEvent.event_id ? eventData : ev))
-    //                     newEvents.push(eventDataRepeated)
-    //                 }
-    //             } catch (error) {
-    //                 // setError(error.message); // Handle errors
-    //                 console.log(error.message)
-    //             } finally {
-    //                 // setLoading(false); // Set loading to false once data is fetched or error occurs
-    //             }
-    //         }   
-    //         currentDate.setDate(currentDate.getDate() + 1)  // Sumo un día
-    //         if (alreadyExistSpaces.length > 0) {
-    //             setErrorMessage([...alreadyExistSpaces])
-    //         }
-    //         setDialogRepeatedResultOpen(true)
-    //         // const
-    //     }
-
-    //     setEvents([...events, ...newEvents]);
-    //     setIsEditing(false)
-    //     setSelectedEvent(null)
-    //     setDialogOpen(true)
-    //     // setEventDataRepeatStart('')
-    //     // setEventDataRepeatEnd('')
-    //     // setDialogOpen(false)
-    //     setDialogRepeatOpen(false)
-    // }
-
-    // Guardando eventos creados / editados
-    // const handleSaveEvent = async () => { 
-    //     // Validar que las horas estén dentro del rango permitido
-    //     const minTime = new Date(eventData.start)
-    //     minTime.setHours(horaMinima.getHours(), horaMinima.getMinutes())
-
-    //     const maxTime = new Date(eventData.start)
-    //     maxTime.setHours(horaMaxima.getHours(), horaMaxima.getMinutes())
-
-    //     // Limitar inicio y fin si están fuera de los límites
-    //     if (eventData.start >= eventData.end) {
-    //         setErrorDialogMessage('La hora de inicio debe ser menor que la hora de fin')
-    //         setErrorDialogOpen(true)
-    //         return
-    //     }
-    //     if (eventData.start < minTime || eventData.end > maxTime) {
-    //         setErrorDialogMessage(`La hora del evento debe estar entre ${horaMinima.getHours()}hrs y ${horaMaxima.getHours()}hrs (dentro del mismo día)`)
-    //         setErrorDialogOpen(true)
-    //         return
-    //     }
-
-    //     const day = eventData.start.getDay()
-    //     if (day === 0 || day === 6) {
-    //         setErrorDialogMessage('Solo se permiten eventos en días laborales')
-    //         setErrorDialogOpen(true)
-    //         return
-    //     }
-
-    //     if (eventData.usuario_id < 1) {
-    //         setErrorDialogMessage('Seleccionar un Usuario')
-    //         setErrorDialogOpen(true)
-    //         return
-    //     }
-
-    //     if (eventData.programa_id < 1) {
-    //         setErrorDialogMessage('Seleccionar un Programa');
-    //         setErrorDialogOpen(true)
-    //         return
-    //     }
-    //     if (isEditing && selectedEvent) {
-    //         // Añadir aqui la llamada a backend para modificar un evento nuevo - selectedEvent.event_id
-    //         try {
-    //             // fetch eventos
-    //             const responseEdit = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${selectedEvent.event_id}`,
-    //                 {
-    //                     method: "PUT",
-    //                     headers: {'Content-type': 'application/json; charset=UTF-8'},
-    //                     body: JSON.stringify(eventData)
-    //                 }
-    //             )
-    //             const data = await responseEdit.json()
-    //             console.log("Respuesta backend evento post: ", data)
-    //             if (data.result === "Evento ya existente") { // PRACTICAMENTE IMPOSIBLE
-    //                 setErrorMessage("Evento ya existente")
-    //                 setDialogError(true)
-    //                 return
-    //             }
-    //             if (data.result === "Espacio ya existente") {
-    //                 setErrorMessage("Espacio OCUPADO, elegir otro")
-    //                 setDialogError(true)
-    //                 return
-    //             }
-
-    //             // Busca en eventos el evento seleccionado y lo reemplaza por eventData
-    //             setEvents(events.map(ev => ev.event_id === selectedEvent.event_id ? eventData : ev))
-
-    //         } catch (error) {
-    //             // setError(error.message); // Handle errors
-    //             console.log(error.message)
-    //         } finally {
-    //             // setLoading(false); // Set loading to false once data is fetched or error occurs
-    //         }
-
-    //     } else {
-    //         // Añadir aqui la llamada a backend para guardar un evento nuevo - eventData
-    //         try {
-    //             // fetch eventos
-    //             const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento`,
-    //                 {
-    //                     method: "POST",
-    //                     headers: {'Content-type': 'application/json; charset=UTF-8'},
-    //                     body: JSON.stringify(eventData)
-    //                 }
-    //             )
-    //             const data = await response.json()
-    //             console.log("Respuesta backend vacacion post: ", data)
-    //             if (data.result === "Evento ya existente") { // PRACTICAMENTE IMPOSIBLE
-    //                 setErrorMessage("Evento ID ya existente")
-    //                 setDialogError(true)
-    //                 return
-    //             }
-    //             if (data.result === "Espacio ya existente") {
-    //                 setErrorMessage("Espacio en uso en ese rango de tiempo.")
-    //                 setDialogError(true)
-    //                 return
-    //             }
-    //             setEvents([...events, eventData])
-
-    //         } catch (error) {
-    //             // setError(error.message); // Handle errors
-    //             console.log(error.message)
-    //         } finally {
-    //             // setLoading(false); // Set loading to false once data is fetched or error occurs
-    //         }
-
-    //     }
-    //     handleCloseDialog()
-    // };
-
-//     const handleDeleteEvent = () => {
-//         setConfirmDeleteOpen(true)
-//     };
-
-//     const handleRepeatEvent = () => {
-//         setDialogRepeatOpen(true)
-//     };
-
-//     const handleEventDrop = async ({ event, start, end }) => {
-//         const day = start.getDay()
-//         if (day === 0 || day === 6) {
-//             setErrorDialogMessage('Solo se permiten eventos en días laborales.')
-//             setErrorDialogOpen(true)
-//             return
-//         }
-//         const updatedEvent = { ...event, start, end };
-
-//         // OJO !!! LA HORA ES UTC+2, EN BACKEND SE GUARDA -2HRS, PERO NO HAY PROBLEMA PORQUE AL 
-//         // CARGARSE LOS DATOS LOS ATUALIZA A UTC+2
-//         try {
-//             // fetch eventos
-//             const responseEdit = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${event.event_id}`,
-//                 {
-//                     method: "PUT",
-//                     headers: {'Content-type': 'application/json; charset=UTF-8'},
-//                     body: JSON.stringify(updatedEvent)
-//                 }
-//             )
-//             const data = await responseEdit.json()
-//             console.log("Respuesta backend vacacion post: ", data)
-//             if (data.result === "Evento event_id NO existente") {
-//                 setErrorMessage("Evento event_id NO existente")
-//                 return
-//             }
-//             if (data.result === "Espacio ya existente") {
-//                 setErrorMessage("Espacio en uso en ese rango de tiempo.")
-//                 setDialogError(true)
-//                 return
-//             }
-//             setEvents(prevEvents => // busca el evento y lo actualiza, actualización de objetos --> updatedEvent: ev
-//                 prevEvents.map(ev => (ev.event_id === event.event_id ? updatedEvent : ev)) 
-//             );
-
-//         } catch (error) {
-//             // setError(error.message); // Handle errors
-//             console.log(error.message)
-//         } finally {
-//             // setLoading(false); // Set loading to false once data is fetched or error occurs
-//         }
-
-//     };
-
-//     const confirmDelete = async () => {
-//         if (!selectedEvent || !selectedEvent.event_id) {
-//             setErrorDialogMessage('No hay evento válido para eliminar.')
-//             setErrorDialogOpen(true)
-//             return
-//         }
-
-//         setEvents(events.filter(ev => ev.event_id !== selectedEvent.event_id))
-//         setConfirmDeleteOpen(false)
-//         setDialogOpen(false)
-// // Llamar a backend para borrar un evento - selectedEvent.event_id
-//         try {
-//             // fetch eventos
-//             console.log("Evento a borrar: ", selectedEvent.event_id)
-//             const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${selectedEvent.event_id}`,
-//                 {
-//                     method: "DELETE",
-//                     headers: {'Content-type': 'application/json; charset=UTF-8'},
-//                 }
-//             )
-//             const data = await response.json()
-//             console.log("Respuesta backend vacacion post: ", data)
-//             if (data.result === "Evento event_id NO existente") {
-//                 setErrorMessage("Evento event_id NO existente")
-//                 return
-//             }
-//         } catch (error) {
-//             // setError(error.message); // Handle errors
-//             console.log(error.message)
-//         } finally {
-//             // setLoading(false); // Set loading to false once data is fetched or error occurs
-//         }
-
-//     };
-
-//     const cancelDelete = () => {
-//         setConfirmDeleteOpen(false);
-//     };
-
-//     const handleCloseDialog = () => {
-//         setDialogOpen(false)
-//     };
-
-//     const handleCloseRepeat = () => {
-//         setEventDataRepeatStart('')
-//         setEventDataRepeatEnd('')
-//         setDialogRepeatOpen(false)
-//     };
-
-//     const handleEventDataRepeatStart = (value) => {
-//         console.log("value: ", value)
-//         if (value) {
-//             const tempValue = new Date(value)
-//             tempValue.setHours(12, 0, 0, 0)
-//             setEventDataRepeatStart(tempValue)
-//         }
-//     }
-//     const handleEventDataRepeatEnd = (value) => {
-//         console.log("value: ", value)
-//         if (value) {
-//             const tempValue = new Date(value)
-//             tempValue.setHours(12, 0, 0, 0)
-//             setEventDataRepeatEnd(tempValue)
-//         }
-//     }
-
-//     const handleCloseError = () => {
-//         setDialogError(false)
-//     }
-
-//     const handleCloseRepeatedResult = () => {
-//         setDialogOpen(false)
-//         setDialogRepeatedResultOpen(false)
-//         setEventDataRepeatStart('')
-//         setEventDataRepeatEnd('')
-//         setErrorMessage("")
-//     }
-
     // Personalizando la visualizacion de eventos en el calendario, por defecto "start-end title"
     const CustomEvent = ({ event }) => {
         const usuario = usuarios.find(p => p.usuario_id === event.usuario_id);
@@ -633,23 +204,6 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
             </div>
         );
     };
-
-    // const handleCopyToClipboard = () => {
-    //     if (!errorMessage || errorMessage.length === 0) return
-
-    //     const formattedErrors = errorMessage
-    //         .map(error => new Date(error.start).toLocaleDateString('es-ES'))
-    //         .join('\n')
-
-    //     navigator.clipboard.writeText(formattedErrors)
-    //         .then(() => {
-    //             console.log('Copiado al portapapeles')
-    //             // Se podría mostrar un texto "Copiado al portapapeles" usando un Snackbar
-    //         })
-    //         .catch(err => {
-    //             console.error('Error al copiar:', err)
-    //         })
-    // }
 
     const handleChangeSelectedValues = (selection, event) => {
         const valorTMP = event.target.value
@@ -704,7 +258,6 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
     return (
     <>
         <Toolbar />
-        {/* <h2>EVENTOS ENTIDAD AÑO: {date.getFullYear()}</h2> */}
         <h2>{t("mainheader.text1")}: {date.getFullYear()}</h2>
 
         {/* OCULTANDO LA LÍNEA SUPERIOR (NO NECESARIA) DE EVENTOS QUE DURAN VARIOS DÍAS */}
@@ -735,20 +288,15 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
             }}
         >
             <Grid size={{ xs: 8, md: 3 }}>
-                {/* <h2>Filtros</h2> */}
                 <h2>{t("grid.header.text1")}</h2>
-                {/* <Button onClick={handleResetFilters} variant="contained">Borrar filtros</Button> */}
                 <Button onClick={handleResetFilters} variant="contained">{t("grid.button1text")}</Button>
                 <Stack spacing={1} m={3}> 
                     <FormControl fullWidth margin='dense'>
-                        {/* <InputLabel id="select-label-usuarios_id">Usuarios</InputLabel> */}
                         <InputLabel id="select-label-usuarios_id">{t("stack1formcontrol.inputlabel")}</InputLabel>
                         <Select
-                            // fullWidth
                             labelId="select-label-usuarios_id"
                             id="select-usuarios_id"
                             multiple
-                            // label="Usuarios"
                             label={t("stack1formcontrol.selectlabel")}
                             value={selectedUsuarios}
                             onChange={(e)=> handleChangeSelectedValues("usuarios", e)}
@@ -757,7 +305,6 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
                             // CON OBJETOS que es seleccionado como "selected"
                             // Aquí usamos el array de objetos para mostrar solo los nombre_apellidos
                             renderValue={(selected) => 
-                                // selected.map((user) => user.nombre_apellidos).join(', ')
                                 usuarios
                                     .filter(u => selected.includes(u.usuario_id))
                                     .map(u=> u.nombre_apellidos)
@@ -768,7 +315,6 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
                                 <MenuItem key={usuario.usuario_id} value={usuario.usuario_id}>
                                     {/* revisar si ese objeto está en el array por su usuario_id */}
                                     {/* si fuese un array normal usaríamos selectedUsuarios.includes() */}
-                                    {/* <Checkbox checked={selectedUsuarios.some(user => user.usuario_id === usuario.usuario_id)} /> */}
                                     <Checkbox checked={selectedUsuarios.includes(usuario.usuario_id)} />
                                     <ListItemText primary={usuario.nombre_apellidos} />
                                 </MenuItem>
@@ -778,14 +324,11 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
                 </Stack>
                 <Stack spacing={1} m={3}> 
                     <FormControl fullWidth margin='dense'>
-                        {/* <InputLabel id="select-label-programas_id">Programas</InputLabel> */}
                         <InputLabel id="select-label-programas_id">{t("stack2formcontrol.inputlabel")}</InputLabel>
                         <Select
-                            // fullWidth
                             labelId="select-label-programas_id"
                             id="select-programas_id"
                             multiple
-                            // label="Programas"
                             label={t("stack2formcontrol.selectlabel")}
                             value={selectedProgramas}
                             onChange={(e)=> handleChangeSelectedValues("programas", e)}
@@ -815,14 +358,11 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
                 </Stack>
                 <Stack spacing={1} m={3}> 
                     <FormControl fullWidth margin='dense'>
-                        {/* <InputLabel id="select-label-espacios_id">Espacios</InputLabel> */}
                         <InputLabel id="select-label-espacios_id">{t("stack3formcontrol.inputlabel")}</InputLabel>
                         <Select
-                            // fullWidth
                             labelId="select-label-espacios_id"
                             id="select-espacios_id"
                             multiple
-                            // label="Espacios"
                             label={t("stack3formcontrol.selectlabel")}
                             value={selectedEspacios}
                             onChange={(e)=> handleChangeSelectedValues("espacios", e)}
@@ -856,25 +396,19 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
                 <Calendar
                     style={{ 
                         minHeight: 1000,
-                        // fontSize: 'clamp(0.75rem, 1rem, 1.2rem)',  // Ajuste responsivo
-                    //     minHeight: 'calc(100vh - 64px)',  // resta la altura del menu
                     }} 
                     localizer={localizer}
                     // culture='es'                                 // días mes, semana, día en español
                     culture={selectedLanguage}                      // días mes, semana, día en el idioma selecionado
                     events={events}                                 // Personalizando la visualizacion de eventos en el calendario usando el array events
                     // selectable                                   // habilita la seleccion de celdas
-                    // views={['month', 'work_week', 'day', 'agenda']}
                     views={['month', 'work_week', 'day']}           // sin agenda ya que filtra mal¿?
                     onView={handleViewChange}
-                    // defaultView='work_week'
                     defaultView='month'
                     step={saltosTiempo}
                     timeslots={saltosHora}
                     min={horaMinima}                                // Limitación hora mínima
                     max={horaMaxima}                                // Limitacion hora máxima
-                    // a modificar onSelectEvent en el futuro
-                    // onSelectEvent={handleSelectEvent}               // Editar evento existente
                     date={date}
                     view={view}
                     onNavigate={handleNavigate}

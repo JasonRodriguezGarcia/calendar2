@@ -37,7 +37,6 @@ const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, sel
 
     const handleUserPassword = (e) => {
         if (e.target.value.length < passwordLength)
-            // setErrorMessage("Contraseña demasiado corta")
             setErrorMessage(t("error.message1"))
         else
             setUserPassword(e.target.value)
@@ -51,12 +50,10 @@ const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, sel
             navigate('/passwordrecovery', { replace: true }) // no deja retroceder en el navegador
         }
         if (userEmail.length === 0) {
-            // setErrorMessage("Introduzca email")
             setErrorMessage(t("error.message2"))
             return
         }
         if (userPassword.length === 0) {
-            // setErrorMessage("Introduzca contraseña")
             setErrorMessage(t("error.message3"))
             return
         }
@@ -78,19 +75,16 @@ const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, sel
             const data = await response.json()
             console.log("Respuesta backend: ", data)
             if (data.result === "No encontrado") {
-                // setErrorMessage("usuario o contraseña no válidos")
                 setErrorMessage(t("error.message4"))
                 return
             } else {
                 // Crear localStorage
-                // const resultado = data[0]
                 const resultado = data.result
                 const usuario = {
                     id: resultado.usuario_id,
-                    password: resultado.password, // igual sobra ¿?¿?
+                    password: resultado.password,
                     nombre_apellidos: resultado.nombre_apellidos
                 }
-                // localStorage.setItem("usuario", JSON.stringify(usuario))
                 localStorage.setItem("token", data.token)
                 console.log("token hadleLogin: :", data.token)
                 setUser(usuario)
@@ -116,7 +110,6 @@ const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, sel
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                // backgroundColor: '#f0f0f0',
                 px: 2,
             }}
         >
@@ -141,19 +134,16 @@ const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, sel
                 }}
             >
                 <Typography variant="h4" component="h3" sx={{ color: "black"}}>
-                    {/* <b>Inicio de sesión</b> */}
                     <b>{t("box.typography")}</b>
                 </Typography>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        {/* <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>Email</FormLabel> */}
                         <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol1.formlabel")}</FormLabel>
                         <Input
                             id="useremail"
                             name="useremail"
                             type="email"
                             autoComplete="email"
-                            // placeholder="Email usuario"
                             placeholder={t("box.formcontrol1.placeholder")}
                             fullWidth
                             onChange={(e)=> setUserEmail(e.target.value)}
@@ -162,7 +152,6 @@ const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, sel
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} justifyContent="left" alignItems="center">
-                        {/* <FormLabel htmlFor="userpassword" sx={{ color: "black", minwidth: 100 }}>Contraseña</FormLabel> */}
                         <FormLabel htmlFor="userpassword" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol2.formlabel")}</FormLabel>
                         <Input
                             id="userpassword"
@@ -171,7 +160,6 @@ const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, sel
                             onMouseEnter={() => setShowPassword(true)}
                             onMouseLeave={() => setShowPassword(false)}
                             autoComplete="password"
-                            // placeholder={`(mín. ${passwordLength} caracteres)`}
                             placeholder={`(${t("box.formcontrol2.placeholder.text1")}. ${passwordLength} ${t("box.formcontrol2.placeholder.text2")})`}
                             fullWidth
                             onChange={(e)=> handleUserPassword(e)}
@@ -185,8 +173,7 @@ const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, sel
                 <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
                     <Typography
                         sx={{ fontSize: 'sm', alignSelf: 'center' }}
-                        >
-                        {/* ¿Olvidaste la contraseña? */}
+                    >
                         {t("box.stack.typography")}
                     </Typography>
                     <Button type="submit" id="boton2" name="passwordrecover" sx={{ mt: 1 /* margin top */ }}>{t("box.stack.buttontext")}</Button>

@@ -43,6 +43,14 @@ import { es as localeEs } from 'date-fns/locale';
 import { eu as localeEu } from 'date-fns/locale';
 
 const DnDCalendar = withDragAndDrop(Calendar);
+const locales = { es, eu };
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
+  getDay,
+  locales,
+});
 // const locales = { es };
 // const locales = { eu: localeEu };
 // const localizer = dateFnsLocalizer({
@@ -90,24 +98,24 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
     const [repeatableSpaces, setRepeatableSpaces] = useState([
         28 // Exterior
     ])
-    const locales = { es: localeEs, eu: localeEu };
-    const [localizer, setLocalizer] = useState(null); // null al inicio
+    // const locales = { es: localeEs, eu: localeEu };
+    // const [localizer, setLocalizer] = useState(null); // null al inicio
 
-    useEffect(() => {
-        const currentLocale = locales[selectedLanguage] || localeEs;
+    // useEffect(() => {
+    //     const currentLocale = locales[selectedLanguage] || localeEs;
 
-        const newLocalizer = dateFnsLocalizer({
-        format: (date, formatStr, options) =>
-            format(date, formatStr, { ...options, locale: currentLocale }),
-        parse: (value, formatStr, options) =>
-            parse(value, formatStr, new Date(), { ...options, locale: currentLocale }),
-        startOfWeek: (date) => startOfWeek(date, { locale: currentLocale }),
-        getDay,
-        locales
-        });
+    //     const newLocalizer = dateFnsLocalizer({
+    //     format: (date, formatStr, options) =>
+    //         format(date, formatStr, { ...options, locale: currentLocale }),
+    //     parse: (value, formatStr, options) =>
+    //         parse(value, formatStr, new Date(), { ...options, locale: currentLocale }),
+    //     startOfWeek: (date) => startOfWeek(date, { locale: currentLocale }),
+    //     getDay,
+    //     locales
+    //     });
 
-        setLocalizer(newLocalizer);
-    }, [selectedLanguage]);
+    //     setLocalizer(newLocalizer);
+    // }, [selectedLanguage]);
 
 
     useEffect(() => {
@@ -808,7 +816,6 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                 agenda: t("calendar.agenda"),
                 noEventsInRange: t("calendar.noeventsinrange"),
                 showMore: t("calendar.showmore")
-
             }}
         />
 

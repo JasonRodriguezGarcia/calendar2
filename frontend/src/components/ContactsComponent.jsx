@@ -32,7 +32,6 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
                         'Content-type': 'application/json; charset=UTF-8'
                     }
                 }
-
             )
             const data = await response.json()
             setUsuarios(data)
@@ -56,7 +55,6 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
 
         <Stack direction="row" justifyContent="center" alignItems="center" mb={3}>
             <Typography variant="h6">
-                {/* CONTACTOS */}
                 {t("stacktypography")}
             </Typography>
 
@@ -85,7 +83,6 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
                                     fontWeight: 'bold',
                                 })}
                             >
-                                {/* Nombre */}
                                 {t("tableheadtablerow.celltext1")}
                             </TableCell>
                             <TableCell align="center"
@@ -106,7 +103,6 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
                                     fontWeight: 'bold',
                                 })}
                             >
-                                {/* Email */}
                                 {t("tableheadtablerow.celltext2")}
                             </TableCell>
                             <TableCell align="center"
@@ -127,7 +123,6 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
                                     fontWeight: 'bold',
                                 })}
                             >
-                                {/* Movil Empresa */}
                                 {t("tableheadtablerow.celltext3")}
                             </TableCell>
                             <TableCell align="center"
@@ -148,7 +143,6 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
                                     fontWeight: 'bold',
                                 })}
                             >
-                                {/* Extension */}
                                 {t("tableheadtablerow.celltext4")}
                             </TableCell>
                             <TableCell align="center"
@@ -169,7 +163,6 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
                                     fontWeight: 'bold',
                                 })}
                             >
-                                {/* Observaciones */}
                                 {t("tableheadtablerow.celltext5")}
                             </TableCell>
 

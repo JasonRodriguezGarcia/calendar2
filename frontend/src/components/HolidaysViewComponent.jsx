@@ -98,9 +98,8 @@ const HolidaysViewComponent = ({ logged, user, token, selectedLanguage }) => {
         }
         setActualMonthDays([...tempMonth])
     }, [date])
-    // }, [date, user])
 
-      // Construir filas cuando usuarios esté listo
+    // Construir filas cuando usuarios esté listo
     useEffect(() => {
         if (usuarios.length === 0) return
 
@@ -122,7 +121,6 @@ const HolidaysViewComponent = ({ logged, user, token, selectedLanguage }) => {
     return (
     <>
         <Toolbar />
-
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}
             sx={{position: "fixed",  top: 60,
             left: 0,
@@ -138,15 +136,14 @@ const HolidaysViewComponent = ({ logged, user, token, selectedLanguage }) => {
                     newDate.setMonth(date.getMonth() - 1)
                     setDate(newDate)
                 }}>
-                {/* Mes Ant. */}
                 {t("stack.button1text")}.
             </Button>
 
             <Typography variant="h6">
-                {/* VACACIONES ENTIDAD: {date.getFullYear()} -  */}
                 {t("stack.typography.text1")}: {date.getFullYear()} - 
-                {/* Mes: {date.toLocaleString('es-ES', { month: 'long' }).toUpperCase()} */}
-                &nbsp;{t("stack.typography.text2")}: {date.toLocaleString('es-ES', { month: 'long' }).toUpperCase()}
+                &nbsp;{t("stack.typography.text2")}: {
+                            date.toLocaleString(selectedLanguage === "es"?'es-ES': "eu-EU", { month: 'long' }).toUpperCase()
+                        }
             </Typography>
 
             <Button variant="outlined" onClick={() => {
@@ -154,7 +151,6 @@ const HolidaysViewComponent = ({ logged, user, token, selectedLanguage }) => {
                     newDate.setMonth(date.getMonth() + 1)
                     setDate(newDate)
                 }}>
-                {/* Mes Sig. */}
                 {t("stack.button2text")}.
             </Button>
         </Stack>
@@ -247,7 +243,8 @@ const HolidaysViewComponent = ({ logged, user, token, selectedLanguage }) => {
                                                 color: "white"
                                             }}
                                         >
-                                            {tieneEvento ? "V" : ' '}
+                                            {tieneEvento ? selectedLanguage === "es"?"V":"O"
+                                                         : ' '}
                                         </TableCell>
                                     )
                                 })}

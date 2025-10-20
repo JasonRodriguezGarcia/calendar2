@@ -24,10 +24,6 @@ import HomeIcon from '@mui/icons-material/Home';
 // import Francia from "../assets/images/flags/francia.png"
 // import ReinoUnido from "../assets/images/flags/ReinoUnido.png"
 
-
-// const pages = ['Eventos', 'Vacaciones', 'Listados', 'About'];
-// const lists = ['Eventos entidad', 'Vacaciones entidad', 'Tardes invierno', 'Contactos', ]
-// const settings = ['Ver perfil', 'Modificar perfil', 'Cerrar sesión'];
 // const languagesSelect = [
 //     { lang: 'Eus', icon: PaisVasco },
 //     { lang: 'Es', icon: Espana },
@@ -45,12 +41,6 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
     const lists = [t("lists.eventosentidad"), t("lists.vacacionesentidad"), t("lists.tardesinvierno"), t("lists.contactos")]
     const settings = [t("settings.verperfil"), t("settings.modificarperfil"), t("settings.cerrarsesion")];
 
-    // useEffect(() => {
-    //     i18n.changeLanguage(selectedLanguage)
-
-    // }, [])
-    // const mainMenu = t('mainmenu', {returnObjects: true})
-
     // console.log("18next mainmenu: ", t("eventos"))
     
     const handleOpenNavMenu = (event) => {
@@ -67,18 +57,12 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
     const handleCloseUserMenu = (setting) => {
         switch (setting) {
             case t("settings.verperfil"):
-                // case "Ver perfil":
-                // navigate("/profile", { replace: true });
                 navigate("/profile")
                 break
             case t("settings.modificarperfil"):
-            // case "Modificar perfil":
-                // navigate("/editprofile", { replace: true });
                 navigate("/editprofile")
                 break
             case t("settings.cerrarsesion"):
-            // case "Cerrar sesión":
-                // localStorage.removeItem("usuario")
                 localStorage.removeItem("token")
                 setLogged(false)
                 setUser({})
@@ -95,22 +79,15 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
 
         switch (page) {
             case t("pages.listados"):
-            // case "Listados":
                 setAnchorElList(event.currentTarget)
                 break
             case t("pages.eventos"):
-            // case "Eventos":
-                // navigate("/eventos", { replace: true });
                 navigate("/eventos")
                 break
             case t("pages.vacaciones"):
-            // case "Vacaciones":
-                // navigate("/holidays", { replace: true });
                 navigate("/holidays")
                 break
             case t("pages.about"):
-            // case "About":
-                // navigate("/about", { replace: true });
                 navigate("/about")
                 break
             default:
@@ -121,9 +98,6 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
 
       // filtramos las páginas y game aparece si estamos logeados
     const filteredPages = pages.filter(page => {
-        // if (page === "Eventos") return logged
-        // else if (page === "Vacaciones") return logged       
-        // else if (page === "Listados") return logged       
         if (page === t("pages.eventos")) return logged
         else if (page === t("pages.vacaciones")) return logged       
         else if (page === t("pages.listados")) return logged       
@@ -290,20 +264,15 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
                                                     // navegación
                                                     switch (item) {
                                                         case t("lists.eventosentidad"):
-                                                            // case "Eventos entidad":
-                                                            // navigate("/staffholidays", { replace: true });
                                                             navigate("/entityevents")
                                                             break
                                                         case t("lists.vacacionesentidad"):
-                                                            // navigate("/staffholidays", { replace: true });
                                                             navigate("/staffholidays")
                                                             break
                                                         case t("lists.tardesinvierno"):
-                                                            // navigate("/winterafternoons", { replace: true });
                                                             navigate("/winterafternoons")
                                                             break
                                                         case t("lists.contactos"):
-                                                            // navigate("/contacts", { replace: true });
                                                             navigate("/contacts")
                                                             break
                                                         default:
@@ -420,23 +389,15 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
                                     // Añade aquí la lógica de navegación por cada item si la tienes
                                     switch (item) {
                                         case t("lists.eventosentidad"):
-                                        // case "Eventos entidad":
-                                            // navigate("/staffholidays", { replace: true });
                                             navigate("/entityevents")
                                             break
                                         case t("lists.vacacionesentidad"):
-                                        // case "Vacaciones entidad":
-                                            // navigate("/staffholidays", { replace: true });
                                             navigate("/staffholidays")
                                             break
                                         case t("lists.tardesinvierno"):
-                                        // case "Tardes invierno":
-                                            // navigate("/winterafternoons", { replace: true });
                                             navigate("/winterafternoons")
                                             break
                                         case t("lists.contactos"):
-                                        // case "Contactos":
-                                            // navigate("/contacts", { replace: true });
                                             navigate("/contacts")
                                             break
                                         default:
@@ -465,11 +426,9 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
                                             color: 'white', fontWeight: 'bold', backgroundColor: '#0072AD', px: 1.5, py: 0.5, borderRadius: 1 
                                     })}
                                 >
-                                    {/* Usuario/a: {user.nombre_apellidos} */}
                                     {t("loggedusertitletext")}: {user.nombre_apellidos}
                                 </Typography>
                             </Box>
-                            {/* <Tooltip title="Abrir configuración"> */}
                             <Tooltip title={t("tooltipstext.text3")}>
                                 <IconButton onClick={handleOpenUserMenu}
                                 sx={{ p: 0 }}
@@ -508,9 +467,7 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
 
             {/* Usuario no logeado */}
                     <Box sx={{ flexGrow: 0, display: logged ? 'none' : 'block'}}>
-                        {/* <Tooltip title="Darse de alta" arrow> */}
                         <Tooltip title={t("tooltipstext.text4")} arrow>
-
                             <Button
                                 onClick={()=> navigate('/signup')}
                                 sx={
@@ -524,17 +481,14 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
                                     
                                 })}
                             >
-                                {/* Alta usuario/a */}
                                 {t("notloggedusertitletexts.text1")}
                             </Button>
                         </Tooltip>
                     </Box>
 
                     <Box sx={{ flexGrow: 0, display: logged ? 'none' : 'block'}}>
-                        {/* <Tooltip title="Iniciar sesión" arrow> */}
                         <Tooltip title={t("tooltipstext.text5")} arrow>
                             <Button
-                                // onClick={()=> navigate('/login', { replace: true })}
                                 onClick={()=> navigate('/login')}
                                 sx={
                                     (theme) => ({
@@ -547,7 +501,6 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
                                     
                                 })}
                             >
-                                {/* Iniciar sesión */}
                                 {t("notloggedusertitletexts.text2")}
                             </Button>
 

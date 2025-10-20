@@ -24,9 +24,6 @@ const WinterAfternoonsComponent = ({ logged, user, token, selectedLanguage }) =>
     const theme = useTheme();
     const [events, setEvents] = useState([])
     const [usuarios, setUsuarios] = useState([])
-    // const [headTableDays, setHeadTableDays] = useState([
-    //     "Lunes", "Martes", "Miércoles", "Jueves", "Viernes"
-    // ])
     const [headTableDays, setHeadTableDays] = useState([])
 
     const fetchUsuarios = async () => {
@@ -43,7 +40,6 @@ const WinterAfternoonsComponent = ({ logged, user, token, selectedLanguage }) =>
 
             )
             const data = await response.json()
-            // const resultado = data.result
         // Paso 1: Inicializar 5 columnas vacías (lunes a viernes)
         const columnasPorDia = Array.from({ length: 5 }, () => [])
 

@@ -196,7 +196,6 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
         }
 
         fetchCheckHolidays();
-
     }
 
     // Editando un evento ya creado que en este caso lo borra
@@ -229,7 +228,6 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
         }
 
         fetchCheckHolidays();
-
     }
     
     // Personalizando la visualizacion de eventos en el calendario, por defecto "start-end title"
@@ -244,7 +242,8 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
                     fontSize: '2.8rem',
             }}>
                 <strong>
-                    V
+                    {/* V */}
+                    {selectedLanguage === "es"? "V" : "O"}
                 </strong>
             </div>
         )
@@ -253,8 +252,6 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
     return (
         <Box>
             <Toolbar />
-            {/* <h2>VACACIONES AÑO: {date.getFullYear()} (Dias de vac. en uso: {diasUsadosVacaciones})</h2> */}
-            {/* <p>(Clickar en un día para añadir/quitar)</p> */}
             <h2>{t("mainheader.text1")}: {date.getFullYear()} ({t("mainheader.text2")}: {diasUsadosVacaciones})</h2>
             <p>({t("mainheader.text3")})</p>
 
@@ -299,10 +296,6 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
                     previous: t("calendar.previous"),
                     today: t("calendar.today"),
                     month: t("calendar.month"),
-                    // work_week: t("calendar.workweek"),                          // ponemos el texto Semana para work_week, sino aparecería "Work week"
-                    // day: t("calendar.day"),
-                    // agenda: t("calendar.agenda"),
-                    // showMore: t("calendar.showmore")
                 }}
             />
         </Box>

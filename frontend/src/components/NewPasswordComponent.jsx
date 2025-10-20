@@ -38,17 +38,14 @@ const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
     const handleNewPassword = async (e) => {
         e.preventDefault()
         if (newPassword.length < minPasswordLength) {
-            // setErrorMessage("Contraseña1 demasiado corta")
             setErrorMessage(t("error.message1"))
             return
         }
         if (newPassword2.length < minPasswordLength) {
-            // setErrorMessage("Contraseña2 demasiado corta")
             setErrorMessage(t("error.message2"))
             return
         }
         if (newPassword !== newPassword2){
-            // setErrorMessage("Las contraseñas no coinciden")
             setErrorMessage(t("error.message3"))
             return
         }
@@ -93,7 +90,6 @@ const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                // backgroundColor: '#f0f0f0',
                 px: 2,
             }}
         >
@@ -118,12 +114,10 @@ const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
                 }}
             >
                 <Typography variant="h4" component="h3" sx={{ color: "black"}}>
-                    {/* <b>Nueva Contraseña</b> */}
                     <b>{t("boxform.typography")}</b>
                 </Typography>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        {/* <FormLabel htmlFor="newpassword" sx={{ color: "black", minwidth: 100 }}>Nueva contraseña</FormLabel> */}
                         <FormLabel htmlFor="newpassword" sx={{ color: "black", minwidth: 100 }}>{t("boxform.formcontrol1.formlabel")}</FormLabel>
                         <Input
                             id="newpassword"
@@ -131,7 +125,6 @@ const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
                             type={showPassword ? 'text' : 'password'}
                             onMouseEnter={() => setShowPassword(true)}
                             onMouseLeave={() => setShowPassword(false)}
-                            // placeholder={`(mín. ${minPasswordLength} - máx. 15 car.)`}
                             placeholder={`(${t("boxform.formcontrol1.placeholder.text1")}. ${minPasswordLength} - ${t("boxform.formcontrol1.placeholder.text2")})`}
                             required
                             fullWidth
@@ -149,7 +142,6 @@ const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
                             type={showPassword ? 'text' : 'password'}
                             onMouseEnter={() => setShowPassword(true)}
                             onMouseLeave={() => setShowPassword(false)}
-                            // placeholder={`(mín. ${minPasswordLength} - máx. 15 car.)`}
                             placeholder={`(${t("boxform.formcontrol2.placeholder.text1")}. ${minPasswordLength} - ${t("boxform.formcontrol2.placeholder.text2")})`}
                             required
                             fullWidth

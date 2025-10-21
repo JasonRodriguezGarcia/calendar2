@@ -45,9 +45,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
     const [errorMessage, setErrorMessage] = useState("")
     const navigate = useNavigate();
 
-    console.log("prop usuario: ", user)
-    console.log("token: ", token)
-
     useEffect(() => {
         const getData = async () => {
             try {

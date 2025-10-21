@@ -18,6 +18,12 @@ router.get('/getNewEventFormData', authenticateToken, async(req, res) => {
 router.post('/evento', authenticateToken, async(req, res) => {
     const evento = req.body
     console.log("Recibido en backend evento post: ", evento)
+    // Validar que el usuario autenticado es el mismo que el del body
+    if (parseInt(evento.usuario_id) !== req.userID ){
+        console.log("No autorizado para acceder a estos eventos")
+        // Forbidden. Está loggeado pero no autorizado
+        return res.status(403).json({ message: "No autorizado para acceder a estos eventos" })
+    }
     const resultEvento = await postEvento(evento);
     console.log(resultEvento);
     res.json (resultEvento)
@@ -26,8 +32,15 @@ router.post('/evento', authenticateToken, async(req, res) => {
 // /api/v1/erroak/evento/:id
 // BORRAR UN EVENTO
 router.delete('/evento/:event_id', authenticateToken, async (req, res) => {
+    const evento = req.body
     const {event_id} = req.params
     console.log("Recibido en backend evento delete: ", event_id)
+    // Validar que el usuario autenticado es el mismo que el del body
+    if (parseInt(evento.usuario_id) !== req.userID ) {
+        console.log("No autorizado para acceder a estos eventos")
+        // Forbidden. Está loggeado pero no autorizado
+        return res.status(403).json({ message: "No autorizado para acceder a estos eventos" })
+    }
     const resultEvento = await deleteEvento(event_id);
     console.log(resultEvento);
     res.json (resultEvento)
@@ -40,6 +53,13 @@ router.put('/evento/:event_id', authenticateToken, async (req, res) => {
     const eventData = req.body
     const {event_id} = req.params
     console.log("Recibido en backend evento put: ", eventData)
+    // Validar que el usuario autenticado es el mismo que el del body
+    if (parseInt(eventData.usuario_id) !== req.userID ) {
+        console.log("No autorizado para acceder a estos eventos")
+        // Forbidden. Está loggeado pero no autorizado
+        return res.status(403).json({ message: "No autorizado para acceder a estos eventos" })
+    }
+
     const resultEvento = await putEvento(event_id, eventData);
     console.log(resultEvento);
     res.json (resultEvento)
@@ -50,17 +70,28 @@ router.put('/evento/:event_id', authenticateToken, async (req, res) => {
 // Pasamos usuario igualmente por seguridad
 router.get('/eventos/:anio/:mes/:usuario', authenticateToken, async(req, res) => {
     const {anio, mes, usuario} = req.params
-    // añadir por seguridad que el usuario exista
+    // Validar que el usuario autenticado es el mismo que el de la URL
+    if (parseInt(usuario) !== req.userID ){
+        console.log("No autorizado para acceder a estos eventos")
+        // Forbidden. Está loggeado pero no autorizado
+        return res.status(403).json({ message: "No autorizado para acceder a estos eventos" })
+    }
     const eventos = await getEventos(anio, mes, usuario);
     console.log(eventos);
     res.json (eventos)
 })
 
 // /api/v1/erroak/eventos/:user/:year/:month
-// Devuelve los datos de los eventos de TODOS LOS USUARIOS en un año y mes
+// Devuelve los datos de los eventos de UN USUARIO en un año y mes
 // router.get('/eventos/:user/:anio/:mes', async(req, res) => {
 router.get('/eventosuser/:usuario/:anio/:mes', authenticateToken, async(req, res) => {
     const {usuario, anio, mes} = req.params
+    // Validar que el usuario autenticado es el mismo que el de la URL
+    if (parseInt(usuario) !== req.userID ){
+        console.log("No autorizado para acceder a estos eventos")
+        // Forbidden. Está loggeado pero no autorizado
+        return res.status(403).json({ message: "No autorizado para acceder a estos eventos" })
+    }
     const eventos = await getEventosUsuario(usuario, anio, mes);
     console.log(eventos);
     res.json (eventos)

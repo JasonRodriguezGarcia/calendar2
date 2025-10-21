@@ -205,9 +205,12 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                             'Content-type': 'application/json; charset=UTF-8'
                         }
                     }
-
                 )
                 const data = await response.json()
+                // para evitar pantalla blanca con error en consola
+                // poner aqui chequeo resultado data === "Invalid token" || === "Missing token"
+                // que en caso afirmativo llamar a función aviso indicando el resultado erróneo
+                // devolver el control a "/"
                 const eventosData = data.map(evento => ({
                     ...evento,
                     start: new Date(evento.start),
@@ -560,6 +563,7 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
             return
         }
         const updatedEvent = { ...event, start, end };
+        console.log("updatedEvent: ", updatedEvent)
 
         // OJO !!! LA HORA ES UTC+2, EN BACKEND SE GUARDA -2HRS, PERO NO HAY PROBLEMA PORQUE AL 
         // CARGARSE LOS DATOS LOS ATUALIZA A UTC+2
@@ -623,7 +627,8 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-type': 'application/json; charset=UTF-8'
-                    }
+                    },
+                    body: JSON.stringify(selectedEvent)
                 }
             )
             const data = await response.json()

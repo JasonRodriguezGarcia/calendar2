@@ -5,12 +5,17 @@ import { getVacaciones, postVacacion, deleteVacacion, getVacacionesCount } from 
 
 const router = Router()
 
-
 // /api/v1/erroak/vacacion 
 // Crear vacaciones
 router.post('/vacacion', authenticateToken, async(req, res) => {
     const vacacion = req.body
     console.log("Recibido en backend vacacion post: ", vacacion)
+    // Validar que el usuario autenticado es el mismo que el del body
+    if (parseInt(vacacion.usuario_id) !== req.userID ){
+        console.log("No autorizado para acceder a estas vacaciones")
+        // Forbidden. Está loggeado pero no autorizado
+        return res.status(403).json({ message: "No autorizado para acceder a estas vacaciones" })
+    }
     const resultVacacion = await postVacacion(vacacion);
     console.log(resultVacacion);
     res.json (resultVacacion)
@@ -19,8 +24,15 @@ router.post('/vacacion', authenticateToken, async(req, res) => {
 // /api/v1/erroak/vacacion/:event_id
 // BORRAR UN EVENTO EN VACACIONES
 router.delete('/vacacion/:event_id', authenticateToken, async (req, res) => {
+    const evento = req.body
     const {event_id} = req.params
     console.log("Recibido en backend vacacion delete: ", event_id)
+    // Validar que el usuario autenticado es el mismo que el del body
+    if (parseInt(evento.usuario_id) !== req.userID ){
+        console.log("No autorizado para acceder a estas vacaciones")
+        // Forbidden. Está loggeado pero no autorizado
+        return res.status(403).json({ message: "No autorizado para acceder a estas vacaciones" })
+    }
     const resultVacacion = await deleteVacacion(event_id);
     console.log(resultVacacion);
     res.json (resultVacacion)
@@ -33,6 +45,12 @@ router.delete('/vacacion/:event_id', authenticateToken, async (req, res) => {
 router.get('/vacaciones/count/:user/:anio', authenticateToken, async(req, res) => {
     const {user, anio} = req.params
     console.log("imprimo en vacacionesCount user-anio-mes: user, anio, mes")
+    // Validar que el usuario autenticado es el mismo que el del body
+    if (parseInt(user) !== req.userID ){
+        console.log("No autorizado para acceder a estas vacaciones")
+        // Forbidden. Está loggeado pero no autorizado
+        return res.status(403).json({ message: "No autorizado para acceder a estas vacaciones" })
+    }
     const vacacionesCount = await getVacacionesCount(user, anio);
     console.log(vacacionesCount);
     res.json (vacacionesCount)
@@ -43,6 +61,12 @@ router.get('/vacaciones/count/:user/:anio', authenticateToken, async(req, res) =
 router.get('/vacaciones/:user/:start/:end/:mode', authenticateToken, async(req, res) => {
     const {user, start, end, mode} = req.params
     console.log("Imprimo en getVacaciones: user, start, end, mode: ", user, start, end, mode)
+    // Validar que el usuario autenticado es el mismo que el del body
+    if (parseInt(user) !== req.userID ){
+        console.log("No autorizado para acceder a estas vacaciones")
+        // Forbidden. Está loggeado pero no autorizado
+        return res.status(403).json({ message: "No autorizado para acceder a estas vacaciones" })
+    }
     const vacaciones = await getVacaciones(user, start, end, mode);
     console.log(vacaciones);
     res.json (vacaciones)

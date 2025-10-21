@@ -5,7 +5,7 @@ import { getUsuarios, postLogin, postRecoveryPassword, postNewPassword, postUsua
     putUsuario, getWinterAfternoons } from '../models/usuariosModel.js';
 
 // TODO
-//  - SE SE PUEDAN USAR SOLO LOS USUARIOS ACTIVOS
+//  - QUE SE PUEDAN USAR SOLO LOS USUARIOS ACTIVOS
 
 const router = Router()
 
@@ -69,6 +69,12 @@ router.post('/usuario', async(req, res) => {
 router.get('/usuario/:id', authenticateToken, async(req, res) => {
     const {id} = req.params
     console.log("imprimo id en get usuario: ", id)
+    // Validar que el usuario autenticado es el mismo que el del URL
+    if (parseInt(id) !== req.userID ){
+        console.log("No autorizado para acceder a este usuario")
+        // Forbidden. Está loggeado pero no autorizado
+        return res.status(403).json({ message: "No autorizado para acceder a este usuario" })
+    }
     const resultUsuario = await getUsuario(id)
     res.json (resultUsuario)
 })
@@ -80,6 +86,12 @@ router.put('/usuario/:id', authenticateToken, async(req, res) => {
     // const id_usuario = req.params.id
     const updatedUser = req.body
     console.log("imprimo id en put usuario/:id : ", id)
+    // Validar que el usuario autenticado es el mismo que el del URL
+    if (parseInt(id) !== req.userID ){
+        console.log("No autorizado para acceder a este usuario")
+        // Forbidden. Está loggeado pero no autorizado
+        return res.status(403).json({ message: "No autorizado para acceder a este usuario" })
+    }
     const resultUsuario = await putUsuario(id, updatedUser)
     res.json (resultUsuario)
 })

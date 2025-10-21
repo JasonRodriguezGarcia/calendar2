@@ -212,6 +212,7 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
                         'Authorization': `Bearer ${token}`,
                         'Content-type': 'application/json; charset=UTF-8'
                     },
+                    body: JSON.stringify(event)
                 }
             )
             const data = await response.json()

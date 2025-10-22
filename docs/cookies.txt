@@ -1,0 +1,328 @@
+npm install cookie-parser
+
+
+Usar cookies httpOnly para guardar el token JWT, que es mucho más segura que localStorage o sessionStorage.
+
+🧠 ¿Por qué usar httpOnly cookies?
+
+No accesible desde JavaScript ⇒ protege contra XSS
+
+Solo se envía en requests al servidor
+
+El navegador se encarga automáticamente de incluirla
+🧩 ¿Qué necesitas en total?
+
+ Backend Express configurado para:
+
+Enviar cookies httpOnly
+
+Leer cookies desde peticiones
+
+Soportar CORS con credentials
+
+ Frontend configurado para enviar cookies
+
+ Endpoint de login que guarda el token en la cookie
+
+ Middleware que lee el token desde la cookie
+
+🛠️ Paso a paso (código incluido)
+🔧 1. Configura Express para usar cookies
+Instala cookie-parser:
+npm install cookie-parser
+
+En tu servidor (app.js o similar):
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+
+const app = express();
+
+app.use(cookieParser());
+app.use(express.json());
+
+// CORS con credentials (ajusta el dominio del frontend)
+app.use(cors({
+  origin: 'http://localhost:3000',  // Cambia esto si usas otro frontend
+  credentials: true
+}));
+
+🔐 2. Crear token y guardarlo en una cookie segura
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  // 👉 Verifica usuario y contraseña en tu DB (esto es un ejemplo)
+  const usuario = await getUsuarioPorEmail(email);
+
+  if (!usuario || usuario.password !== password) {
+    return res.status(401).json({ message: 'Credenciales inválidas' });
+  }
+
+  const payload = {
+    usuarioID: usuario.id,
+    emailUsuario: usuario.email
+  };
+
+  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+
+  // 👉 Enviar cookie httpOnly
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: true,      // SOLO si usas HTTPS
+    sameSite: 'Strict', // 'Lax' o 'None' dependiendo del flujo
+    maxAge: 60 * 60 * 1000 // 1 hora
+  });
+
+  res.json({ message: 'Login exitoso' });
+});
+
+🛡️ 3. Middleware que lee el token desde la cookie
+export function authenticateToken(req, res, next) {
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res.status(401).json({ message: 'Token faltante' });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: 'Token inválido o expirado' });
+    }
+
+    req.user = decoded;
+    next();
+  });
+}
+
+🌍 4. Configura el frontend para enviar cookies
+
+Cuando hagas una petición a una ruta protegida, asegúrate de enviar credentials: 'include' en el fetch:
+
+const response = await fetch('http://localhost:3001/api/v1/eventosuser', {
+  method: 'GET',
+  credentials: 'include', // 👈 NECESARIO para enviar la cookie
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
+🔚 5. Logout ⇒ borrar la cookie
+app.post('/logout', (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'Strict'
+  });
+  res.json({ message: 'Sesión cerrada' });
+});
+
+✅ Resumen
+Tarea	Estado
+Backend envía cookie con token	✅
+Middleware lee token desde cookie	✅
+Frontend envía credentials: include	✅
+Logout elimina cookie	✅
+Cookie segura (httpOnly, secure)	✅
+****************************
+****************************
+****************************
+
+osea no uso el user_id en frontend ya que creo el jwt en la cookie y cuando necesite el user_id uso /api/user/me para 
+usar el jwt del cookie en frontend para conseguir user_id o datos del usuario para devolverlos a frontend,
+
+🎯 Exactamente. Lo has entendido perfectamente.
+
+Vamos a dejarlo claro y ordenado para que lo tengas como guía.
+
+✅ FLUJO SEGURO Y MODERNO USANDO JWT EN COOKIE HttpOnly
+1. 🔐 Login (email + password)
+
+El backend:
+
+Verifica las credenciales
+
+Crea un JWT con el user_id, email y (opcional) rol
+
+Lo guarda en una cookie httpOnly
+
+res.cookie('token', token, {
+  httpOnly: true,
+  secure: true,         // Solo si usas HTTPS
+  sameSite: 'Lax',      // o 'Strict'
+  maxAge: 60 * 60 * 1000 // 1 hora
+});
+
+2. 🧠 El frontend no tiene acceso al token directamente
+
+No lo puede leer con document.cookie
+
+No necesita preocuparse por user_id ni tokens
+
+Solo hace peticiones con credentials: 'include'
+
+fetch('https://tuservidor.com/api/user/me', {
+  method: 'GET',
+  credentials: 'include'
+});
+
+3. 🚪 Ruta /api/user/me en el backend
+
+Usa el token de la cookie para identificar al usuario
+
+Extrae user_id del JWT
+
+Devuelve los datos completos del usuario (sin contraseña, claro)
+
+app.get('/api/user/me', authenticateToken, async (req, res) => {
+  const userId = req.user.usuario_id; // extraído del JWT
+
+  const usuario = await db.getUsuarioPorId(userId);
+  res.json({
+    id: usuario.id,
+    nombre: usuario.nombre,
+    apellidos: usuario.apellidos,
+    email: usuario.email
+    // otros datos útiles, nunca la contraseña
+  });
+});
+
+4. 🎯 El frontend recibe los datos del usuario
+const response = await fetch('/api/user/me', {
+  credentials: 'include'
+});
+const user = await response.json();
+
+// Ahora puedes usar: user.id, user.nombre, etc.
+
+❌ Ya no necesitas pasar el user_id en la URL
+❌ Antes (inseguro o innecesario):
+GET /api/eventosuser/59
+
+
+Esto puede ser manipulado fácilmente si no lo proteges bien.
+
+✅ Ahora (seguro y más limpio):
+GET /api/eventosuser  // sin user_id
+
+
+Y en el backend:
+
+app.get('/api/eventosuser', authenticateToken, async (req, res) => {
+  const userId = req.user.usuario_id; // del JWT
+
+  const eventos = await getEventosUsuario(userId);
+  res.json(eventos);
+});
+
+✅ Ventajas del enfoque
+
+🔒 No expones ningún identificador de usuario en el frontend
+
+🧠 El backend es el único que confía en el JWT
+
+💡 El frontend solo consume datos, no gestiona seguridad
+
+🧼 La API queda más limpia y RESTful
+
+
+*****************************
+*****************************
+*****************************
+*****************************
+
+pero cualquiera podría mediante POSTMAN hacer un post de usuario nuevo? quedaría protegido el backend con cors?
+
+💡 Buena observación — vamos al grano:
+
+❓¿Puede cualquiera crear un usuario nuevo usando Postman?
+
+✅ Sí, técnicamente cualquiera puede hacer peticiones POST al backend, desde:
+
+Postman
+
+cURL
+
+Otro backend
+
+Bots
+
+Porque:
+
+Las APIs no están protegidas por CORS en estos casos
+
+CORS solo afecta a navegadores, no a herramientas externas
+
+🧱 ¿Qué es CORS y qué protege realmente?
+CORS protege de...	❌ No protege de...
+Peticiones hechas desde otros navegadores	Peticiones hechas desde Postman, cURL, etc.
+Aplicaciones web cruzadas (XSS, etc.)	Ataques directos al backend
+
+🛑 Conclusión: CORS no protege tu API frente a ataques desde herramientas externas.
+
+✅ ¿Cómo proteger la ruta POST /user para que no cualquiera cree usuarios?
+
+Aquí tienes las mejores prácticas:
+
+🔒 1. Rate limiting (Límite de peticiones)
+
+Evita abusos, como bots creando miles de usuarios.
+
+import rateLimit from 'express-rate-limit';
+
+const createAccountLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 10, // máximo 10 intentos por IP
+  message: "Demasiadas cuentas creadas desde esta IP. Inténtalo más tarde."
+});
+
+app.post('/api/user', createAccountLimiter, crearUsuario);
+
+🤖 2. CAPTCHA (ej. reCAPTCHA de Google)
+
+Para asegurarte de que es una persona y no un bot quien envía el formulario.
+Solo aplicable en frontend + backend.
+
+📧 3. Verificación de email
+
+No actives la cuenta hasta que el usuario confirme su correo.
+
+🧼 4. Validación y sanitización de datos
+
+Evita inyecciones de datos o datos basura:
+
+if (!email.includes('@') || password.length < 6) {
+  return res.status(400).json({ error: 'Datos inválidos' });
+}
+
+👮 5. Permisos (en otros endpoints)
+
+Por ejemplo, puedes permitir crear un usuario sin autenticación,
+pero para modificar/eliminar uno, sí necesitas estar autenticado con token (JWT, cookie, etc).
+
+✅ ¿Entonces CORS ayuda o no?
+
+CORS sí ayuda en navegadores para:
+
+Impedir que otra web (desde otro dominio) interactúe con tu API.
+
+Controlar desde qué orígenes (origin) se puede usar tu API.
+
+app.use(cors({
+  origin: 'https://tu-frontend.com',
+  credentials: true
+}));
+
+
+🛡️ Pero no es un sistema de seguridad. Solo es una medida de control de acceso en el navegador.
+
+✅ En resumen
+Riesgo	¿Solución?
+Peticiones desde Postman/bots	✅ Rate limiting / CAPTCHA
+Usuarios falsos o spam	✅ Email verification / validación fuerte
+Peticiones desde otro dominio (web)	✅ CORS
+Robo de tokens / sesiones	✅ Cookies httpOnly + CSRF protection
+Exposición de contraseñas	✅ HTTPS + bcrypt

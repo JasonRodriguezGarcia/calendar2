@@ -43,15 +43,16 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
     const [formReadOnly, setFormReadOnly] = useState(false)
     const [showPassword,setShowPassword] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     useEffect(() => {
         const getData = async () => {
             try {
                 // fetch for getting horarios & turnos data
-                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getSignUpFormData`,
+                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getsignupformdata`,
                     {
                         method: 'GET',
+                        credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                         headers: {
                             // 'Authorization': `Bearer ${token}`,
                             'Content-type': 'application/json; charset=UTF-8'
@@ -77,14 +78,16 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
                 // setLoading(false); // Set loading to false once data is fetched or error occurs
             }
             if (action === "read" || action === "update")  {
-                const endPoint= `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario/${user.id}`
+                // const endPoint= `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario/${user.id}`
+                const endPoint= `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario`
                 try {
                     // fetch for getting usuario data
                     const responseUser = await fetch(endPoint,
                         {
                             method: "GET",
+                            credentials: 'include',
                             headers: {
-                                'Authorization': `Bearer ${token}`,
+                                // 'Authorization': `Bearer ${token}`,
                                 'Content-type': 'application/json; charset=UTF-8'
                             }
                         }
@@ -180,39 +183,39 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
     }
 
     const handleUserEmail = (e) => {
-        if (e.target.value.length > 50) return;
+        if (e.target.value.length > 50) return
         setUserEmail(e.target.value)
         if (e.target.value.length < 7)
             setErrorMessage(t("error.message1"))
         else
-            setErrorMessage(""); // Limpia el error si ya es válido
+            setErrorMessage("") // Limpia el error si ya es válido
     }
 
     const handleUserPassword = (e) => {
-        if (e.target.value.length > 15) return;
+        if (e.target.value.length > 15) return
         setUserPassword(e.target.value)
         if (e.target.value.length < minPasswordLength)
             setErrorMessage(t("error.message2"))
         else
-            setErrorMessage(""); // Limpia el error si ya es válido
+            setErrorMessage("") // Limpia el error si ya es válido
     }
 
     const handleUserNombre_Apellidos = (e) => {
-        if (e.target.value.length > 50) return;
+        if (e.target.value.length > 50) return
         setUserNombre_Apellidos(e.target.value)
         if (e.target.value.length < 7)
             setErrorMessage(t("error.message3"))
         else
-            setErrorMessage(""); // Limpia el error si ya es válido
+            setErrorMessage("") // Limpia el error si ya es válido
     }
 
     const handleUserMovil = (e) => {
-        let numbersOnly = e.target.value.replace(/\D/g, '').slice(0, 9); // solo 9 números
-        setUserMovil(numbersOnly);
+        let numbersOnly = e.target.value.replace(/\D/g, '').slice(0, 9) // solo 9 números
+        setUserMovil(numbersOnly)
     }
 
     const handleUserExtension = (e) => {
-        let numbersOnly = e.target.value.replace(/\D/g, '').slice(0, 3); // solo 3 números
+        let numbersOnly = e.target.value.replace(/\D/g, '').slice(0, 3) // solo 3 números
         setUserExtension(numbersOnly)
         if (e.target.value > 3) {
             setErrorMessage(t("error.message4"))
@@ -224,7 +227,7 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
     const handleFormSubmit = async (e) => {
         e.preventDefault()
         if (action === "read") {
-            navigate(`/`, { replace: true });
+            navigate(`/`, { replace: true })
             return
         }
         if (userEmail.length < 18 && !userEmail.includes("@erroak.sartu.org")) {
@@ -232,11 +235,11 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
             return
         }
         if (userPassword.length < minPasswordLength) {
-            setErrorMessage()
+            setErrorMessage(t("error.message6"))
             return
         }
         if (userNombre_Apellidos.length < 8) {
-            setErrorMessage()
+            setErrorMessage(t("error.message7"))
             return
         }
 
@@ -258,17 +261,19 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
                 observaciones: userObservaciones
             }
             console.log("user: ", userTmp)
-            const endPoint= action === "create"
-                ? `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario`
-                : `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario/${user.id}`
+            const endPoint = `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario`
+            // const endPoint= action === "create"
+            //     ? `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario`
+            //     : `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario/${user.id}`
             const method = action === "create" ? "POST" : "PUT"
 
             // fetch validate
             const response = await fetch(endPoint,
                 {
                     method: method,
+                    credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                     headers: {
-                        'Authorization': `Bearer ${token}`, // se usará o no
+                        // 'Authorization': `Bearer ${token}`, // se usará o no
                         'Content-type': 'application/json; charset=UTF-8'
                     },
                     body: JSON.stringify(userTmp)
@@ -283,8 +288,9 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
             }
             const usuario = {
                 id: resultado.usuario_id,
-                password: userPassword,
+                // password: userPassword,
                 nombre_apellidos: userNombre_Apellidos,
+                email: resultado.email
             }
 
             // Crear/modificar localStorage
@@ -314,7 +320,7 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
                 onSubmit={(e)=> handleFormSubmit(e)}
                 sx={{
                     heigth: "100vh",
-                    width: { xs: '90%', sm: "30%" },
+                    width: { xs: '90%', sm: "50%", md: "30%" },
                     mx: 'auto', // margin left & right
                     my: 4, // margin top & bottom
                     py: 3, // padding top & bottom

@@ -1,4 +1,7 @@
-npm install cookie-parser
+backend
+    npm install cookie-parser
+frontend
+    npm install js-cookie
 
 
 Usar cookies httpOnly para guardar el token JWT, que es mucho más segura que localStorage o sessionStorage.
@@ -79,6 +82,17 @@ app.post('/login', async (req, res) => {
 
   res.json({ message: 'Login exitoso' });
 });
+IMPORTANTE EN FRONTENT LA LLAMADA A LOGIN SERÁ ALGO PARECIDO A ESTO
+            const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/login`,
+                {
+                    method: 'POST',
+IMPORTANTE---->>>   credentials: 'include', // IMPORTANTE: esto permite guardar la cookie
+                    headers: {'Content-type': 'application/json; charset=UTF-8'},
+                    body: JSON.stringify(user)
+                }
+            )
+
+
 
 🛡️ 3. Middleware que lee el token desde la cookie
 export function authenticateToken(req, res, next) {

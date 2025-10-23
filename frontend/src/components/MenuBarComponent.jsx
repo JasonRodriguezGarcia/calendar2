@@ -32,6 +32,8 @@ import HomeIcon from '@mui/icons-material/Home';
 // ];
 
 const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect }) => {
+    const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
+
     const navigate = useNavigate()
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
@@ -54,7 +56,7 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
         setAnchorElNav(null);
     }
 
-    const handleCloseUserMenu = (setting) => {
+    const handleCloseUserMenu = async (setting) => {
         switch (setting) {
             case t("settings.verperfil"):
                 navigate("/profile")
@@ -63,9 +65,27 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
                 navigate("/editprofile")
                 break
             case t("settings.cerrarsesion"):
-                localStorage.removeItem("token")
+                // localStorage.removeItem("token")
                 setLogged(false)
                 setUser({})
+                try {
+                    const response = await fetch(
+                        `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/logout`,
+                        {
+                            method: 'POST',
+                            credentials: 'include', // IMPORTANTE: esto permite usar la cookie
+                            headers: {
+                                // 'Authorization': `Bearer ${token}`,
+                                'Content-type': 'application/json; charset=UTF-8'
+                            }
+                        }
+                    )
+                    const data = await response.json()
+                    console.log("Resultado logout: ", data.message)
+                } catch (error) {
+                    console.error("Error cerrando sesión:", error)
+                }
+
                 navigate("/", { replace: true })
                 break
             default:
@@ -473,11 +493,11 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
                                 sx={
                                     (theme) => ({
                                         fontSize: {
-                                            xs: '10px',   // móviles
+                                            xs: '8px',   // móviles
                                             sm: '10px',  // tablets
                                             md: '14px',  // escritorio
                                         },
-                                        mr: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
+                                        mr: 1, minWidth: "auto", color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
                                     
                                 })}
                             >
@@ -493,11 +513,11 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
                                 sx={
                                     (theme) => ({
                                         fontSize: {
-                                            xs: '10px',   // móviles
+                                            xs: '8px',   // móviles
                                             sm: '10px',  // tablets
                                             md: '14px',  // escritorio
                                         },
-                                        mr: 2, color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
+                                        mr: 1, minWidth: "auto", color: 'white', display: 'block', "&:hover": {backgroundColor: 'lightgrey', color: "black"},
                                     
                                 })}
                             >

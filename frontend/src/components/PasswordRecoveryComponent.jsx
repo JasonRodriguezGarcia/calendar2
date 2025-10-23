@@ -49,15 +49,24 @@ const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
         }
 
         try {
-            const user = {
+            const userPasswordDetails = {
                 useremail: userEmail,
+                emailmsg: {
+                    subject: t("emailmsg.subject"),
+                    html: {
+                        line1: t("emailmsg.html.line1"),
+                        line2: t("emailmsg.html.line2"),
+                        line3: t("emailmsg.html.line3"),
+                        line4: t("emailmsg.html.line4")
+                    }
+                }
             }
             // fetch validate
             const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/passwordrecovery`,
                 {
                     method: 'POST',
                     headers: {'Content-type': 'application/json; charset=UTF-8'},
-                    body: JSON.stringify(user)
+                    body: JSON.stringify(userPasswordDetails)
                 }
             )
             const data = await response.json()
@@ -66,7 +75,6 @@ const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
                 setErrorMessage(t("error.message2"))
                 return
             } else {
-                const {usuario_id} = data[0]
                 setDialogRecovery(true)
             }
 

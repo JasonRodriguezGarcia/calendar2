@@ -126,8 +126,9 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                     `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getNewEventFormData`,
                     {
                         method: 'GET',
+                        credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                         headers: {
-                            'Authorization': `Bearer ${token}`,
+                            // 'Authorization': `Bearer ${token}`,
                             'Content-type': 'application/json; charset=UTF-8'
                         }
                     }
@@ -197,11 +198,13 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
             // Llamando a backend para presentar los datos
             try {
                 const response = await fetch(
-                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventosuser/${user.id}/${start.toISOString()}/${end.toISOString()}`,
+                //   `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventosuser/${user.id}/${start.toISOString()}/${end.toISOString()}`,
+                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventosuser/${start.toISOString()}/${end.toISOString()}`,
                     {
                         method: 'GET',
+                        credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                         headers: {
-                            'Authorization': `Bearer ${token}`,
+                            // 'Authorization': `Bearer ${token}`,
                             'Content-type': 'application/json; charset=UTF-8'
                         }
                     }
@@ -371,11 +374,13 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                 // se responde a backend con el resultado para que se añada a o no a newEvents
                 try {
                     // fetch eventos
-                    const responseRepeated = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/`,
+                    const responseRepeated = await fetch(
+                        `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/`,
                         {
                             method: "POST",
+                            credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                             headers: {
-                                'Authorization': `Bearer ${token}`,
+                                // 'Authorization': `Bearer ${token}`,
                                 'Content-type': 'application/json; charset=UTF-8'
                             },
                             body: JSON.stringify(eventDataRepeated)
@@ -471,11 +476,13 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
             // Añadir aqui la llamada a backend para modificar un evento nuevo - selectedEvent.event_id
             try {
                 // fetch eventos
-                const responseEdit = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${selectedEvent.event_id}`,
+                const responseEdit = await fetch(
+                    `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${selectedEvent.event_id}`,
                     {
                         method: "PUT",
+                        credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                         headers: {
-                            'Authorization': `Bearer ${token}`,
+                            // 'Authorization': `Bearer ${token}`,
                             'Content-type': 'application/json; charset=UTF-8'
                         },
                         body: JSON.stringify(eventData)
@@ -513,8 +520,9 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                     `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento`,
                     {
                         method: "POST",
+                        credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                         headers: {
-                            'Authorization': `Bearer ${token}`,
+                            // 'Authorization': `Bearer ${token}`,
                             'Content-type': 'application/json; charset=UTF-8'
                         },
                         body: JSON.stringify(eventData)
@@ -573,8 +581,9 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${event.event_id}`,
                 {
                     method: "PUT",
+                    credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        // 'Authorization': `Bearer ${token}`,
                         'Content-type': 'application/json; charset=UTF-8'
                     },
                     body: JSON.stringify(updatedEvent)
@@ -624,8 +633,9 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${selectedEvent.event_id}`,
                 {
                     method: "DELETE",
+                    credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        // 'Authorization': `Bearer ${token}`,
                         'Content-type': 'application/json; charset=UTF-8'
                     },
                     body: JSON.stringify(selectedEvent)
@@ -825,7 +835,7 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
         />
 
         {/* <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeEs}> */}
-        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeEu}>
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeEs}>
             <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth>
                 {/* <DialogTitle>{!isEditing ? actionEventMessage[0] : actionEventMessage[1]} evento</DialogTitle> */}
                 <DialogTitle>{!isEditing ? actionEventMessage[0] : actionEventMessage[1]}</DialogTitle>

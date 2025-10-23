@@ -68,6 +68,7 @@ const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, sel
             const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/login`,
                 {
                     method: 'POST',
+                    credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                     headers: {'Content-type': 'application/json; charset=UTF-8'},
                     body: JSON.stringify(user)
                 }
@@ -82,10 +83,11 @@ const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, sel
                 const resultado = data.result
                 const usuario = {
                     id: resultado.usuario_id,
-                    password: resultado.password,
-                    nombre_apellidos: resultado.nombre_apellidos
+                    // password: resultado.password,
+                    nombre_apellidos: resultado.nombre_apellidos,
+                    email: resultado.email
                 }
-                localStorage.setItem("token", data.token)
+                // localStorage.setItem("token", data.token)
                 console.log("token hadleLogin: :", data.token)
                 setUser(usuario)
                 setLogged(true)

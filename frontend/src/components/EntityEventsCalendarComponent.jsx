@@ -71,11 +71,13 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
         const getNewEventFormData = async () => {
             try {
                 // fetch for getting horarios & turnos data
-                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getNewEventFormData`,
+                const response = await fetch(
+                    `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getNewEventFormData`,
                     {
                         method: 'GET',
+                        credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                         headers: {
-                            'Authorization': `Bearer ${token}`,
+                            // 'Authorization': `Bearer ${token}`,
                             'Content-type': 'application/json; charset=UTF-8'
                         },
                     }
@@ -145,11 +147,13 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
             // Llamando a backend para presentar los datos
             try {
                 const response = await fetch(
-                    `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${start.toISOString()}/${end.toISOString()}/${user.id}`,
+                    // `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${start.toISOString()}/${end.toISOString()}/${user.id}`,
+                    `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${start.toISOString()}/${end.toISOString()}`,
                     {
                         method: "GET",
+                        credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                         headers: {
-                            'Authorization': `Bearer ${token}`,
+                            // 'Authorization': `Bearer ${token}`,
                             'Content-type': 'application/json; charset=UTF-8'
                         },
                     }

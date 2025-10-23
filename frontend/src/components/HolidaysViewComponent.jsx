@@ -39,16 +39,18 @@ const HolidaysViewComponent = ({ logged, user, token, selectedLanguage }) => {
         console.log("user.id: ", user.id)
         try {
             const response = await fetch(
-                `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${user.id}/${start.toISOString()}/${end.toISOString()}/all`,
+                // `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${user.id}/${start.toISOString()}/${end.toISOString()}/all`,
+                `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${start.toISOString()}/${end.toISOString()}/all`,
                 {
                     method: 'GET',
+                    credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        // 'Authorization': `Bearer ${token}`,
                         'Content-type': 'application/json; charset=UTF-8'
                     }
                 }
             )
-            const data = await response.json();
+            const data = await response.json()
             const formatted = data.map(vacacion => ({
                 ...vacacion,
                 start: new Date(vacacion.start),
@@ -68,8 +70,9 @@ const HolidaysViewComponent = ({ logged, user, token, selectedLanguage }) => {
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuarios`,
                 {
                     method: 'GET',
+                    credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        // 'Authorization': `Bearer ${token}`,
                         'Content-type': 'application/json; charset=UTF-8'
                     }
                 }

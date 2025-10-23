@@ -114,15 +114,15 @@ export async function putEvento(event_ID, event) {
     }
 }
 
-export async function getEventos(year, month) {
-    console.log("imprimo year-month: ", year, month)
+export async function getEventos(startDate, endDate) {
+    console.log("imprimo startDate-endDate: ", startDate, endDate)
     try {
         const result = await pool.query(`
             SELECT * FROM erroak.eventos
             WHERE start >= $1
             AND start <= $2
             ORDER BY start ASC;`, 
-            [year, month])
+            [startDate, endDate])
         console.log("imprimo result getEventos: ", result)
         return result.rows;
 
@@ -132,8 +132,8 @@ export async function getEventos(year, month) {
     }
 }
 
-export async function getEventosUsuario(user, year, month) {
-    console.log("imprimo user-year-month: ", user, year, month)
+export async function getEventosUsuario(user, startDate, endDate) {
+    console.log("imprimo user-startDate-endDate: ", user, startDate, endDate)
     try {
         const result = await pool.query(`
             SELECT * FROM erroak.eventos
@@ -141,7 +141,7 @@ export async function getEventosUsuario(user, year, month) {
             AND start >= $2
             AND start <= $3
             ORDER BY start ASC;`, 
-            [user, year, month])
+            [user, startDate, endDate])
         console.log("imprimo result getEventos: ", result)
         return result.rows;
 

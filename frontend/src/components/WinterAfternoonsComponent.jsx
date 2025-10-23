@@ -32,8 +32,9 @@ const WinterAfternoonsComponent = ({ logged, user, token, selectedLanguage }) =>
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/winterafternoons`,
                 {
                     method: 'GET',
+                    credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        // 'Authorization': `Bearer ${token}`,
                         'Content-type': 'application/json; charset=UTF-8'
                     }
                 }

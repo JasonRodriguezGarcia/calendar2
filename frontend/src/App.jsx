@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Navigate, useNavigate } from 'react-router-dom';
 import './utils/i18next/i18n';  // Path is relative to the current file in App.jsx
 import { useTranslation } from 'react-i18next';
+import Cookies from 'js-cookie';
 import EventsCalendarPage from './pages/EventsCalendarPage';
 import HolidaysPage from './pages/HolidaysPage';
 import MainPage from './pages/MainPage';
@@ -18,6 +19,7 @@ import ContactsPage from './pages/ContactsPage';
 import PasswordRecoveryPage from './pages/PasswordRecoveryPage';
 import NewPasswordPage from './pages/NewPasswordPage';
 import EntityEventsCalendarPage from './pages/EntityEventsCalendarPage';
+import UnderConstructionPage from './pages/UnderContructionPage';
 import PaisVasco from "./assets/images/flags/paisvasco.png"
 import Espana from "./assets/images/flags/espana.png"
 import Francia from "./assets/images/flags/francia.png"
@@ -46,7 +48,22 @@ const App = () => {
         
     useEffect(()=> {
         const checkLogeado = async () => {
-            const usuarioToken = localStorage.getItem("token")
+            const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/me`,
+                {
+                    method: 'GET',
+                    credentials: 'include', // IMPORTANTE: esto permite usar la cookie
+                    headers: {'Content-type': 'application/json; charset=UTF-8'},
+                }
+            )
+            const data = await response.json()
+            console.log("Data: ", data)
+            if (data.message) {
+                console.log("NO HAY TOKEN")
+                setLogeado(false)
+                return <Navigate to="/" replace />
+            }
+            const usuarioToken = data.token
+            console.log("usuarioToken: ", usuarioToken)
             if (usuarioToken) {
                 try {
                     const decoded = jwtDecode(usuarioToken);
@@ -56,40 +73,40 @@ const App = () => {
                     //     logout(); // Token expirado
                     // } else {
                     // Recuperar datos del backend
-                    const { usuarioID, emailUsuario, passwordUsuario } = decoded
+                    const { usuarioID, emailUsuario, nombreapellidos } = decoded
                     console.log("Decodificado usuarioToken: ", decoded)
-                    const user = {
-                        id: usuarioID,
-                        useremail: emailUsuario,
-                        password: passwordUsuario,
-                    }
-                    const response1 = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/login`,
-                        {
-                            method: 'POST',
-                            headers: {'Content-type': 'application/json; charset=UTF-8'},
-                            body: JSON.stringify(user)
-                        }
-                    )
-                    const data = await response1.json()
-                    console.log("Respuesta backend: ", data)
-                    if (data.result === "No encontrado") {
-                        setErrorMessage("usuario o contraseña no válidos")
-                        return
-                    } else {
-                        // Crear localStorage
-                        const resultado = data.result
-                        console.log("data.result: ", data.result)
+                    // const user = {
+                    //     id: usuarioID,
+                    //     useremail: emailUsuario,
+                    //     password: passwordUsuario,
+                    // }
+                    // const response1 = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/login`,
+                    //     {
+                    //         method: 'POST',
+                    //         headers: {'Content-type': 'application/json; charset=UTF-8'},
+                    //         body: JSON.stringify(user)
+                    //     }
+                    // )
+                    // const data = await response1.json()
+                    // console.log("Respuesta backend: ", data)
+                    // if (data.result === "No encontrado") {
+                    //     setErrorMessage("usuario o contraseña no válidos")
+                    //     return
+                    // } else {
+                    //     // Crear localStorage
+                    //     const resultado = data.result
+                    //     console.log("data.result: ", data.result)
                         const usuario = {
-                            id: resultado.usuario_id,
-                            password: resultado.password, // igual sobra ¿?¿?
-                            nombre_apellidos: resultado.nombre_apellidos
+                            id: usuarioID,
+                            // password: resultado.password, // igual sobra ¿?¿?
+                            nombre_apellidos: nombreapellidos,
                         }
                         localStorage.setItem("token", data.token)
                         setUsuario(usuario)
                         setLogeado(true)
-                        setToken(data.token)
+                        // setToken(data.token)
                         // navigate('/', { replace: true }) // no deja retroceder en el navegador
-                    }
+                    // }
                 } catch (e) {
                     // logout();
                 }
@@ -167,6 +184,9 @@ const App = () => {
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/newpassword/:id" element={<NewPasswordPage 
+                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
+                    logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
+                <Route path="/about" element={<UnderConstructionPage
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
             </Routes>

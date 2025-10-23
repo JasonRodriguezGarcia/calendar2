@@ -45,11 +45,13 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
     const fetchCheckHolidays = async () => {
         // Llamada a la cuenta del año en curso de las vacaciones acumuladas
         try {
-            const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/count/${user.id}/${date.getFullYear()}`,
+            // const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/count/${user.id}/${date.getFullYear()}`,
+            const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/count/${date.getFullYear()}`,
                 {
                     method: 'GET',
+                    credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        // 'Authorization': `Bearer ${token}`,
                         'Content-type': 'application/json; charset=UTF-8'
                     }
                 }
@@ -87,11 +89,13 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
             // Llamando a backend para presentar los datos
             try {
                 const response = await fetch(
-                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${user.id}/${start.toISOString()}/${end.toISOString()}/uno`,
+                //   `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${user.id}/${start.toISOString()}/${end.toISOString()}/uno`,
+                  `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${start.toISOString()}/${end.toISOString()}/uno`,
                     {
                         method: 'GET',
+                        credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                         headers: {
-                            'Authorization': `Bearer ${token}`,
+                            // 'Authorization': `Bearer ${token}`,
                             'Content-type': 'application/json; charset=UTF-8'
                         }
                     }
@@ -172,11 +176,13 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
         try {
             // Llamada a backend para guardar
             // fetch vacaciones
+            // const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacacion`,
             const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacacion`,
                 {
                     method: "POST",
+                    credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        // 'Authorization': `Bearer ${token}`,
                         'Content-type': 'application/json; charset=UTF-8'
                     },
                     body: JSON.stringify(newVacacion)
@@ -198,21 +204,22 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
         fetchCheckHolidays();
     }
 
-    // Editando un evento ya creado que en este caso lo borra
+    // Borrando evento viejo
     const handleSelectEvent = async (event) => {
         const filtered = events.filter(evento => evento.event_id != event.event_id)
         setEvents(filtered)
-    // Llama a backend para borrar
+    // Llama a backend para borrar evento viejo
         try {
             // fetch vacaciones
             const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacacion/${event.event_id}`,
                 {
                     method: "DELETE",
+                    credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        // 'Authorization': `Bearer ${token}`,
                         'Content-type': 'application/json; charset=UTF-8'
                     },
-                    body: JSON.stringify(event)
+                    // body: JSON.stringify(event)
                 }
             )
             const data = await response.json()

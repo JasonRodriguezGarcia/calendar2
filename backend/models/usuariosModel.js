@@ -23,18 +23,53 @@ export async function postLogin(loginDetails) {
         const { useremail , password } = loginDetails
         const result = await pool.query("SELECT * FROM erroak.usuarios WHERE email = $1 AND password = $2;", [useremail, password]);
         console.log("result: ", result)
+        const userData = result.rows[0]
         if (result.rows.length > 0) {
-            const usuarioID = result.rows[0].usuario_id
-            const passwordUsuario = result.rows[0].password
-            const emailUsuario = result.rows[0].email
+            const usuarioID = userData.usuario_id
+            const nombreapellidos = userData.nombre_apellidos
+            // const passwordUsuario = userData[0].password
+            const emailUsuario = userData.email
             const token = jwt.sign(
-                { usuarioID, emailUsuario, passwordUsuario },
+                { usuarioID, nombreapellidos, emailUsuario },
                 JWT_SECRET_KEY,
                 // { expiresIn: '1h', algorithm: 'HS256' },
                 { algorithm: 'HS256' },
             )
             console.log("JWT: ", token)
-            return ({ result: result.rows[0], token: token })
+            // return ({ result: result.rows[0], token: token })
+            return ({ result: userData, success: true, token: token })
+            
+        } 
+        else
+            return ({result: "No encontrado"})
+
+    } catch (err) {
+        console.error('Error en postLogin:', err.message);
+        throw err;
+    }
+}
+
+export async function postMe(loginMeDetails) {
+    try {
+        const { usuarioID , emailUsuario } = loginMeDetails
+        const result = await pool.query("SELECT * FROM erroak.usuarios WHERE usuario_id = $1 AND email = $2;", [usuarioID, emailUsuario]);
+        console.log("result: ", result)
+        const userData = result.rows[0]
+        if (result.rows.length > 0) {
+            // const usuarioID = userData.usuario_id
+            const nombreapellidos = userData.nombre_apellidos
+            // const passwordUsuario = userData[0].password
+            // const emailUsuario = userData.email
+            const token = jwt.sign(
+                { usuarioID, nombreapellidos, emailUsuario },
+                JWT_SECRET_KEY,
+                // { expiresIn: '1h', algorithm: 'HS256' },
+                { algorithm: 'HS256' },
+            )
+            console.log("JWT: ", token)
+            // return ({ result: result.rows[0], token: token })
+            return ({ result: userData, success: true, token: token })
+            
         } 
         else
             return ({result: "No encontrado"})
@@ -47,27 +82,34 @@ export async function postLogin(loginDetails) {
 
 export async function postRecoveryPassword(recoveryPasswordDetails) {
     try {
-        const { useremail } = recoveryPasswordDetails
+        const { useremail, emailmsg } = recoveryPasswordDetails
         console.log("useremail: ", useremail)
         const result = await pool.query("SELECT usuario_id, password, nombre_apellidos FROM erroak.usuarios WHERE email = $1",
             [useremail]);
         console.log("result: ", result)
         if (result.rows.length > 0) {
-
+            const recoveryData = result.rows[0]
 // AUN HABIENDOLO ENCONTRADO VERIFICAR QUE SU EMAIL SEA EL QUE PONE¿?
-            const {usuario_id, nombre_apellidos} = result.rows[0]
+            const {usuario_id, nombre_apellidos} = recoveryData
             const resetLink = `http://localhost:5173/newpassword/${usuario_id}`
             const msg = {
                     to: useremail,
                     from: "jasonr@erroak.sartu.org", // debe ser verificado en SendGrid
-                    subject: "Recuperación de contraseña",
-                    // <p>Hola ${username},</p>
+                    // subject: "Recuperación de contraseña",
+                    subject: emailmsg.subject,
+                    // html: `
+                    //     <p>Hola ${nombre_apellidos},</p>
+                    //     <p>Desde una web de Sartu has hecho una petición para restablecer tu contraseña:</p>
+                    //     <p>Haz clic en el siguiente enlace para cambiarla:</p>
+                    //     <a href="${resetLink}">${resetLink}</a>
+                    //     <p>Este enlace expirará en 1 hora.</p>
+                    // `,
                     html: `
-                        <p>Hola ${nombre_apellidos},</p>
-                        <p>Desde una web de Sartu has hecho una petición para restablecer tu contraseña:</p>
-                        <p>Haz clic en el siguiente enlace para cambiarla:</p>
+                        <p>${emailmsg.html.line1} ${nombre_apellidos},</p>
+                        <p>${emailmsg.html.line2}:</p>
+                        <p>${emailmsg.html.line3}:</p>
                         <a href="${resetLink}">${resetLink}</a>
-                        <p>Este enlace expirará en 1 hora.</p>
+                        <p>${emailmsg.html.line4}.</p>
                     `,
             }
 
@@ -132,12 +174,13 @@ export async function postUsuario(usuario) {
             // RETURNING usuario_id;`, 
             [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno, observaciones])
         console.log("usuario creado: ", result)
-
-        const usuarioID = result.rows[0].usuario_id
-        const passwordUsuario = result.rows[0].password
-        const emailUsuario = result.rows[0].email
+        const userData = result.rows[0]
+        const usuarioID = userData.usuario_id
+        const nombreapellidos = userData.nombre_apellidos
+        // const passwordUsuario = result.rows[0].password
+        const emailUsuario = userData.email
         const tokenPost = jwt.sign(
-            { usuarioID, emailUsuario, passwordUsuario },
+            { usuarioID, nombreapellidos, emailUsuario },
             JWT_SECRET_KEY,
             // { expiresIn: '1h', algorithm: 'HS256' },
             { algorithm: 'HS256' },
@@ -207,13 +250,15 @@ export async function putUsuario(id, updatedUser) {
             [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno, observaciones, parseInt(id)]
         )
         console.log("result: ", result.command)
+        const userData = result.rows[0]
         if (result.rows.length > 0) {
-            console.log("Usuario encontrado y actualizado: ", result.rows[0])
-            const usuarioID = result.rows[0].usuario_id
-            const passwordUsuario = result.rows[0].password
-            const emailUsuario = result.rows[0].email
+            console.log("Usuario encontrado y actualizado: ", userData)
+            const usuarioID = userData.usuario_id
+            const nombreapellidos = userData.nombre_apellidos
+            // const passwordUsuario = result.rows[0].password
+            const emailUsuario = userData.email
             const token = jwt.sign(
-                { usuarioID, emailUsuario, passwordUsuario },
+                { usuarioID, nombreapellidos, emailUsuario },
                 JWT_SECRET_KEY,
                 // { expiresIn: '1h', algorithm: 'HS256' },
                 { algorithm: 'HS256' },

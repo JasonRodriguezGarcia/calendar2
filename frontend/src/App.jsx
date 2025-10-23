@@ -99,9 +99,10 @@ const App = () => {
                         const usuario = {
                             id: usuarioID,
                             // password: resultado.password, // igual sobra ¿?¿?
-                            nombre_apellidos: nombreapellidos,
+                            nombreapellidos: nombreapellidos,
+                            emailUsuario: emailUsuario
                         }
-                        localStorage.setItem("token", data.token)
+                        // localStorage.setItem("token", data.token)
                         setUsuario(usuario)
                         setLogeado(true)
                         // setToken(data.token)

@@ -32,7 +32,8 @@ router.post('/login', async(req, res) => {
             // DESCOMENTAR EN PRODUCCIÓN
             // secure: true,      // SOLO si usas HTTPS
             secure: false,
-            sameSite: 'Strict', // 'Lax' o 'None' dependiendo del flujo
+            // sameSite: 'Strict', // 'Lax' o 'None' dependiendo del flujo
+            sameSite: 'None', // 'Lax' o 'None' dependiendo del flujo
             // maxAge: 60 * 60 * 1000 // 1 hora
         })
         // console.log("imprimo res.cookie: ", res.cookie())
@@ -46,7 +47,8 @@ router.post('/logout', authenticateToken, (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
     secure: true,
-    sameSite: 'Strict'
+    // sameSite: 'Strict'
+    sameSite: 'None'
   })
   res.json({ message: 'Sesión cerrada' })
 })
@@ -69,7 +71,8 @@ router.get('/me', checkToken, async (req, res) => {
             // DESCOMENTAR EN PRODUCCIÓN
             secure: true,      // SOLO si usas HTTPS
             // secure: false,
-            sameSite: 'Strict', // 'Lax' o 'None' dependiendo del flujo
+            // sameSite: 'Strict', // 'Lax' o 'None' dependiendo del flujo
+            sameSite: 'None', // 'Lax' o 'None' dependiendo del flujo
             // maxAge: 60 * 60 * 1000 // 1 hora
         })
         // console.log("imprimo res.cookie: ", res.cookie())

@@ -67,8 +67,8 @@ router.get('/me', checkToken, async (req, res) => {
         res.cookie('token', login.token, {
             httpOnly: true,
             // DESCOMENTAR EN PRODUCCIÓN
-            // secure: true,      // SOLO si usas HTTPS
-            secure: false,
+            secure: true,      // SOLO si usas HTTPS
+            // secure: false,
             sameSite: 'Strict', // 'Lax' o 'None' dependiendo del flujo
             // maxAge: 60 * 60 * 1000 // 1 hora
         })

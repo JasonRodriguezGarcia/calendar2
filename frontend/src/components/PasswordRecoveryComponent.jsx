@@ -4,17 +4,16 @@ import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
 // MUI
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography,
-  Button,
-  FormControl, 
-  FormLabel,
-  Input,
-  Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
-
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Typography,
+    Button,
+    FormControl, 
+    FormLabel,
+    Input,
+    Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 } from '@mui/material';
 
 const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
@@ -147,7 +146,7 @@ const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
                 }
                 <Dialog open={dialogRecovery} onClose={handleRecovery}>
                     <DialogTitle>
-                        <Typography variant="h4">
+                        <Typography variant="h4" component="span">
                             {t("boxdialog.title")}
                         </Typography>
                     </DialogTitle>

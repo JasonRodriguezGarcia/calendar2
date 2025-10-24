@@ -99,7 +99,7 @@ const App = () => {
                         const usuario = {
                             id: usuarioID,
                             // password: resultado.password, // igual sobra ¿?¿?
-                            nombreapellidos: nombreapellidos,
+                            nombre_apellidos: nombreapellidos,
                             emailUsuario: emailUsuario
                         }
                         // localStorage.setItem("token", data.token)
@@ -133,7 +133,7 @@ const App = () => {
                 // localStorage.setItem("idioma", idiomaPorDefecto)
             }
         }
-
+        
         checkLogeado()
         checkIdioma()
     }, [])
@@ -184,7 +184,7 @@ const App = () => {
                 <Route path="/passwordrecovery" element={<PasswordRecoveryPage 
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/newpassword/:id" element={<NewPasswordPage 
+                <Route path="/newpassword/:token" element={<NewPasswordPage 
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/about" element={<UnderConstructionPage

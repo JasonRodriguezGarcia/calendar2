@@ -36,7 +36,6 @@ router.post('/login', async(req, res) => {
             sameSite: 'none', // 'Lax' o 'None' dependiendo del flujo
             // maxAge: 60 * 60 * 1000 // 1 hora
         })
-        // console.log("imprimo res.cookie: ", res.cookie())
     }
     res.json (login)
 })
@@ -103,7 +102,7 @@ router.post('/newpassword', async(req, res) => {
 
 // /api/v1/erroak/getsignupformdata
 // Conseguir los datos de los select del formulario de alta de un usuario
-router.get('/getsignupformdata', authenticateToken, async(req, res) => {
+router.get('/getsignupformdata', async(req, res) => {
     const result = await getSignUpFormData()
     console.log(result)
     res.json (result)
@@ -122,16 +121,9 @@ router.post('/usuario', async(req, res) => {
 // /api/v1/erroak/usuario/:id
 // router.get('/usuario/:id', authenticateToken, async(req, res) => {
 router.get('/usuario', authenticateToken, async(req, res) => {
-    // const {id} = req.params
     console.log("Imprimmo req.user: ", req.user)
     const id = req.user.usuarioID; // <- Datos conseguidos desde JWT en cookie httpOnly
     console.log("imprimo id en get usuario: ", id)
-    // // Validar que el usuario autenticado es el mismo que el del URL
-    // if (parseInt(id) !== req.userID ){
-    //     console.log("No autorizado para acceder a este usuario")
-    //     // Forbidden. Está loggeado pero no autorizado
-    //     return res.status(403).json({ message: "No autorizado para acceder a este usuario" })
-    // }
     const resultUsuario = await getUsuario(id)
     res.json (resultUsuario)
 })
@@ -139,17 +131,9 @@ router.get('/usuario', authenticateToken, async(req, res) => {
 // /api/v1/erroak/usuario/:id
 // Modificar los datos de un usuario
 router.put('/usuario', authenticateToken, async(req, res) => {
-    // const {id} = req.params
     const id = req.user.usuarioID
-    // const id_usuario = req.params.id
     const updatedUser = req.body
     console.log("imprimo id en put usuario/:id : ", id)
-    // Validar que el usuario autenticado es el mismo que el del URL
-    // if (parseInt(id) !== req.userID ){
-    //     console.log("No autorizado para acceder a este usuario")
-    //     // Forbidden. Está loggeado pero no autorizado
-    //     return res.status(403).json({ message: "No autorizado para acceder a este usuario" })
-    // }
     const resultUsuario = await putUsuario(id, updatedUser)
     res.json (resultUsuario)
 })

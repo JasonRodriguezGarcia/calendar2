@@ -4,13 +4,16 @@ import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
 // MUI
 import {
-  Typography,
-  Button,
-  FormControl, 
-  FormLabel,
-  Input,
-  Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
-
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Typography,
+    Button,
+    FormControl, 
+    FormLabel,
+    Input,
+    Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 } from '@mui/material';
 
 const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
@@ -18,14 +21,15 @@ const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
     const { t, i18n } = useTranslation("newpassword")
 
     const navigate = useNavigate();
-    const {id} = useParams()
-    console.log("userId: ", id)
+    const {token} = useParams()
+    console.log("token: ", token)
     const [newPassword, setNewPassword] = useState("")
     const [newPassword2, setNewPassword2] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
     const [showPassword, setShowPassword] = useState(false)
     const [minPasswordLength, setMinPasswordLength] = useState(10) // Longitud contraseña
-
+    const [dialogNewPasswordOpen, setDialogNewPasswordOpen] = useState(false)
+    
     useEffect(()=> {
         if (errorMessage) {
             const intervalo = setTimeout(() => {
@@ -35,7 +39,7 @@ const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
         }
     }, [errorMessage])
 
-    const handleNewPassword = async (e) => {
+    const handleNewPasswordSubmit = async (e) => {
         e.preventDefault()
         if (newPassword.length < minPasswordLength) {
             setErrorMessage(t("error.message1"))
@@ -52,7 +56,8 @@ const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
 
             try {
                 const user = {
-                    userid: id,
+                    // token: token,
+                    token,
                     newpassword: newPassword,
                 }
                 // fetch validate
@@ -68,10 +73,17 @@ const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
                 if (data.result === "No encontrado") {
                     setErrorMessage(t("error.message4"))
                     return
-                } else {
-                    // console.log("Recibido newpassword: ", data)
                 }
-                navigate("/", { replace: true })
+                if (data.error) {
+                    if (data.error === "El enlace ha expirado, solicite uno nuevo") {
+                        setErrorMessage("El enlace ha expirado, solicite uno nuevo")
+                    } else if (data.result === "Token inválido, solicite nueva contraseña") {
+                        setErrorMessage("Token inválido, solicite nueva contraseña")
+                    }
+                    return
+                }
+                setDialogNewPasswordOpen(true)
+                // navigate("/", { replace: true })
 
             } catch (error) {
                 // setError(error.message); // Handle errors
@@ -80,6 +92,11 @@ const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
                 // setLoading(false); // Set loading to false once data is fetched or error occurs
             }
 
+    }
+
+    const handleNewPassword = () => {
+        setDialogNewPasswordOpen(false)
+        navigate('/', { replace: true })
     }
     
     return (
@@ -94,7 +111,7 @@ const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
             }}
         >
             <Box component="form"
-                onSubmit={(e)=> handleNewPassword(e)}
+                onSubmit={(e)=> handleNewPasswordSubmit(e)}
                 sx={{
                 heigth: "100vh",
                 width: { xs: '90%', sm: "30%" },
@@ -150,10 +167,28 @@ const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
                         />
                     </Stack>
                 </FormControl>
-                <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 /* margin top */ }}>Actualizar contraseña</Button>
+                <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 /* margin top */ }}>{t("button")}</Button>
                 {errorMessage && 
                     <Typography level="body-sm" color="danger" fontWeight="bold" fontSize="1em">{errorMessage}</Typography>
                 }
+                <Dialog open={dialogNewPasswordOpen} onClose={handleNewPassword}>
+                    <DialogTitle>
+                        <Typography variant="h4" component="span">
+                            {/* Contraseña cambiada */}
+                            {t("dialog.title")}
+                        </Typography>
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContent>
+                            {/* La contraseña ha sido cambiada con éxito.
+                            Puede iniciar sesión con la nueva contraseña. */}
+                            {t("dialog.content.content")}
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleNewPassword} variant="contained">{t("dialog.content.actions")}</Button>
+                        </DialogActions>
+                    </DialogContent>
+                </Dialog>
             </Box>
         </Box>
         </>

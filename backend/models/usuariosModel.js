@@ -36,7 +36,6 @@ export async function postLogin(loginDetails) {
                 { algorithm: 'HS256' },
             )
             console.log("JWT: ", token)
-            // return ({ result: result.rows[0], token: token })
             return ({ result: userData, success: true, token: token })
             
         } 
@@ -89,21 +88,20 @@ export async function postRecoveryPassword(recoveryPasswordDetails) {
         console.log("result: ", result)
         if (result.rows.length > 0) {
             const recoveryData = result.rows[0]
-// AUN HABIENDOLO ENCONTRADO VERIFICAR QUE SU EMAIL SEA EL QUE PONE¿?
             const {usuario_id, nombre_apellidos} = recoveryData
-            const resetLink = `http://localhost:5173/newpassword/${usuario_id}`
+            // Generar token que caduque a la hora
+            const tokenRecovery = jwt.sign(
+                { usuario_id, nombre_apellidos },
+                JWT_SECRET_KEY,
+                { expiresIn: '1h', algorithm: 'HS256' },
+            )
+
+            // const resetLink = `http://localhost:5173/newpassword/${usuario_id}`
+            const resetLink = `http://localhost:5173/newpassword/${tokenRecovery}`
             const msg = {
                     to: useremail,
                     from: "jasonr@erroak.sartu.org", // debe ser verificado en SendGrid
-                    // subject: "Recuperación de contraseña",
                     subject: emailmsg.subject,
-                    // html: `
-                    //     <p>Hola ${nombre_apellidos},</p>
-                    //     <p>Desde una web de Sartu has hecho una petición para restablecer tu contraseña:</p>
-                    //     <p>Haz clic en el siguiente enlace para cambiarla:</p>
-                    //     <a href="${resetLink}">${resetLink}</a>
-                    //     <p>Este enlace expirará en 1 hora.</p>
-                    // `,
                     html: `
                         <p>${emailmsg.html.line1} ${nombre_apellidos},</p>
                         <p>${emailmsg.html.line2}:</p>
@@ -115,7 +113,7 @@ export async function postRecoveryPassword(recoveryPasswordDetails) {
 
             try {
                 await sgMail.send(msg);
-                console.log("Correo enviado a", nombre_apellidos);
+                console.log("Correo enviado correctamente a", nombre_apellidos);
                 return result.rows
             } catch (error) {
                 console.error("Error al enviar correo:", error.response?.body || error)
@@ -134,13 +132,14 @@ export async function postRecoveryPassword(recoveryPasswordDetails) {
 
 export async function postNewPassword(newPasswordDetails) {
     try {
-        const { userid, newpassword } = newPasswordDetails
-        console.log("userid - newpassword: ", userid, newpassword)
+        const { token, newpassword } = newPasswordDetails
+        console.log("token - newpassword: ", token, newpassword)
+        // verificar y decodificar el token
+        const decoded = jwt.verify(token, JWT_SECRET_KEY)
+        const userid = decoded.usuario_id
         const result = await pool.query(`UPDATE erroak.usuarios SET password = $1 WHERE usuario_id = $2 RETURNING *;`,
             [newpassword, userid]);
         console.log("result: ", result)
-
-        console.log("result: ", result.command)
         if (result.rows.length > 0) {
             console.log("Usuario encontrado y CONTRASEÑA actualizada: ", result.rows[0])
             return result.rows[0]  // retornamos el usuario actualizado
@@ -149,8 +148,14 @@ export async function postNewPassword(newPasswordDetails) {
             return ({result: "No encontrado"})
 
     } catch (err) {
-        console.error('Error en postRecoveryPassword:', err.message)
-        throw err
+        if (err.name === "TokenExpiredError")
+            return ({error: "El enlace ha expirado, solicite uno nuevo"})
+        else if (err.name === "JsonWebTokenError")
+            return ({error: "Token inválido, solicite nueva contraseña"})
+        else {
+            console.error('Error en postRecoveryPassword:', err.message)
+            throw err
+        }
     }
 }
 

@@ -9,6 +9,10 @@
     "message7": "Izena eta abizenak luzeagoak izan behar dira",
     "message8": "Emaila lehendik existitzen da"
   },
+  "turnos": {
+    "descripcion0": "Goizean",
+    "descripcion1": "Arratsaldean"
+  },
   "tardesinvierno": {
     "descripcion0": "Ez",
     "descripcion1": "Astelehena",

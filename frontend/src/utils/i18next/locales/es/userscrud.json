@@ -9,6 +9,10 @@
         "message7": "Nombre y Apellidos más largo",
         "message8": "Email ya existente"
     },
+    "turnos": {
+        "descripcion0": "Mañana",
+        "descripcion1": "Tarde"
+    },
     "tardesinvierno": {
         "descripcion0": "No",
         "descripcion1": "Lunes",

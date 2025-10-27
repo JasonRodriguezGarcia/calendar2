@@ -1,4 +1,19 @@
-react big-calendar
+Web para el uso de calendario minimalista adaptado a los requerimientos requeridos en las prácticas
+
+- Uso librería react big-calendar con la creación de eventos en la agenda con CRUD y repetición eventos, generación de vacaciones del personal
+- CRUD de usuarios
+- Gestión de vacaciones
+- Listado de 
+    eventos de todos los usuarios
+    vacaciones de todos los usuario
+    situación de la posesión de llaves y alarma de cada día
+- Login con posibilidad de Recuperación de contraseña
+- Manejo desde backend de
+    JWT en apis
+    cookies
+
+
+Notas varias:
 
 Primeras pruebas de la librería con resultados satisfactorios usando versiones de React y Mui actuales
 

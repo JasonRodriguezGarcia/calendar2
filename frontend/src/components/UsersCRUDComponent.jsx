@@ -61,15 +61,16 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
                 )
                 const data = await response.json()
                 console.log("Respuesta backend: ", data)
-                if (data.result === "Error. No hay datos en Turnos") {
-                    setErrorMessage("Faltan Datos en Turnos")
-                    return
-                } else if (data.result === "Error. No hay datos en Centros") {
+                // if (data.result === "Error. No hay datos en Turnos") {
+                //     setErrorMessage("Faltan Datos en Turnos")
+                //     return
+                // } else
+                if (data.result === "Error. No hay datos en Centros") {
                     setErrorMessage("Faltan Datos en centros")
                     return
                 } else {
                     setCentros(data.centros)
-                    setTurnos(data.turnos)
+                    // setTurnos(data.turnos)
                 }
 
             } catch (error) {
@@ -152,6 +153,10 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
     // y haga el fetch correctamente.
 
     useEffect(() =>{
+        setTurnos([
+            {turno_id: 0, descripcion: t("turnos.descripcion0")},
+            {turno_id: 1, descripcion: t("turnos.descripcion1")},
+        ])
         setTardesInvierno([
             {tarde_id: 0, descripcion: t("tardesinvierno.descripcion0")},
             {tarde_id: 1, descripcion: t("tardesinvierno.descripcion1")},
@@ -290,7 +295,7 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
                 id: resultado.usuario_id,
                 // password: userPassword,
                 nombre_apellidos: userNombre_Apellidos,
-                email: resultado.email
+                emailUsuario: resultado.email
             }
 
             // Crear/modificar localStorage
@@ -486,7 +491,8 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
                             required
                         >
                             {turnos.map((turno) => (
-                                <MenuItem key={turno.turno_id} value={turno.turno_id}>{turno.turno}</MenuItem>
+                                // <MenuItem key={turno.turno_id} value={turno.turno_id}>{turno.turno}</MenuItem>
+                                <MenuItem key={turno.turno_id} value={turno.turno_id}>{turno.descripcion}</MenuItem>
                             ))}
                         </Select>
                     </Stack>

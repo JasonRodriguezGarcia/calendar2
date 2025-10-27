@@ -85,7 +85,7 @@ const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, sel
                     id: resultado.usuario_id,
                     // password: resultado.password,
                     nombre_apellidos: resultado.nombre_apellidos,
-                    email: resultado.email
+                    emailUsuario: resultado.email
                 }
                 // localStorage.setItem("token", data.token)
                 console.log("token hadleLogin: :", data.token)

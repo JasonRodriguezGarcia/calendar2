@@ -81,6 +81,13 @@
       "text1": "Sortu",
       "text2": "Itxi",
       "text3": "Gorde"
+    },
+    "dialog": {
+      "title": "Erabiltzailea sortu da",
+      "content": {
+          "content": "Erabiltzaile berria arrakastaz sortu da. Saioa hasi dezakezu sistemara sartzeko.",
+          "actions": "Jarraitu"
+      }
     }
   }
 }

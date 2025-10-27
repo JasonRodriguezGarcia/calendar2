@@ -1,10 +1,15 @@
 {
-  "stacktypography": "KONTAKTUAK",
-  "tableheadtablerow": {
-    "celltext1": "Izena",
-    "celltext2": "Emaila",
-    "celltext3": "Enpresako Mugikorra",
-    "celltext4": "Luzapena",
-    "celltext5": "Oharrak"
-  }
+    "stacktypography": "KONTAKTUAK",
+    "tableheadtablerow": {
+        "celltext1": "Izena",
+        "celltext2": "Emaila",
+        "celltext3": "Enpresako Mugikorra",
+        "celltext4": "Luzapena",
+        "celltext5": "Txandak",
+        "celltext6": "Oharrak"
+    },
+    "turnos": {
+        "descripcion0": "Goizean",
+        "descripcion1": "Arratsaldean"
+    }
 }

@@ -707,7 +707,7 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
 
         return (
             <div>
-                {programa?.descripcion || 'Sin nombre'}
+                {programa?.descripcion.slice(0 , 4) || 'Sin nombre'}
                 - <strong>{usuario?.nombre_apellidos || 'Sin nombre'}</strong> 
                 - {espacio?.descripcion || 'Sin nombre'}
             </div>

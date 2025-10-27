@@ -5,6 +5,8 @@ import jwt from 'jsonwebtoken'
 
 dotenv.config(); // Permite usar variables de entorno
 const JWT_SECRET_KEY = process.env.JWT_SECRET
+const FRONTEND_URL_RENDER = process.env.FRONTEND_URL_RENDER;
+
 sgMail.setApiKey(process.env.SENDGRID_APIKEY);
 
 export async function getUsuarios() {
@@ -97,7 +99,7 @@ export async function postRecoveryPassword(recoveryPasswordDetails) {
             )
 
             // const resetLink = `http://localhost:5173/newpassword/${usuario_id}`
-            const resetLink = `http://localhost:5173/newpassword/${tokenRecovery}`
+            const resetLink = `${FRONTEND_URL_RENDER}/newpassword/${tokenRecovery}`
             const msg = {
                     to: useremail,
                     from: "jasonr@erroak.sartu.org", // debe ser verificado en SendGrid

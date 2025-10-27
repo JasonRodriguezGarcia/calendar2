@@ -20,6 +20,7 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
 
     const theme = useTheme();
     const [usuarios, setUsuarios] = useState([])
+    const [turnos, setTurnos] = useState([])
 
     const fetchUsuarios = async () => {
         try {
@@ -44,6 +45,11 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
     useEffect(() => {
         if (!user?.id) return
         fetchUsuarios();
+        setTurnos([
+            {turno_id: 0, descripcion: t("turnos.descripcion0")},
+            {turno_id: 1, descripcion: t("turnos.descripcion1")},
+        ])
+
     }, [user])
 
     useEffect(() => {
@@ -166,6 +172,26 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
                             >
                                 {t("tableheadtablerow.celltext5")}
                             </TableCell>
+                            <TableCell align="center"
+                                sx= {
+                                    (theme) => ({ 
+                                    width: {
+                                        xs: '20px',   // móviles
+                                        sm: '120px',  // tablets
+                                        md: '150px',  // escritorio
+                                    },
+                                    fontSize: {
+                                        xs: '6px',   // móviles
+                                        sm: '10px',  // tablets
+                                        md: '14px',  // escritorio
+                                    },
+                                    border: '1px solid rgba(224, 224, 224, 1)', // borde completo
+                                    padding: '8px',
+                                    fontWeight: 'bold',
+                                })}
+                            >
+                                {t("tableheadtablerow.celltext6")}
+                            </TableCell>
 
                         </TableRow>
                     </TableHead>
@@ -220,6 +246,18 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
                                         }}
                                     >
                                         {usuario.extension}
+                                    </TableCell>
+                                    <TableCell sx={{
+                                            border: '1px solid rgba(224, 224, 224, 1)', // borde completo
+                                            padding: '8px',
+                                            fontSize: {
+                                            xs: '6px',
+                                            sm: '10px',
+                                            md: '14px',
+                                            },
+                                        }}
+                                    >
+                                        {t(`turnos.descripcion${usuario.turno_id}`).toUpperCase()}
                                     </TableCell>
                                     <TableCell sx={{
                                             border: '1px solid rgba(224, 224, 224, 1)', // borde completo

@@ -5,6 +5,11 @@
         "celltext2": "Email",
         "celltext3": "Movil Empresa",
         "celltext4": "Extension",
-        "celltext5": "Observaciones"
+        "celltext5": "Turnos",
+        "celltext6": "Observaciones"
+    },
+    "turnos": {
+        "descripcion0": "Mañana",
+        "descripcion1": "Tarde"
     }
 }

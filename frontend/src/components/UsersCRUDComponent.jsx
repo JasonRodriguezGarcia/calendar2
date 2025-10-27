@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     Box, 
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
     Typography,
     Button,
     TextField,
@@ -43,6 +47,7 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
     const [formReadOnly, setFormReadOnly] = useState(false)
     const [showPassword,setShowPassword] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
+    const [dialogNewUserOpen, setDialogNewUserOpen] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -291,23 +296,33 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
                 setErrorMessage(t("error.message8"))
                 return
             }
-            const usuario = {
-                id: resultado.usuario_id,
-                // password: userPassword,
-                nombre_apellidos: userNombre_Apellidos,
-                emailUsuario: resultado.email
-            }
 
             // Crear/modificar localStorage
-            localStorage.setItem("token", data.token) // no hace falta un setToken porque el token se carga en "/"
-            setLogged(true)
-            setUser(usuario)
-            navigate('/', { replace: true })
+            // localStorage.setItem("token", data.token) // no hace falta un setToken porque el token se carga en "/"
+            // setLogged(true)
+            debugger
+            if (action !== "create") { // Si no estamos creando, actualizamos datos usuario en frontend
+                const usuario = {
+                    id: resultado.usuario_id,
+                    // password: userPassword,
+                    nombre_apellidos: userNombre_Apellidos,
+                    emailUsuario: resultado.email
+                }
+                setUser(usuario)
+                navigate('/', { replace: true })
+            } else {
+                setDialogNewUserOpen(true)
+            }
         } catch (error) {
             console.log(error.message)
         } finally {
             // setLoading(false); // Set loading to false once data is fetched or error occurs
         }
+    }
+
+    const handleNewUserClose = () => {
+        setDialogNewUserOpen(false)
+        navigate('/', { replace: true })
     }
 
     return (
@@ -567,6 +582,25 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
                 {errorMessage &&                 
                     <Typography level="body-sm" color="danger" fontWeight="bold" fontSize="1em">{errorMessage}</Typography>
                 }
+                <Dialog open={dialogNewUserOpen} onClose={handleNewUserClose}>
+                    <DialogTitle>
+                        <Typography variant="h4" component="span">
+                            {/* Usuario Creado */}
+                            {t("box.dialog.title")}
+                        </Typography>
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContent>
+                            {/* Usuario nuevo creado con éxito.
+                            Puede iniciar sesión para acceder al sistema. */}
+                            {t("box.dialog.content.content")}
+                        </DialogContent>
+                        <DialogActions>
+                                                                                    {/* Continuar */}
+                            <Button onClick={handleNewUserClose} variant="contained">{t("box.dialog.content.actions")}</Button>
+                        </DialogActions>
+                    </DialogContent>
+                </Dialog>
             </Box>
         </Box>
         </>

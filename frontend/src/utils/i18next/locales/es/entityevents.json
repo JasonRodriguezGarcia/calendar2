@@ -28,6 +28,6 @@
         "workweek": "Semana",
         "day": "Día",
         "agenda": "Agenda",
-        "showmore": "+{{count}} gehiago"
+        "showmore": "+{{count}} mas"
     }
 }

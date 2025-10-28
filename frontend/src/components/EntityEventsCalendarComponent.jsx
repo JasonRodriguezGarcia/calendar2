@@ -398,9 +398,7 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
             <Grid size={{ xs: 12, md: 9 }}>
                 {/* <DnDCalendar */}
                 <Calendar
-                    style={{ 
-                        minHeight: 1000,
-                    }} 
+                    style={{ minHeight: 1000 }} 
                     localizer={localizer}
                     // culture='es'                                 // días mes, semana, día en español
                     culture={selectedLanguage}                      // días mes, semana, día en el idioma selecionado
@@ -447,6 +445,7 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
                                 borderRadius: '4px',
                                 border: '1px solid black',
                                 padding: '2px',
+                                fontSize: ".8rem"
                             }
                         }
                     }}
@@ -465,7 +464,8 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
                         work_week: t("calendar.workweek"),                          // ponemos el texto Semana para work_week, sino aparecería "Work week"
                         day: t("calendar.day"),
                         // agenda: t("calendar.agenda"),
-                        showMore: t("calendar.showmore")
+                        // showMore: t("calendar.showmore")
+                        showMore: (count) => t("calendar.showmore", { count })  // Usar como función
                     }}
                 />
             </Grid>

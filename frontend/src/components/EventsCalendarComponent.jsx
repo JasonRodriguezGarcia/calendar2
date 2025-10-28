@@ -757,7 +757,9 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
             }
         }} />
         <DnDCalendar
-            style= {{height: 1000, fontSize: 'clamp(0.75rem, 1vw, 1.2rem)',}}
+            // style= {{height: 800, fontSize: 'clamp(0.75rem, 1vw, 1.2rem)',}}
+            style= {{ minHeight: 1000 }}
+            // eventOffset={20} // en teoría esto es para el espacio entre eventos
             localizer={localizer}
             // culture='es'                                    // días mes, semana, día en español
             culture={selectedLanguage}                         // días mes, semana, día en español
@@ -810,7 +812,8 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                         color: 'white',
                         borderRadius: '4px',
                         border: '1px solid black',
-                        padding: '4px',
+                        padding: '2px',
+                        fontSize: ".8rem" // añadido esto
                     }
                 }
             }}
@@ -830,7 +833,9 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                 day: t("calendar.day"),
                 agenda: t("calendar.agenda"),
                 noEventsInRange: t("calendar.noeventsinrange"),
-                showMore: t("calendar.showmore")
+                // showMore: t("calendar.showmore")
+                showMore: (count) => t("calendar.showmore", { count })  // Usar como función
+
             }}
         />
 

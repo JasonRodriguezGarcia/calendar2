@@ -92,7 +92,6 @@ const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, sel
                 setUser(usuario)
                 setLogged(true)
                 setToken(data.token)
-                debugger
                 // const lenguajeUsuario = data.result.lenguaje_id === 0 ? "es" : "eu"
                 const lenguajeUsuario = languagesSelect[data.result.lenguaje_id].lang
                 setSelectedLanguage(lenguajeUsuario)

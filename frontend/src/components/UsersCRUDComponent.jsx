@@ -329,7 +329,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
                 setDialogNewUserOpen(true)
             }
             // const lenguajeUsuario = userLenguaje === 0 ? "es" : "eu"
-            debugger
             const lenguajeUsuario = languagesSelect[userLenguaje].lang
             setSelectedLanguage(lenguajeUsuario)
             i18n.changeLanguage(lenguajeUsuario)      

@@ -61,8 +61,8 @@ const localizer = dateFnsLocalizer({
 //   locales,
 // });
 
-const saltosTiempo = 60 // step={15}
-const saltosHora = 1 // timeslots={4}
+const saltosTiempo = 30 // step={15}
+const saltosHora = 2 // timeslots={4}
 const horaMinima = new Date(1970, 1, 1, 7, 0) // Limitación hora mínima
 const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
 

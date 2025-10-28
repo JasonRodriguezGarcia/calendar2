@@ -23,7 +23,7 @@ import {
 } from '@mui/material';
 import { colorOptions } from "../utils/EventColors";
 
-const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, selectedLanguage }) => {
+const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, selectedLanguage, setSelectedLanguage, languagesSelect }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("userscrud")
 
@@ -38,9 +38,11 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
     const [userLlave, setUserLlave] = useState("false")
     const [userAlarma, setUserAlarma] = useState("false")
     const [userTurno, setUserTurno] = useState("")
+    const [userLenguaje, setUserLenguaje] = useState("")
     const [userTarde_Invierno, setUserTarde_Invierno] = useState("")
     const [userObservaciones, setUserObservaciones] = useState("")
     const [centros, setCentros] = useState([])
+    const [lenguajes, setLenguajes] = useState([])
     const [turnos, setTurnos] = useState([])
     const [minPasswordLength, setMinPasswordLength] = useState(10) // Longitud contraseña
     const [formTitle, setFormTitle] = useState('')
@@ -115,6 +117,7 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
                         setUserCentro(dataUser.centro_id)
                         setUserLlave(dataUser.llave)
                         setUserAlarma(dataUser.alarma)
+                        setUserLenguaje(dataUser.lenguaje_id)
                         setUserTurno(dataUser.turno_id)
                         setSelectedColor(dataUser.color)
                         setUserTarde_Invierno(dataUser.tarde_invierno)
@@ -158,6 +161,10 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
     // y haga el fetch correctamente.
 
     useEffect(() =>{
+        setLenguajes([
+            {lenguaje_id: 0, descripcion: t("lengua.descripcion0")},
+            {lenguaje_id: 1, descripcion: t("lengua.descripcion1")},
+        ])
         setTurnos([
             {turno_id: 0, descripcion: t("turnos.descripcion0")},
             {turno_id: 1, descripcion: t("turnos.descripcion1")},
@@ -187,6 +194,14 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
             return () => clearTimeout(intervalo)
         }
     }, [errorMessage])
+
+    // useEffect(() => {
+    //     if (selectedLanguage) {
+    //         localStorage.setItem("idioma", selectedLanguage);
+    //         i18n.changeLanguage(selection)      
+
+    //     }
+    // }, [selectedLanguage]);
 
     const handleChangeColor = (event) => {
         setSelectedColor(event.target.value)
@@ -265,6 +280,7 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
                 centro_id: userCentro,
                 llave: userLlave,
                 alarma: userAlarma,
+                lenguaje_id: userLenguaje,
                 turno_id: userTurno,
                 color: selectedColor,
                 tarde_invierno: userTarde_Invierno,
@@ -300,7 +316,6 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
             // Crear/modificar localStorage
             // localStorage.setItem("token", data.token) // no hace falta un setToken porque el token se carga en "/"
             // setLogged(true)
-            debugger
             if (action !== "create") { // Si no estamos creando, actualizamos datos usuario en frontend
                 const usuario = {
                     id: resultado.usuario_id,
@@ -313,6 +328,12 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
             } else {
                 setDialogNewUserOpen(true)
             }
+            // const lenguajeUsuario = userLenguaje === 0 ? "es" : "eu"
+            debugger
+            const lenguajeUsuario = languagesSelect[userLenguaje].lang
+            setSelectedLanguage(lenguajeUsuario)
+            i18n.changeLanguage(lenguajeUsuario)      
+
         } catch (error) {
             console.log(error.message)
         } finally {
@@ -465,53 +486,80 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
                         </Select>
                     </Stack>
                 </FormControl>
-                <FormControl>
-                    <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="userllave" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol7.formlabel")}:</FormLabel>
-                        <RadioGroup
-                            row //  esto los pone en horizontal
-                            aria-labelledby="demo-radio-buttons-group-label-llave"
-                            defaultValue="false"
-                            name="radio-buttons-group-llave"
-                            value={userLlave}
-                            onChange={(e)=> setUserLlave(e.target.value)}
-                        >
-                            <FormControlLabel value="true" control={<Radio />} label={t("box.formcontrol7.radio.label1")} disabled={formReadOnly}/>
-                            <FormControlLabel value="false" control={<Radio />} label={t("box.formcontrol7.radio.label2")} disabled={formReadOnly}/>
-                        </RadioGroup>
-                        <FormLabel htmlFor="useralarma" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol8.formlabel")}:</FormLabel>
-                        <RadioGroup
-                            row //  esto los pone en horizontal
-                            aria-labelledby="demo-radio-buttons-group-label-alarma"
-                            defaultValue="false"
-                            name="radio-buttons-group-alarma"
-                            value={userAlarma}
-                            onChange={(e)=> setUserAlarma(e.target.value)}
-                        >
-                            <FormControlLabel value="true" control={<Radio />} label={t("box.formcontrol8.radio.label1")} disabled={formReadOnly}/>
-                            <FormControlLabel value="false" control={<Radio />} label={t("box.formcontrol8.radio.label2")} disabled={formReadOnly}/>
-                        </RadioGroup>
-                    </Stack>
-                </FormControl>
-                <FormControl>
-                    <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="selectturno" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol9.formlabel")}:</FormLabel>
-                        <Select
-                            fullWidth
-                            labelId="select-label-turno"
-                            id="selectturno"
-                            value={userTurno}
-                            disabled={formReadOnly}
-                            onChange={(e) => setUserTurno(e.target.value)}
-                            required
-                        >
-                            {turnos.map((turno) => (
-                                // <MenuItem key={turno.turno_id} value={turno.turno_id}>{turno.turno}</MenuItem>
-                                <MenuItem key={turno.turno_id} value={turno.turno_id}>{turno.descripcion}</MenuItem>
-                            ))}
-                        </Select>
-                    </Stack>
-                </FormControl>
+                <Stack direction={{ xs: "column", sm: "column", md: "row"}} spacing={2} justifyContent="center">
+                    <FormControl fullWidth>
+                        <Stack direction="row" spacing={2} alignItems="center">
+                            <FormLabel htmlFor="userllave" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol7.formlabel")}:</FormLabel>
+                            <RadioGroup
+                                row //  esto los pone en horizontal
+                                aria-labelledby="demo-radio-buttons-group-label-llave"
+                                defaultValue="false"
+                                name="radio-buttons-group-llave"
+                                value={userLlave}
+                                onChange={(e)=> setUserLlave(e.target.value)}
+                            >
+                                <FormControlLabel value="true" control={<Radio />} label={t("box.formcontrol7.radio.label1")} disabled={formReadOnly}/>
+                                <FormControlLabel value="false" control={<Radio />} label={t("box.formcontrol7.radio.label2")} disabled={formReadOnly}/>
+                            </RadioGroup>
+                        </Stack>
+                    </FormControl>
+                    <FormControl fullWidth>
+                        <Stack direction="row" spacing={2} alignItems="center">
+                            <FormLabel htmlFor="useralarma" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol8.formlabel")}:</FormLabel>
+                            <RadioGroup
+                                row //  esto los pone en horizontal
+                                aria-labelledby="demo-radio-buttons-group-label-alarma"
+                                defaultValue="false"
+                                name="radio-buttons-group-alarma"
+                                value={userAlarma}
+                                onChange={(e)=> setUserAlarma(e.target.value)}
+                            >
+                                <FormControlLabel value="true" control={<Radio />} label={t("box.formcontrol8.radio.label1")} disabled={formReadOnly}/>
+                                <FormControlLabel value="false" control={<Radio />} label={t("box.formcontrol8.radio.label2")} disabled={formReadOnly}/>
+                            </RadioGroup>
+                        </Stack>
+                    </FormControl>
+                </Stack>
+                {/* <Stack direction="row" spacing={2} justifyContent="center"> */}
+                <Stack direction= {{ xs: "column", sm: "column", md: "row"}} spacing={2} justifyContent="center">
+                    <FormControl fullWidth>
+                        <Stack direction="row" spacing={2} alignItems="center">
+                            <FormLabel htmlFor="selectlenguaje" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol12.formlabel")}:</FormLabel>
+                            <Select
+                                fullWidth
+                                labelId="select-label-lenguaje"
+                                id="selectlenguaje"
+                                value={userLenguaje}
+                                disabled={formReadOnly}
+                                onChange={(e) => setUserLenguaje(e.target.value)}
+                                required
+                            >
+                                {lenguajes.map((lenguaje) => (
+                                    <MenuItem key={lenguaje.lenguaje_id} value={lenguaje.lenguaje_id}>{lenguaje.descripcion}</MenuItem>
+                                ))}
+                            </Select>
+                        </Stack>
+                    </FormControl>
+                    <FormControl fullWidth>
+                        <Stack direction="row" spacing={2} alignItems="center">
+                            <FormLabel htmlFor="selectturno" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol9.formlabel")}:</FormLabel>
+                            <Select
+                                fullWidth
+                                labelId="select-label-turno"
+                                id="selectturno"
+                                value={userTurno}
+                                disabled={formReadOnly}
+                                onChange={(e) => setUserTurno(e.target.value)}
+                                required
+                            >
+                                {turnos.map((turno) => (
+                                    // <MenuItem key={turno.turno_id} value={turno.turno_id}>{turno.turno}</MenuItem>
+                                    <MenuItem key={turno.turno_id} value={turno.turno_id}>{turno.descripcion}</MenuItem>
+                                ))}
+                            </Select>
+                        </Stack>
+                    </FormControl>
+                </Stack>
                 <FormControl fullWidth margin="dense">
                     <Stack direction="row" spacing={2} alignItems="center">
                         <FormLabel htmlFor="selectedcolor" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol10.formlabel")}:</FormLabel>

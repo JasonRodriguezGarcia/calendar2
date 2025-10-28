@@ -18,16 +18,13 @@ CREATE TABLE IF NOT EXISTS erroak.usuarios
     color character varying(20) COLLATE pg_catalog."default",
     tarde_invierno integer,
     observaciones character varying(255) COLLATE pg_catalog."default",
+    lenguaje_id integer NOT NULL DEFAULT 0,
     CONSTRAINT usuarios_pkey PRIMARY KEY (usuario_id),
     CONSTRAINT email_unico UNIQUE (email),
     CONSTRAINT nombre_apellidos_unico UNIQUE (nombre_apellidos),
     CONSTRAINT centro_id_fk FOREIGN KEY (centro_id)
         REFERENCES erroak.centros (centro_id) MATCH SIMPLE
         ON UPDATE CASCADE
-        ON DELETE NO ACTION,
-    CONSTRAINT turno_id_fk FOREIGN KEY (turno_id)
-        REFERENCES erroak.turnos (turno_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )
 

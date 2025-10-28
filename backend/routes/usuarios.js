@@ -61,9 +61,8 @@ router.get('/me', checkToken, async (req, res) => {
     console.log("imprimo /me user: ", user)
     // res.json({ userId});
     const login = await postMe(user)
-    console.log("imprimo login en /login: ", login)
+    console.log("imprimo login en /me: ", login)
     if (login.success) {
-        console.log("paso por /me login.success")
         // Enviar cookie httpOnly
         res.cookie('token', login.token, {
             httpOnly: true,

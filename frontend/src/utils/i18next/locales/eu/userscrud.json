@@ -9,6 +9,10 @@
     "message7": "Izena eta abizenak luzeagoak izan behar dira",
     "message8": "Emaila lehendik existitzen da"
   },
+  "lengua": {
+    "descripcion0": "Gaztelania",
+    "descripcion1": "Euskara"
+  },
   "turnos": {
     "descripcion0": "Goizean",
     "descripcion1": "Arratsaldean"
@@ -75,6 +79,9 @@
     },
     "formcontrol11": {
       "formlabel": "Neguko arratsaldea"
+    },
+    "formcontrol12": {
+      "formlabel": "Hizkuntza"
     },
     "textfieldlabel": "Oharrak",
     "button": {

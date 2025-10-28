@@ -26,7 +26,7 @@ const ProfilePage = ({ logged, setLogged, user, setUser, token, selectedLanguage
                 logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
             <Toolbar /> {/* Añadiendo Toolbar vacío justo después, para que actúe como "espaciador" */}
             <UsersCRUDComponent 
-                selectedLanguage={selectedLanguage}
+                selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage}
                 logged={logged} setLogged={setLogged} user={user} setUser={setUser} action="read" token={token}/>
         </Box>
         </>

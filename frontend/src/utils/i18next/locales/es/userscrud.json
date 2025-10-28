@@ -9,6 +9,10 @@
         "message7": "Nombre y Apellidos más largo",
         "message8": "Email ya existente"
     },
+    "lengua": {
+        "descripcion0": "Español",
+        "descripcion1": "Euskera"
+    },
     "turnos": {
         "descripcion0": "Mañana",
         "descripcion1": "Tarde"
@@ -75,6 +79,9 @@
         },
         "formcontrol11": {
             "formlabel": "Tarde Invierno"
+        },
+        "formcontrol12": {
+            "formlabel": "Idioma"
         },
         "textfieldlabel": "Observaciones",
         "button": {

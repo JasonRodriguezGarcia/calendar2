@@ -235,7 +235,7 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
     }, [date, user])
 
     useEffect(() => {
-            setActionEventMessage([t("actioneventmessage.message1"), t("actioneventmessage.message2")])
+        setActionEventMessage([t("actioneventmessage.message1"), t("actioneventmessage.message2")])
     }, [selectedLanguage])
     
   if (!localizer) return null; // o loader si quieres

@@ -24,7 +24,7 @@ const LoginPage = ({ logged, setLogged, user, setUser, token, setToken, selected
                 selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                 logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
             <LoginComponent 
-                selectedLanguage={selectedLanguage}
+                selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                 logged={logged} setLogged={setLogged} user={user} setUser={setUser} token={token} setToken={setToken}/> {/* user={usuario} setUser={setUsuario} /> */}
         </Box>
         </>

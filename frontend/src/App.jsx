@@ -32,20 +32,14 @@ const App = () => {
     const [usuario, setUsuario] = useState({})
     const [token, setToken] = useState("")
     const languagesSelect = [
-        { lang: 'eu', icon: PaisVasco },
         { lang: 'es', icon: Espana },
+        { lang: 'eu', icon: PaisVasco },
         // { lang: 'Fr', icon: Francia },
         // { lang: 'En', icon: ReinoUnido },
     ];
     const [selectedLanguage, setSelectedLanguage] = useState("")
     const { t, i18n } = useTranslation("menubar")
 
-    // const navigate = useNavigate()
-// Retorna el componente <Navigate>, lo cual permite hacer una redirección efectiva si no hay usuario o no está logeado.
-//  Eso es correcto para manejar acceso restringido en este componente.
-    // if (!usuario || !logeado)
-    //     <Navigate to="/" replace />
-        
     useEffect(()=> {
         const checkLogeado = async () => {
             const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/me`,
@@ -68,46 +62,16 @@ const App = () => {
                 try {
                     const decoded = jwtDecode(usuarioToken);
                     console.log("decoded JWT: ", decoded)
-                    // const now = Date.now() / 1000;
-                    // if (decoded.exp < now) {
-                    //     logout(); // Token expirado
-                    // } else {
-                    // Recuperar datos del backend
                     const { usuarioID, emailUsuario, nombreapellidos } = decoded
                     console.log("Decodificado usuarioToken: ", decoded)
-                    // const user = {
-                    //     id: usuarioID,
-                    //     useremail: emailUsuario,
-                    //     password: passwordUsuario,
-                    // }
-                    // const response1 = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/login`,
-                    //     {
-                    //         method: 'POST',
-                    //         headers: {'Content-type': 'application/json; charset=UTF-8'},
-                    //         body: JSON.stringify(user)
-                    //     }
-                    // )
-                    // const data = await response1.json()
-                    // console.log("Respuesta backend: ", data)
-                    // if (data.result === "No encontrado") {
-                    //     setErrorMessage("usuario o contraseña no válidos")
-                    //     return
-                    // } else {
-                    //     // Crear localStorage
-                    //     const resultado = data.result
-                    //     console.log("data.result: ", data.result)
                         const usuario = {
                             id: usuarioID,
                             // password: resultado.password, // igual sobra ¿?¿?
                             nombre_apellidos: nombreapellidos,
                             emailUsuario: emailUsuario
                         }
-                        // localStorage.setItem("token", data.token)
                         setUsuario(usuario)
                         setLogeado(true)
-                        // setToken(data.token)
-                        // navigate('/', { replace: true }) // no deja retroceder en el navegador
-                    // }
                 } catch (e) {
                     // logout();
                 }
@@ -125,12 +89,10 @@ const App = () => {
             if (usuarioIdioma && languagesSelect.some(languagesSelect => languagesSelect.lang === usuarioIdioma)) {
                 setSelectedLanguage(usuarioIdioma)
                 i18n.changeLanguage(usuarioIdioma)
-
-                // localStorage.setItem("idioma", usuarioIdioma)
             } else {
-                const idiomaPorDefecto = languagesSelect[1].lang // lenguaje por defecto
+                const idiomaPorDefecto = languagesSelect[0].lang // lenguaje por defecto
                 setSelectedLanguage(idiomaPorDefecto)
-                // localStorage.setItem("idioma", idiomaPorDefecto)
+                i18n.changeLanguage(idiomaPorDefecto)
             }
         }
         

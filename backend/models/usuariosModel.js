@@ -31,6 +31,7 @@ export async function postLogin(loginDetails) {
             const nombreapellidos = userData.nombre_apellidos
             // const passwordUsuario = userData[0].password
             const emailUsuario = userData.email
+            const lenguajeUsuario = userData.lenguaje_id
             const token = jwt.sign(
                 { usuarioID, nombreapellidos, emailUsuario },
                 JWT_SECRET_KEY,
@@ -163,7 +164,9 @@ export async function postNewPassword(newPasswordDetails) {
 
 export async function postUsuario(usuario) {
     try {
-        const { email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno, observaciones } = usuario
+        const { email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno,
+            observaciones, lenguaje_id 
+        } = usuario
         const existsEmail = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.usuarios WHERE email = $1);`, [email])
         console.log("imprimo exists: ", existsEmail.rows[0].exists)
         if (existsEmail.rows[0].exists)
@@ -175,11 +178,14 @@ export async function postUsuario(usuario) {
             return {result: "Nombre y apellidos ya existente"}
 
         const result = await pool.query(`INSERT INTO erroak.usuarios
-            (email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno, observaciones)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+            (email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno, 
+            observaciones, lenguaje_id)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
             RETURNING *;`, 
             // RETURNING usuario_id;`, 
-            [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno, observaciones])
+            [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno,
+                 observaciones, lenguaje_id
+            ])
         console.log("usuario creado: ", result)
         const userData = result.rows[0]
         const usuarioID = userData.usuario_id
@@ -240,7 +246,8 @@ export async function getUsuario(id) {
 export async function putUsuario(id, updatedUser) {
     try {
         const {
-            email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno, observaciones
+            email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno,
+            observaciones, lenguaje_id
         } = updatedUser
 
         const existsEmail = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.usuarios WHERE email = $1 AND usuario_id != $2);`, [email, id])
@@ -251,10 +258,12 @@ export async function putUsuario(id, updatedUser) {
         const result = await pool.query(
             `UPDATE erroak.usuarios SET
                 email = $1, password = $2, nombre_apellidos = $3, movil = $4, extension = $5, centro_id = $6,
-                llave = $7, alarma = $8, turno_id = $9, color = $10, tarde_invierno = $11, observaciones = $12
-            WHERE usuario_id = $13
+                llave = $7, alarma = $8, turno_id = $9, color = $10, tarde_invierno = $11, observaciones = $12, lenguaje_id = $13
+            WHERE usuario_id = $14
             RETURNING *`,
-            [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno, observaciones, parseInt(id)]
+            [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno, 
+                observaciones, lenguaje_id, parseInt(id)
+            ]
         )
         console.log("result: ", result.command)
         const userData = result.rows[0]

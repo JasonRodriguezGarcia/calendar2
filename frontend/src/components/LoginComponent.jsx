@@ -13,7 +13,7 @@ import {
 
 } from '@mui/material';
 
-const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, selectedLanguage }) => {
+const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, selectedLanguage, setSelectedLanguage, languagesSelect }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("login")
 
@@ -92,6 +92,11 @@ const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, sel
                 setUser(usuario)
                 setLogged(true)
                 setToken(data.token)
+                debugger
+                // const lenguajeUsuario = data.result.lenguaje_id === 0 ? "es" : "eu"
+                const lenguajeUsuario = languagesSelect[data.result.lenguaje_id].lang
+                setSelectedLanguage(lenguajeUsuario)
+                i18n.changeLanguage(lenguajeUsuario)      
                 navigate('/', { replace: true }) // no deja retroceder en el navegador
             }
 

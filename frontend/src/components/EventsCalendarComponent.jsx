@@ -281,7 +281,13 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
     const handleSelectSlot = ({ start, end }) => {
 
         const newStart = start
-        const newEnd = end
+        let newEnd
+        if (view === "month") {
+            newEnd = new Date(end)
+        } else {
+            newEnd = new Date(newStart.getTime() + 60 * 60 * 1000); // +60 minutos
+        }
+
         // En vista "month" el "end" es por defecto un día mas, le restamos un día
         if (view === "month") {
             newEnd.setDate(end.getDate() -1) // resto un día

@@ -1,3 +1,13 @@
+RESUMEN 
+-backend
+    crea el cookie (en la creación usuario, o en login) con user_id entre otros, nunca password
+    lee la cookie y consigue el user_id
+    manejo de JWT con la cookie (mirar cookies.txt)
+-frontend
+    backend devuelve datos necesarios vía cookie
+    uso de /me para conseguir dichos datos
+
+INSTALACION
 backend
     npm install cookie-parser
 frontend

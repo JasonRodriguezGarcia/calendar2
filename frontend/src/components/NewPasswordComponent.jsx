@@ -74,10 +74,11 @@ const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
                     setErrorMessage(t("error.message4"))
                     return
                 }
+                debugger
                 if (data.error) {
                     if (data.error === "El enlace ha expirado, solicite uno nuevo") {
                         setErrorMessage("El enlace ha expirado, solicite uno nuevo")
-                    } else if (data.result === "Token inválido, solicite nueva contraseña") {
+                    } else if (data.error === "Token inválido, solicite nueva contraseña") {
                         setErrorMessage("Token inválido, solicite nueva contraseña")
                     }
                     return

@@ -74,6 +74,11 @@ const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, sel
                 }
             )
             const data = await response.json()
+            if (response.status === 429) {
+                // const data = await response.json();
+                setErrorMessage(data.message || 'Demasiados intentos. Intente de nuevo más tarde.')
+                return
+            }
             console.log("Respuesta backend: ", data)
             if (data.result === "No encontrado") {
                 setErrorMessage(t("error.message4"))

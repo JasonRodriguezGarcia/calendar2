@@ -1,5 +1,5 @@
 import { Router} from 'express';
-import { authenticateToken, checkToken } from '../middleware/login.js';
+import { authenticateToken, checkToken, loginLimiter, registerLimiter, updateUserLimiter } from '../middleware/login.js';
 // import { validateQuery, validateUserId } from '../middleware/users.js';
 import { getUsuarios, postLogin, postRecoveryPassword, postNewPassword, postUsuario, getSignUpFormData, getUsuario,
     putUsuario, getWinterAfternoons, postMe } from '../models/usuariosModel.js';
@@ -19,7 +19,7 @@ router.get('/usuarios', authenticateToken, async(req, res) => {
 
 // /api/v1/erroak/login
 // Datos para hacer un login
-router.post('/login', async(req, res) => {
+router.post('/login', loginLimiter, async(req, res) => {
     const loginDetails = req.body
     console.log("loginDetails: ", loginDetails)
     const login = await postLogin(loginDetails)
@@ -109,7 +109,7 @@ router.get('/getsignupformdata', async(req, res) => {
 
 // /api/v1/erroak/usuario 
 // Crear usuario
-router.post('/usuario', async(req, res) => {
+router.post('/usuario', registerLimiter, async(req, res) => {
     const usuario = req.body
     console.log("Recibido en backend post usuario: ", usuario)
     const resultUsuario = await postUsuario(usuario)
@@ -129,7 +129,7 @@ router.get('/usuario', authenticateToken, async(req, res) => {
 
 // /api/v1/erroak/usuario/:id
 // Modificar los datos de un usuario
-router.put('/usuario', authenticateToken, async(req, res) => {
+router.put('/usuario', authenticateToken, updateUserLimiter, async(req, res) => {
     const id = req.user.usuarioID
     const updatedUser = req.body
     console.log("imprimo id en put usuario/:id : ", id)

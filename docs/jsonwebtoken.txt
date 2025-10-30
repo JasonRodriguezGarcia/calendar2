@@ -1,3 +1,23 @@
+RESUMEN
+1º Login usuario_id+contraseña -->https backend textoplano
+2º Backend compara id+password con base de datos
+3º Si todo ok recibe token a guardar en localstorage
+Cada llamada a backend tengra una línea más con headers:
+    fetch('http://localhost:3001/api/protegido', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+Cada ruta en backend tendrá además un middleware que también mirará la cookie
+    router.get('/usuario', authenticateToken, async(req, res) => {
+        ...
+    })
+    ...
+
+    const authenticateToken (req, res, next) {
+        // lee el token desde la cookie
+        const token = req.cookies.token;
+        ...
+    }
+
 ENCRIPTACIÓN CON JSONWEBTOKEN
 *****************************
 

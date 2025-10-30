@@ -1,0 +1,653 @@
+***************************************
+Limitar Intentos de Inicio de Sesión Login (login limiting)
+***************************************
+Una de las formas más eficaces de protegerte contra los ataques de fuerza bruta es limitar la cantidad de intentos de 
+inicio de sesión fallidos que un usuario puede hacer en un corto período de tiempo. Esto reduce el riesgo de que un atacante 
+pueda probar muchas combinaciones de contraseñas rápidamente.
+
+Puedes usar un middleware en Express.js como express-rate-limit para implementar esto.
+Instalar express-rate-limit:
+    npm install express-rate-limit
+
+Ejemplo de configuración para proteger las rutas de login:
+
+import rateLimit from 'express-rate-limit';
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // reseteo del bloque a los 15 minutos
+  max: 5, // Limitar a 5 intentos
+  message: "Demasiados intentos de inicio de sesión. Por favor, intente de nuevo en 15 minutos.",
+  ó también message: {message: "Demasiados intentos de inicio de sesión. Por favor, intente de nuevo en 15 minutos."},
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Usar el rate limiter solo en la ruta de login
+router.post('/login', loginLimiter, async (req, res) => {
+  // Tu lógica de autenticación aquí
+});
+
+En frontend
+    const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/login`,
+        {
+            method: 'POST',
+            credentials: 'include', // IMPORTANTE: esto permite usar la cookie
+            headers: {'Content-type': 'application/json; charset=UTF-8'},
+            body: JSON.stringify(user)
+        }
+    )
+    const data = await response.json()
+    if (response.status === 429) {
+        // const data = await response.json();
+        setErrorMessage(data.message || 'Demasiados intentos. Intente de nuevo más tarde.')
+        return
+    }
+    console.log("Respuesta backend: ", data)
+    if (data.result === "No encontrado") {
+...............
+    }
+
+Usando el siguiente codigo
+    keyGenerator: (req, res) => {
+    const user = req.body?.usuario || 'anon';
+    return `${req.ip}-${user}`;
+    },
+Esto evita que un atacante desde una sola IP pruebe usuarios distintos ilimitadamente.
+
+***************************************
+Limitar el número de solicitudes API (rate limiting)
+***************************************
+Limitar el Número de Solicitudes (Rate Limiting)
+
+Al igual que con los ataques de fuerza bruta, puedes aplicar rate limiting en todas las rutas o en rutas específicas de 
+tu API. Esto no solo ayuda a prevenir ataques de fuerza bruta, sino que también limita el impacto de un ataque DDoS al controlar el volumen de solicitudes por IP.
+
+Ejemplo (en express claro):
+    import rateLimit from 'express-rate-limit'; // PONER ANTES DE LOS ROUTER'S
+
+app.use('/api/', apiLimiter); // Usar rate limiter en todas las rutas de la API
+
+se puede combinar con authenticateToken si queremos meterlo en usuarios router también ojo el orden, pero es mejor lo de arriba
+router.post('/login', apiLimiter, authenticateToken, ...); // Usar rate limiter en una api en concreto, pero mejor en index.js
+
+En middleware importado
+const apiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // reseteo del bloqueo cada 1 minuto
+  max: 100, // Limitar a 100 solicitudes por IP por minuto
+  message: "Demasiadas solicitudes. Por favor, intente nuevamente más tarde.",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+Añadir middleware en router usuarios.js
+// Límite específico para registro .post('/usuario', ...)
+export const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hora
+  max: 5, // máximo 5 registros por IP en una hora
+  message: {
+    success: false,
+    message: "Demasiadas solicitudes de registro. Intente más tarde.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+})
+
+*********************************
+PROTECCIÓN CONTRA ATAQUES CSRF
+*********************************
+En este caso porque tenemos frontend y backend en distintos dominios.
+Tenemos configurado
+    SameSite='none' y no Lax o Strict
+
+Explicacion ataque CSRF
+Un ataque CSRF (Cross-Site Request Forgery) —en español, falsificación de petición en sitios cruzados— es un tipo de vulnerabilidad que afecta a aplicaciones web del lado del backend, y que permite a un atacante hacer que un usuario autenticado ejecute acciones no deseadas en un sitio web en el que está logueado.
+
+🧠 Ejemplo conceptual
+
+Imagina que estás logueado en tu banco (banco.com) y, mientras tanto, visitas un sitio malicioso (malicio.us).
+Este sitio contiene un formulario oculto que envía una petición POST a:
+
+https://banco.com/transferir
+
+
+con los datos:
+
+{
+  "cuenta_destino": "12345678",
+  "monto": 1000
+}
+
+
+Cuando tu navegador carga la página maliciosa, automáticamente envía esa petición con tus cookies de sesión, porque 
+sigues autenticado en banco.com.
+El backend del banco recibe la solicitud, ve que está autenticada (por las cookies), y realiza la transferencia sin 
+sospechar que no fue el usuario quien la inició.
+
+⚙️ Cómo funciona técnicamente
+
+El usuario inicia sesión en un sitio legítimo → obtiene una cookie de sesión.
+El atacante prepara una página maliciosa que envía peticiones HTTP al mismo dominio (por ejemplo, usando un formulario 
+o una petición fetch).
+El navegador del usuario envía la cookie de sesión automáticamente, haciendo que el backend piense que la solicitud es legítima.
+El servidor ejecuta la acción no deseada (p. ej., cambio de contraseña, transferencia, eliminación de cuenta…).
+🛡️ Cómo se previene en el backend
+
+Tokens CSRF (anti-CSRF tokens)
+El backend genera un token único y lo envía al frontend (por ejemplo, en un campo oculto del formulario o en el 
+encabezado de la respuesta).
+El frontend debe incluir ese token en cada solicitud que modifique datos (POST, PUT, DELETE...).
+Si el token no coincide, el backend rechaza la solicitud.
+
+Cabeceras personalizadas (en APIs)
+Las peticiones legítimas usan cabeceras especiales (como X-CSRF-Token o X-Requested-With).
+Navegadores no envían esas cabeceras automáticamente, así que los ataques CSRF no pueden replicarlas.
+
+SameSite cookies
+Configurar la cookie de sesión con SameSite=Lax o Strict evita que se envíe automáticamente desde otros dominios.
+
+Validar origen y referer
+El servidor puede comprobar las cabeceras Origin o Referer para asegurarse de que la solicitud proviene del dominio esperado.
+
+📋 En resumen
+Elemento	Descripción
+Tipo de ataque	Cross-Site Request Forgery
+Afecta a	Backends que confían solo en cookies/sesiones
+Riesgo principal	Ejecución de acciones sin consentimiento del usuario
+Prevención	Tokens CSRF, SameSite cookies, validación de origen
+
+
+EN NUESTRO CASO
+Ya que usamos cookies HttpOnly cross-domain, la opción CSRF token (Double Submit Cookie) es la más segura.
+
+Combínalo con:
+Rate limiting (ya lo tienes)
+Verificación de origin/referer como capa extra
+SameSite cookies en endpoints internos si es posible
+
+Opción: CSRF Tokens (Double Submit Cookie)
+Backend genera un token CSRF diferente del JWT.
+Se envía al frontend (puede ser en una cookie normal o en la respuesta JSON).
+Frontend lo envía en cada request sensible, en un header como X-CSRF-Token.
+Backend valida que el token coincida.
+
+Ejemplo con Express y csurf:
+
+import csurf from 'csurf';
+import cookieParser from 'cookie-parser';
+
+app.use(cookieParser());
+
+const csrfProtection = csurf({
+  cookie: {
+    httpOnly: false, // accesible desde frontend
+    sameSite: 'strict'
+  }
+});
+
+app.get('/csrf-token', csrfProtection, (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
+
+app.post('/update-profile', csrfProtection, (req, res) => {
+  res.send('Perfil actualizado');
+});
+
+
+El frontend obtiene el token de /csrf-token (recomendado ponderlo en app.jsx)
+  useEffect(() => {
+    fetch('https://backend.com/csrf-token', {
+      credentials: 'include'
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log('CSRF Token:', data.csrfToken);
+        setCsrfToken(data.csrfToken);
+      })
+      .catch(err => console.error('Error obteniendo CSRF:', err));
+  }, []);
+
+
+y lo envía en un header:
+
+fetch('https://backend.com/update-profile', {
+  method: 'POST',
+  credentials: 'include',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRF-Token': csrfToken
+  },
+  body: JSON.stringify({ name: 'Juan' })
+});
+
+Mas ejemplos
+EJEMPLO1
+***********************************
+Una implementación manual de CSRF (con crypto.randomBytes) en lugar de csurf, para que vieras claramente el flujo 
+completo y cómo integrarlo con JWT HttpOnly + frontend separado.
+
+Pero si quieres una versión más robusta y automática, podemos integrar csurf perfectamente.
+Te explico ambos enfoques y luego te dejo el código completo con csurf.
+
+⚖️ Diferencias entre csurf y una solución manual
+Enfoque	Ventajas	Desventajas
+🔹 Manual (como el ejemplo anterior)	Control total, fácil de combinar con JWT y frontends SPA; no dependes de sesiones.	
+    Tienes que implementar la validación tú mismo.
+🔹 csurf middleware	Automático, probado y sólido; maneja tokens, cookies y validación.	Originalmente diseñado para apps 
+    con sessions (Express-session); con JWT hay que adaptarlo.
+
+
+💡 Cómo usar csurf con JWT (sin sesiones)
+Por defecto, csurf guarda el token en la sesión (req.session.csrfSecret).
+Pero como tú usas JWT (sin sesiones), debemos configurarlo para que guarde el secreto en una cookie.
+
+Así, csurf:
+    Genera un token CSRF basado en ese secreto.
+    Lo envía al frontend.
+    Valida automáticamente el header X-CSRF-Token en cada request protegida.
+
+🧩 BACKEND con csurf
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import csurf from 'csurf';
+
+dotenv.config();
+const app = express();
+
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors({
+  origin: 'https://frontend.com',
+  credentials: true,
+}));
+
+// Middleware de autenticación
+function authMiddleware(req, res, next) {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ message: 'No token' });
+  try {
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    next();
+  } catch {
+    res.status(401).json({ message: 'Token inválido' });
+  }
+}
+
+// Configurar csurf con cookie (sin sesiones)
+const csrfProtection = csurf({
+  cookie: {
+    key: '_csrfSecret',  // cookie donde guarda el secreto
+    httpOnly: true,      // no accesible desde JS
+    sameSite: 'none',
+    secure: true,
+  },
+});
+
+// 🔹 Endpoint para obtener el token CSRF
+app.get('/csrf-token', csrfProtection, (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
+
+// 🔹 Login (genera JWT)
+app.post('/login', (req, res) => {
+  const { username } = req.body;
+  const jwtToken = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+  res.cookie('token', jwtToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+    maxAge: 60 * 60 * 1000,
+  });
+
+  res.json({ success: true });
+});
+
+// 🔹 Ruta protegida con JWT + CSRF
+app.post('/update-profile', authMiddleware, csrfProtection, (req, res) => {
+  res.json({ message: `Perfil de ${req.user.username} actualizado correctamente.` });
+});
+
+// 🔹 Logout
+app.post('/logout', (req, res) => {
+  res.clearCookie('token', { sameSite: 'none', secure: true });
+  res.clearCookie('_csrfSecret', { sameSite: 'none', secure: true });
+  res.json({ success: true });
+});
+
+app.listen(4000, () => console.log('✅ Backend con csurf activo'));
+
+⚛️ FRONTEND (React)
+
+Tu flujo sigue igual, solo que ahora el CSRF lo pides con /csrf-token:
+
+async function getCSRFToken() {
+  const res = await fetch('https://backend.com/csrf-token', {
+    credentials: 'include',
+  });
+  const data = await res.json();
+  return data.csrfToken;
+}
+
+// Ejemplo de uso
+const csrfToken = await getCSRFToken();
+
+await fetch('https://backend.com/update-profile', {
+  method: 'POST',
+  credentials: 'include',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRF-Token': csrfToken,
+  },
+  body: JSON.stringify({ name: 'Nuevo nombre' }),
+});
+
+🔐 Qué hace automáticamente csurf
+
+✅ Genera un secreto por usuario y lo guarda en una cookie HttpOnly (_csrfSecret).
+✅ Crea un token firmado único (req.csrfToken()) que el frontend debe enviar.
+✅ Valida automáticamente ese token en cada request protegida.
+✅ Si el token no coincide, lanza error 403 (EBADCSRFTOKEN).
+
+🧩 Combinación recomendada
+
+JWT en cookie HttpOnly → autentica al usuario.
+
+csurf con cookie propia → valida intención del usuario.
+
+cors con credentials: true → permite cookies cross-domain.
+
+EJEMPLO2
+**********************************************
+el backend regenerará el token CSRF automáticamente al hacer login y lo invalidará o renovará al hacer logout.
+Así, tu frontend no necesita pedirlo manualmente — solo lo actualiza cuando cambia el estado de autenticación.
+
+🧱 Objetivo del flujo
+
+Usuario entra → si no hay sesión, no hay token CSRF.
+
+Usuario hace login → backend crea:
+
+JWT en cookie HttpOnly
+
+CSRF token (en JSON o cookie accesible)
+
+Usuario hace peticiones autenticadas → envía X-CSRF-Token.
+
+Usuario hace logout → backend borra cookie JWT y genera un nuevo CSRF token “vacío” (o inválido).
+
+🧩 BACKEND (Express)
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import crypto from 'crypto'; // para generar tokens CSRF simples
+
+dotenv.config();
+const app = express();
+
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors({
+  origin: 'https://frontend.com',
+  credentials: true,
+}));
+
+// Middleware de autenticación JWT
+function authMiddleware(req, res, next) {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ message: 'No token' });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch {
+    res.status(401).json({ message: 'Token inválido' });
+  }
+}
+
+// Generar CSRF token seguro (simple y rápido)
+function generateCSRFToken() {
+  return crypto.randomBytes(32).toString('hex');
+}
+
+// LOGIN — genera JWT + CSRF
+app.post('/login', (req, res) => {
+  const { username } = req.body;
+  const jwtToken = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+  const csrfToken = generateCSRFToken();
+
+  // Guardar CSRF token vinculado al usuario (ejemplo simple, en memoria o DB)
+  // Aquí, para demo, lo devolvemos directamente
+  res.cookie('token', jwtToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+    maxAge: 60 * 60 * 1000,
+  });
+
+  // Enviar el CSRF token al frontend
+  res.json({ csrfToken });
+});
+
+// Ruta protegida
+app.post('/update-profile', authMiddleware, (req, res) => {
+  const clientCSRF = req.headers['x-csrf-token'];
+  if (!clientCSRF) return res.status(403).json({ message: 'Falta CSRF token' });
+
+  // Aquí podrías validar el token guardado en DB o en sesión si lo implementas
+  // (para este ejemplo asumimos que es válido)
+  res.json({ message: `Perfil de ${req.user.username} actualizado correctamente.` });
+});
+
+// LOGOUT — borra JWT y renueva CSRF vacío
+app.post('/logout', (req, res) => {
+  res.clearCookie('token', { sameSite: 'none', secure: true });
+  const newCSRF = generateCSRFToken(); // token nuevo, sin sesión activa
+  res.json({ csrfToken: newCSRF });
+});
+
+app.listen(4000, () => console.log('✅ Backend seguro en http://localhost:4000'));
+
+⚛️ FRONTEND (React)
+AuthContext.jsx
+
+Guarda el CSRF token y lo actualiza en login/logout automáticamente 👇
+
+import { createContext, useContext, useState } from 'react';
+
+const AuthContext = createContext();
+
+export function AuthProvider({ children }) {
+  const [csrfToken, setCsrfToken] = useState('');
+  const [user, setUser] = useState(null);
+
+  async function login(username) {
+    const res = await fetch('https://backend.com/login', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username }),
+    });
+    const data = await res.json();
+    setCsrfToken(data.csrfToken);
+    setUser(username);
+  }
+
+  async function logout() {
+    const res = await fetch('https://backend.com/logout', {
+      method: 'POST',
+      credentials: 'include',
+    });
+    const data = await res.json();
+    setUser(null);
+    setCsrfToken(data.csrfToken); // ⚡ Nuevo token (sin sesión)
+  }
+
+  return (
+    <AuthContext.Provider value={{ user, csrfToken, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  return useContext(AuthContext);
+}
+
+Ejemplo de uso (App.jsx)
+import { useAuth } from './AuthContext';
+
+export default function App() {
+  const { user, csrfToken, login, logout } = useAuth();
+
+  async function updateProfile() {
+    const res = await fetch('https://backend.com/update-profile', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken,
+      },
+      body: JSON.stringify({ name: 'Nuevo nombre' }),
+    });
+    const data = await res.json();
+    alert(data.message);
+  }
+
+  return (
+    <div>
+      <h1>Hola {user || 'invitado'}</h1>
+      {!user ? (
+        <button onClick={() => login('juan')}>Login</button>
+      ) : (
+        <>
+          <button onClick={logout}>Logout</button>
+          <button onClick={updateProfile}>Actualizar perfil</button>
+        </>
+      )}
+    </div>
+  );
+}
+
+🔐 Resumen del flujo
+Acción	Backend hace	Frontend hace
+Login	Crea JWT + nuevo CSRF token	Guarda token en memoria
+Request protegida	Valida JWT y CSRF	Envía header X-CSRF-Token
+Logout	Borra cookie JWT + genera CSRF vacío	Limpia usuario y actualiza token
+
+
+
+EJEMPLO3
+**********************************************
+Instalar csurf
+npm install csurf
+
+2️⃣ Configurar middleware CSRF en index.js o tu main server
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import csurf from 'csurf';
+import usuariosRouter from './routes/usuarios.js';
+
+const app = express();
+
+app.use(express.json());
+app.use(cookieParser());
+
+// Configuración CSRF
+const csrfProtection = csurf({
+    cookie: {
+        httpOnly: true,
+        secure: true,       // si usas HTTPS
+        sameSite: 'none',   // porque tu frontend está en otro dominio
+    }
+});
+
+// Endpoint para obtener token CSRF
+app.get('/api/v1/erroak/csrf-token', csrfProtection, (req, res) => {
+    res.json({ csrfToken: req.csrfToken() });
+});
+
+// Aplicar csrfProtection solo a rutas que modifican datos
+app.use('/api/v1/erroak', usuariosRouter);
+
+export default app;
+
+
+Nota: solo protegemos rutas POST, PUT, DELETE que cambian datos; GET no necesita CSRF.
+
+3️⃣ Integrar CSRF en tu router (usuarios.js)
+
+Primero, importa el middleware:
+
+import csurf from 'csurf';
+const csrfProtection = csurf({ cookie: true });
+
+
+Luego aplica csrfProtection a rutas que modifican datos. Ejemplo:
+
+// Crear usuario
+router.post('/usuario', registerLimiter, csrfProtection, async(req, res) => {
+    const usuario = req.body;
+    const resultUsuario = await postUsuario(usuario);
+    res.json(resultUsuario);
+});
+
+// Actualizar usuario
+router.put('/usuario/:id', updateUserLimiter, authenticateToken, csrfProtection, async(req, res) => {
+    const id = req.params.id;
+    const updatedUser = req.body;
+    const result = await putUsuario(id, updatedUser);
+    res.json(result);
+});
+
+// Logout (limpia cookie CSRF también)
+router.post('/logout', authenticateToken, csrfProtection, (req, res) => {
+    res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'none' });
+    res.clearCookie('_csrf'); // limpiar cookie CSRF
+    res.json({ message: 'Sesión cerrada' });
+});
+
+
+Las rutas GET (/usuarios, /me, /usuario/:id, /getsignupformdata) no requieren CSRF.
+
+4️⃣ En el frontend React
+
+Obtener token CSRF al cargar la app:
+
+async function fetchCsrfToken() {
+    const res = await fetch('https://tu-backend.com/api/v1/erroak/csrf-token', {
+        credentials: 'include', // envía cookies
+    });
+    const data = await res.json();
+    return data.csrfToken;
+}
+
+
+Enviar el token en headers en cada POST/PUT/DELETE:
+
+const csrfToken = await fetchCsrfToken();
+
+fetch('https://tu-backend.com/api/v1/erroak/usuario', {
+    method: 'POST',
+    credentials: 'include', // cookies httpOnly
+    headers: {
+        'Content-Type': 'application/json',
+        'csrf-token': csrfToken // CSRF token obligatorio
+    },
+    body: JSON.stringify(usuario)
+});
+
+✅ Beneficios de este setup
+
+Mantienes JWT httpOnly para proteger contra XSS.
+
+Añades protección CSRF para POST/PUT/DELETE.
+
+No necesitas mover JWT al header Authorization si quieres mantener cookies.
+
+Compatible con frontend en otro dominio (sameSite: 'none', secure: true).
+

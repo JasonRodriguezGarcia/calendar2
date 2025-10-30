@@ -8,10 +8,10 @@ Web para el uso de calendario minimalista adaptado a los requerimientos requerid
     vacaciones de todos los usuario
     situación de la posesión de llaves y alarma de cada día
 - Login con posibilidad de Recuperación de contraseña
-- Manejo desde backend de
-    JWT en apis
-    cookies
-
+- Manejo desde backend de la seguridad con cookies en apis con JWT permitiendo o no acceso
+- Recuperación de contraseña con envío de link que al usarlo se chequea que no esté caducado o sea inválido
+- Limitación de intentos de login de usuario por fuerza bruta
+- Limitación de llamadas API al backend
 
 Notas varias:
 

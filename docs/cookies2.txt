@@ -1,6 +1,7 @@
 EJEMPLO DE USO SIN GUARDAR EN LOCALSTORAGE, PERO RECUPERANDO EL TOKEN DESDE Backend APROVECHANDO LO HECHO HASTA Ahora
 
-implementación completa desde cero de un sistema de autenticación seguro usando React + fetch (sin axios) y Express (Node.js), con:
+implementación completa desde cero de un sistema de autenticación seguro usando React + fetch (sin axios) y Express (Node.js), 
+con:
 
 ✅ Access token en memoria.
 

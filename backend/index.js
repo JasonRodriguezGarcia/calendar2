@@ -4,6 +4,7 @@ import path from "path";
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { fileURLToPath } from "url";
+import { apiLimiter } from "./middleware/login.js";
 import usuariosRouter from './routes/usuarios.js'
 import vacacionesRouter from './routes/vacaciones.js'
 import eventosRouter from './routes/eventos.js'
@@ -36,12 +37,15 @@ app.use(cors({
       callback(new Error('Origen no permitido por CORS'));
     }
   },
-  credentials: true
+  credentials: true  // ESTO PERMITE EL USO DE COOKIES
 })); // para tener acceso desde React, ya que React y Express no están en el mismo directorio
 app.use(cookieParser()); // Para el uso de cookies
 // Habilita el parsing de JSON en los requests.
 // Es decir, cuando un cliente (como React) envía datos en formato JSON (por ejemplo, en un POST o PUT), Express puede leerlos desde req.body.
 app.use(express.json());
+
+// Aplica rate limit a toda la API
+app.use('/api/v1/erroak', apiLimiter)
 
 // app.use(logger); // adding middleware to show some logs
 // Esto registra routers separados para manejar distintas partes del backend:

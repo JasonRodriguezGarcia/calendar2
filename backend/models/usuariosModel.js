@@ -103,7 +103,8 @@ export async function postRecoveryPassword(recoveryPasswordDetails) {
             const resetLink = `${FRONTEND_URL_RENDER}/newpassword/${tokenRecovery}`
             const msg = {
                     to: useremail,
-                    from: "jasonr@erroak.sartu.org", // debe ser verificado en SendGrid
+                    // from: "jasonr@erroak.sartu.org", // debe ser verificado en SendGrid con una cuenta en sendGrid
+                    from: "no-reply@erroak.sartu.org",
                     subject: emailmsg.subject,
                     html: `
                         <p>${emailmsg.html.line1} ${nombre_apellidos},</p>
@@ -138,27 +139,36 @@ export async function postNewPassword(newPasswordDetails) {
         const { token, newpassword } = newPasswordDetails
         console.log("token - newpassword: ", token, newpassword)
         // verificar y decodificar el token
-        const decoded = jwt.verify(token, JWT_SECRET_KEY)
+        // const decoded = jwt.verify(token, JWT_SECRET_KEY)
+        let decoded
+        try {
+            decoded = jwt.verify(token, JWT_SECRET_KEY)
+        } catch (err) {
+            if (err.name === "TokenExpiredError")
+                return { error: "El enlace ha expirado, solicite uno nuevo" }
+            else if (err.name === "JsonWebTokenError" || err instanceof SyntaxError)
+                return { error: "Token inválido, solicite nueva contraseña" }
+            else
+                throw err
+        }
+
         const userid = decoded.usuario_id
         const result = await pool.query(`UPDATE erroak.usuarios SET password = $1 WHERE usuario_id = $2 RETURNING *;`,
             [newpassword, userid]);
         console.log("result: ", result)
         if (result.rows.length > 0) {
             console.log("Usuario encontrado y CONTRASEÑA actualizada: ", result.rows[0])
-            return result.rows[0]  // retornamos el usuario actualizado
+            // return result.rows[0]  // retornamos el usuario actualizado
+            return ({success: true, message: "Contraseña actualizada correctamente"})
         }
         else
             return ({result: "No encontrado"})
 
     } catch (err) {
-        if (err.name === "TokenExpiredError")
-            return ({error: "El enlace ha expirado, solicite uno nuevo"})
-        else if (err.name === "JsonWebTokenError")
-            return ({error: "Token inválido, solicite nueva contraseña"})
-        else {
-            console.error('Error en postRecoveryPassword:', err.message)
+        // console.error("Error en postNewPassword:", err.message);
+        // return { error: "Error interno del servidor" };
+        console.error('Error en postRecoveryPassword:', err.message)
             throw err
-        }
     }
 }
 

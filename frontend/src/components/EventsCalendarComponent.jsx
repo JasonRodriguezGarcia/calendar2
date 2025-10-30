@@ -272,7 +272,7 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
         const fechaFinal = new Date(ffinal)
         fechaInicial.setHours(0, 0, 0, 0)
         fechaFinal.setHours(0, 0, 0, 0)
-        const resta = fechaFinal - fechaFinal
+        const resta = fechaFinal - fechaInicial
 
         return Math.round(resta / dia)
     }

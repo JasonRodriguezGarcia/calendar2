@@ -4,7 +4,7 @@ import path from "path";
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { fileURLToPath } from "url";
-import { apiLimiter } from "./middleware/login.js";
+import { apiLimiter, csrfProtection } from "./middleware/login.js";
 import usuariosRouter from './routes/usuarios.js'
 import vacacionesRouter from './routes/vacaciones.js'
 import eventosRouter from './routes/eventos.js'
@@ -22,6 +22,7 @@ const allowedOrigins = [
   'https://calendar2-6wyj.onrender.com'
 ];
 
+
 // Middleware
 // Servir archivos desde la carpeta 'public'
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
@@ -37,7 +38,7 @@ app.use(cors({
       callback(new Error('Origen no permitido por CORS'));
     }
   },
-  credentials: true  // ESTO PERMITE EL USO DE COOKIES
+  credentials: true
 })); // para tener acceso desde React, ya que React y Express no están en el mismo directorio
 app.use(cookieParser()); // Para el uso de cookies
 // Habilita el parsing de JSON en los requests.
@@ -46,6 +47,15 @@ app.use(express.json());
 
 // Aplica rate limit a toda la API
 app.use('/api/v1/erroak', apiLimiter)
+
+// app.get('/api/v1/erroak/csrf-token', csrfProtection, (req, res) => {
+//   res.json({ csrfToken: req.csrfToken() });
+// });
+
+// 🔹 Endpoint para obtener el token CSRF
+app.get('/api/v1/erroak/csrf-token', csrfProtection, (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
 
 // app.use(logger); // adding middleware to show some logs
 // Esto registra routers separados para manejar distintas partes del backend:

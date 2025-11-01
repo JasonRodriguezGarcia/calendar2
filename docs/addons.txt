@@ -1,0 +1,20 @@
+instalar en frontend
+    npm install @mui/joy @emotion/react @emotion/styled
+
+en app.jsx
+    import CircularProgress from '@mui/joy/CircularProgress';
+ó
+    import { CircularProgress } from '@mui/joy';
+
+    <Box sx={{ display: 'flex', position: "absolute", top: "30%", left: "50%",     transform: "translate(-50%, -50%)",
+        gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+        {/* <CircularProgress size="sm" />
+        <CircularProgress size="md" /> */}
+        {isLoading && 
+            <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
+                <CircularProgress size="lg" />
+                <b>Loading ... </b>
+            </Box>
+        }
+    </Box>        
+

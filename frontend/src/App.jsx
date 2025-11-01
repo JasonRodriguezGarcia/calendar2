@@ -31,6 +31,7 @@ const App = () => {
     const [logeado, setLogeado] = useState(false)
     const [usuario, setUsuario] = useState({})
     const [token, setToken] = useState("")
+    const [csrfToken, setCsrfToken] = useState(null);
     const languagesSelect = [
         { lang: 'es', icon: Espana },
         { lang: 'eu', icon: PaisVasco },
@@ -95,9 +96,24 @@ const App = () => {
                 i18n.changeLanguage(idiomaPorDefecto)
             }
         }
-        
+        const fetchCsrfToken = async () => {
+            try {
+                const res = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/csrf-token`, {
+                    credentials: "include", // 🔑 importante para enviar/recibir cookies
+                })
+                const data = await res.json()
+                console.log("csrfToken de data: ", data.csrfToken)
+                setCsrfToken(data.csrfToken)
+            } catch (error) {
+                console.error("Error al obtener CSRF token:", error);
+            } finally {
+                // setIsLoading(false);
+            }
+        }
+
         checkLogeado()
         checkIdioma()
+        fetchCsrfToken()
     }, [])
 
     useEffect(() => {
@@ -110,46 +126,60 @@ const App = () => {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<MainPage 
+                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario}/>} />
                 <Route path="/eventos" element={<EventsCalendarPage 
+                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/holidays" element={<HolidaysPage 
+                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/login" element={<LoginPage 
+                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
                     token={token} setToken={setToken}
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/signup" element={<SignUpPage 
+                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/profile" element={<ProfilePage 
+                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/editprofile" element={<EditProfilePage 
+                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/entityevents" element={<EntityEventsCalendarPage 
+                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/staffholidays" element={<HolidaysViewPage 
+                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/winterafternoons" element={<WinterAfternoonsPage 
+                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/contacts" element={<ContactsPage 
+                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/passwordrecovery" element={<PasswordRecoveryPage 
+                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/newpassword/:token" element={<NewPasswordPage 
+                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
                 <Route path="/about" element={<UnderConstructionPage
+                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
                     selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                     logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
             </Routes>

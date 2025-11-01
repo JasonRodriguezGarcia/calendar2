@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
+import csurf from 'csurf';
 
 dotenv.config();
 const JWT_SECRET_KEY = process.env.JWT_SECRET
@@ -113,4 +114,21 @@ export const updateUserLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => req.user?.usuarioID, // 💡 Limita por usuario autenticado si hay token
+})
+
+// export const csrfProtection = csurf({
+//   cookie: {
+//     httpOnly: false, // accesible desde frontend
+//     sameSite: 'none'
+//   }
+// });
+
+// Configurar csurf con cookie (sin sesiones)
+export const csrfProtection = csurf({
+  cookie: {
+    key: '_csrfSecret',  // cookie donde guarda el secreto
+    httpOnly: true,      // no accesible desde JS
+    sameSite: 'none',
+    secure: true,
+  },
 })

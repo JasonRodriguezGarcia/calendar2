@@ -66,7 +66,7 @@ const saltosHora = 2 // timeslots={4}
 const horaMinima = new Date(1970, 1, 1, 7, 0) // Limitación hora mínima
 const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
 
-const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => {
+const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLanguage } ) => {
     
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("events")
@@ -379,7 +379,7 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                 // pero hay que pasar la fecha y el espacio_id
                 // se responde a backend con el resultado para que se añada a o no a newEvents
                 try {
-                    // fetch eventos
+                    // fetch eventos para repeticiones
                     const responseRepeated = await fetch(
                         `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/`,
                         {
@@ -387,7 +387,8 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                             credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                             headers: {
                                 // 'Authorization': `Bearer ${token}`,
-                                'Content-type': 'application/json; charset=UTF-8'
+                                'Content-type': 'application/json; charset=UTF-8',
+                                'X-CSRF-Token': csrfToken,
                             },
                             body: JSON.stringify(eventDataRepeated)
                         }
@@ -481,7 +482,7 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
         if (isEditing && selectedEvent) {
             // Añadir aqui la llamada a backend para modificar un evento nuevo - selectedEvent.event_id
             try {
-                // fetch eventos
+                // fetch eventos para modificar
                 const responseEdit = await fetch(
                     `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${selectedEvent.event_id}`,
                     {
@@ -489,7 +490,8 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                         credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                         headers: {
                             // 'Authorization': `Bearer ${token}`,
-                            'Content-type': 'application/json; charset=UTF-8'
+                            'Content-type': 'application/json; charset=UTF-8',
+                            'X-CSRF-Token': csrfToken,
                         },
                         body: JSON.stringify(eventData)
                     }
@@ -521,7 +523,7 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
         } else {
             // Añadir aqui la llamada a backend para guardar un evento nuevo - eventData
             try {
-                // fetch eventos
+                // fetch eventos para crear
                 const response = await fetch(
                     `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento`,
                     {
@@ -529,7 +531,8 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                         credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                         headers: {
                             // 'Authorization': `Bearer ${token}`,
-                            'Content-type': 'application/json; charset=UTF-8'
+                            'Content-type': 'application/json; charset=UTF-8',
+                            'X-CSRF-Token': csrfToken,
                         },
                         body: JSON.stringify(eventData)
                     }
@@ -582,7 +585,7 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
         // OJO !!! LA HORA ES UTC+2, EN BACKEND SE GUARDA -2HRS, PERO NO HAY PROBLEMA PORQUE AL 
         // CARGARSE LOS DATOS LOS ATUALIZA A UTC+2
         try {
-            // fetch eventos
+            // fetch eventos para modificar/guardar con nueva fecha/hora de un evento movido
             const responseEdit = await fetch(
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${event.event_id}`,
                 {
@@ -590,7 +593,8 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                     credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                     headers: {
                         // 'Authorization': `Bearer ${token}`,
-                        'Content-type': 'application/json; charset=UTF-8'
+                        'Content-type': 'application/json; charset=UTF-8',
+                        'X-CSRF-Token': csrfToken,
                     },
                     body: JSON.stringify(updatedEvent)
                 }
@@ -633,7 +637,7 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
         setDialogOpen(false)
 // Llamar a backend para borrar un evento - selectedEvent.event_id
         try {
-            // fetch eventos
+            // fetch eventos parar borrar
             console.log("Evento a borrar: ", selectedEvent.event_id)
             const response = await fetch(
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${selectedEvent.event_id}`,
@@ -642,7 +646,8 @@ const EventsCalendarComponent = ({ logged, user, token, selectedLanguage } ) => 
                     credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                     headers: {
                         // 'Authorization': `Bearer ${token}`,
-                        'Content-type': 'application/json; charset=UTF-8'
+                        'Content-type': 'application/json; charset=UTF-8',
+                        'X-CSRF-Token': csrfToken,
                     },
                     body: JSON.stringify(selectedEvent)
                 }

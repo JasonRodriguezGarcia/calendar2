@@ -23,7 +23,7 @@ import {
 } from '@mui/material';
 import { colorOptions } from "../utils/EventColors";
 
-const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, selectedLanguage, setSelectedLanguage, languagesSelect }) => {
+const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user, setUser, action, token, selectedLanguage, setSelectedLanguage, languagesSelect }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("userscrud")
 
@@ -96,7 +96,8 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
                             credentials: 'include',
                             headers: {
                                 // 'Authorization': `Bearer ${token}`,
-                                'Content-type': 'application/json; charset=UTF-8'
+                                'Content-type': 'application/json; charset=UTF-8',
+                                'X-CSRF-Token': csrfToken,
                             }
                         }
                     )
@@ -203,6 +204,8 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
     //     }
     // }, [selectedLanguage]);
 
+    console.log("imprimo csrfToken desde usersCRUDComponent: ", csrfToken)
+
     const handleChangeColor = (event) => {
         setSelectedColor(event.target.value)
     }
@@ -300,7 +303,8 @@ const UsersCRUDComponent = ({ logged, setLogged, user, setUser, action, token, s
                     credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                     headers: {
                         // 'Authorization': `Bearer ${token}`, // se usará o no
-                        'Content-type': 'application/json; charset=UTF-8'
+                        'Content-type': 'application/json; charset=UTF-8',
+                        'X-CSRF-Token': csrfToken,
                     },
                     body: JSON.stringify(userTmp)
                 }

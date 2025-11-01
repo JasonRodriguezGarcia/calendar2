@@ -95,6 +95,45 @@ export const registerLimiter = rateLimit({
 *********************************
 PROTECCIÓN CONTRA ATAQUES CSRF
 *********************************
+¿Qué es un ataque CSRF?
+
+Un ataque Cross-Site Request Forgery ocurre cuando un sitio malicioso hace que el navegador del usuario autenticado 
+(con cookies válidas) ejecute una acción en tu sitio sin su consentimiento.
+
+Ejemplo clásico:
+<!-- Un atacante inserta esto en una página -->
+<img src="https://tuapp.com/api/delete-account" />
+
+➡️ Si el usuario está logueado y su cookie de sesión sigue activa, el navegador enviará la cookie automáticamente, 
+ejecutando esa acción peligrosa.
+Por eso:
+Tu servidor debe asegurarse de que cada petición sensible viene realmente de tu frontend legítimo, no de un sitio externo.
+
+¿Cómo funciona csurf?
+csurf usa el modelo clásico “double-submit cookie” o “synchronized token pattern”, según tu configuración.
+
+🔹 En resumen:
+Cuando un usuario carga tu app o se autentica, el servidor genera un token CSRF único.
+
+Ese token se guarda:
+En la sesión del usuario (por defecto).
+Y se envía al frontend (por JSON o cookie).
+
+En cada petición POST, PUT, PATCH, o DELETE, el frontend debe enviar ese token de vuelta.
+csurf compara el token recibido con el almacenado en la sesión.
+Si coinciden → ✅ petición válida.
+
+Si no → ❌ ataque bloqueado.
+
+🔍 Explicación de lo que hace csurf
+Etapa	                    Qué hace csurf
+Inicialización	            Genera un token secreto por usuario y lo guarda en req.session._csrfSecret.
+Al llamar req.csrfToken()	Calcula un token público firmado y lo devuelve al frontend.
+En una petición POST	    Lee el token del body, query, o header (x-csrf-token) y lo compara.
+Si no coincide	            Lanza un error EBADCSRFTOKEN.
+
+
+
 En este caso porque tenemos frontend y backend en distintos dominios.
 Tenemos configurado
     SameSite='none' y no Lax o Strict
@@ -220,7 +259,7 @@ fetch('https://backend.com/update-profile', {
 });
 
 Mas ejemplos
-EJEMPLO1
+EJEMPLO1 (USADO en mi app)
 ***********************************
 Una implementación manual de CSRF (con crypto.randomBytes) en lugar de csurf, para que vieras claramente el flujo 
 completo y cómo integrarlo con JWT HttpOnly + frontend separado.
@@ -244,6 +283,14 @@ Así, csurf:
     Genera un token CSRF basado en ese secreto.
     Lo envía al frontend.
     Valida automáticamente el header X-CSRF-Token en cada request protegida.
+🔍 Explicación de lo que hace csurf
+Etapa	                    Qué hace csurf
+Inicialización	            Genera un token secreto por usuario y lo guarda en req.session._csrfSecret.
+Al llamar req.csrfToken()	Calcula un token público firmado y lo devuelve al frontend.
+En una petición POST	    Lee el token del body, query, o header (x-csrf-token) y lo compara.
+Si no coincide	            Lanza un error EBADCSRFTOKEN.
+
+
 
 🧩 BACKEND con csurf
 import express from 'express';
@@ -541,7 +588,8 @@ Logout	Borra cookie JWT + genera CSRF vacío	Limpia usuario y actualiza token
 
 
 
-EJEMPLO3
+**********************************************
+EJEMPLO3 (OJO CSURF esta deprecated, osea obsoleto)
 **********************************************
 Instalar csurf
 npm install csurf
@@ -651,3 +699,539 @@ No necesitas mover JWT al header Authorization si quieres mantener cookies.
 
 Compatible con frontend en otro dominio (sameSite: 'none', secure: true).
 
+
+******************************
+EJEMPLO4
+******************************
+
+csrf-sync
+    es una opción moderna y más flexible que csurf, especialmente cuando trabajas con JWT + cookies HttpOnly + frontend separado (SPA).
+
+Vamos a ver por qué, y te dejo luego el código completo para integrarlo en tu backend actual (usuarios.js + index.js).
+
+💡 ¿Por qué csrf-sync en lugar de csurf?
+Característica	                            csurf	                                   csrf-sync
+Requiere express-session	                Sí (por defecto)	                       ❌ No
+Compatible con JWT + cookies	            🟡 Requiere configuración extra	           ✅ Totalmente compatible
+Fácil de usar en SPA (React, Vue, etc.) 	🟡 Necesita endpoint /csrf-token manual	   ✅ Integrado y simple
+Genera/verifica token	                    Automático (por cookie)	                    Automático (por cookie o memoria)
+Ideal para microservicios / APIs	        ❌	                                      ✅
+
+👉 En tu caso —backend JWT HttpOnly + frontend separado (React)— csrf-sync es la mejor opción.
+
+🧱 Instalación
+npm install csrf-sync
+
+⚙️ Configuración en tu index.js
+
+Aquí configuramos el middleware global para Express.
+
+// index.js
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import { csrfSync } from 'csrf-sync';
+import usuariosRouter from './routes/usuarios.js';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const app = express();
+
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://calendar2-6wyj.onrender.com'
+  ],
+  credentials: true
+}));
+
+// 🔐 Inicializar csrf-sync
+const { csrfSynchronisedProtection, generateToken } = csrfSync({
+  getTokenFromRequest: (req) => req.headers['x-csrf-token'],
+  cookieName: '_csrf', // cookie segura
+  cookieOptions: {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+  },
+});
+
+// Endpoint para obtener el token CSRF
+app.get('/api/v1/erroak/csrf-token', (req, res) => {
+  const token = generateToken(req);
+  res.json({ csrfToken: token });
+});
+
+// Aplicar protección CSRF solo después de /csrf-token
+// Así, las rutas protegidas deben enviar `X-CSRF-Token`
+app.use(csrfSynchronisedProtection);
+
+// Rutas
+app.use('/api/v1/erroak', usuariosRouter);
+
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
+
+🧩 En tu router /routes/usuarios.js
+
+No necesitas tocar casi nada — solo asegúrate de enviar el token CSRF desde el frontend cuando hagas peticiones POST/PUT/DELETE.
+
+Tus rutas pueden quedar así:
+
+import { Router } from 'express';
+import { authenticateToken, loginLimiter, registerLimiter } from '../middleware/login.js';
+import { postUsuario, postLogin, postMe, getUsuarios, getUsuario } from '../models/usuariosModel.js';
+
+const router = Router();
+
+// ✅ Login
+router.post('/login', loginLimiter, async (req, res) => {
+  const loginDetails = req.body;
+  const login = await postLogin(loginDetails);
+  if (login.success) {
+    res.cookie('token', login.token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none'
+    });
+  }
+  res.json(login);
+});
+
+// ✅ Crear usuario (protegido CSRF + rate limit)
+router.post('/usuario', registerLimiter, async (req, res) => {
+  const usuario = req.body;
+  const result = await postUsuario(usuario);
+  res.json(result);
+});
+
+// ✅ Logout (limpia cookie JWT + CSRF)
+router.post('/logout', authenticateToken, (req, res) => {
+  res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'none' });
+  res.clearCookie('_csrf', { httpOnly: true, secure: true, sameSite: 'none' });
+  res.json({ message: 'Sesión cerrada' });
+});
+
+// ✅ Datos de usuario autenticado
+router.get('/usuario', authenticateToken, async (req, res) => {
+  const id = req.user.usuarioID;
+  const result = await getUsuario(id);
+  res.json(result);
+});
+
+export default router;
+
+⚛️ En el frontend React
+
+Pedir el token CSRF al iniciar la app o antes del primer POST:
+
+async function getCsrfToken() {
+  const res = await fetch('https://tu-backend.com/api/v1/erroak/csrf-token', {
+    credentials: 'include'
+  });
+  const data = await res.json();
+  return data.csrfToken;
+}
+
+
+Enviar el token en cada request que cambie datos:
+
+const csrfToken = await getCsrfToken();
+
+await fetch('https://tu-backend.com/api/v1/erroak/usuario', {
+  method: 'POST',
+  credentials: 'include',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRF-Token': csrfToken
+  },
+  body: JSON.stringify({ email, password, nombre_apellidos })
+});
+
+🔒 Ventajas de esta implementación
+
+✅ No necesitas sesiones (express-session) — compatible con JWT.
+✅ Compatible con frontends SPA en otros dominios (sameSite: 'none').
+✅ Tokens sincronizados entre cookie HttpOnly y header.
+✅ Simple de integrar y mantener.
+✅ Requiere una sola petición inicial /csrf-token por sesión o al refrescar.
+
+🚀 Flujo completo
+Etapa	            Acción	            Qué ocurre
+App carga	        GET /csrf-token 	Backend genera token y setea cookie _csrf
+Login	            POST /login	        Backend crea cookie JWT
+Petición protegida	POST /usuario, etc.	Frontend envía header X-CSRF-Token; backend valida
+Logout	            POST /logout	    Se limpian cookies JWT y CSRF
+
+
+El paquete csrf-sync
+ guarda los tokens CSRF dentro de req.session, o en un “almacenamiento” asociado a la sesión.
+Si no existe req.session (porque nunca se configuró express-session), no tiene dónde guardar ni recuperar el token, y lanza el error:
+
+TypeError: Cannot read properties of undefined (reading 'csrfToken')
+
+npm install express-session
+
+Cómo se usa express-session
+
+Instálalo:
+
+npm install express-session
+
+
+Luego, en tu index.js, lo colocas antes de csrf-sync:
+
+import session from 'express-session'
+import { csrfSync } from 'csrf-sync'
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'clave-secreta-supersegura',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'none',
+  }
+}));
+
+// Ahora que hay sesión, csrf-sync puede usarla
+const { csrfSynchronisedProtection, generateToken } = csrfSync({
+  getTokenFromRequest: (req) => req.headers['x-csrf-token'],
+});
+
+// Endpoint público para obtener el token CSRF
+app.get('/api/v1/erroak/csrf-token', (req, res) => {
+  const { csrfToken } = generateToken(req);
+  res.json({ csrfToken });
+});
+
+// Aplica la protección CSRF después del endpoint de token
+app.use(csrfSynchronisedProtection);
+
+En resumen
+Concepto	Qué hace
+express-session	Crea un objeto req.session para cada usuario y lo persiste entre peticiones mediante una cookie
+csrf-sync	Usa req.session para guardar y verificar tokens CSRF sincronizados
+Tu error actual	Ocurre porque req.session no existe; csrf-sync intenta acceder a él y falla
+
+
+**********************
+**********************
+EJEMPLO 5 (FINAL)
+**********************
+Perfecto ✅ — actualmente estás usando csurf, que es un middleware clásico para protección CSRF, pero quieres migrar a csrf-sync
+(QUE ESTA OBSOLETO), una alternativa más moderna y simple (que no depende de sesiones o cookies de secreto).
+
+Vamos a ver cómo hacerlo paso a paso:
+
+🚀 Objetivo
+
+Reemplazar csurf por csrf-sync, manteniendo tu mismo flujo:
+
+Backend con Express.
+
+JWT en cookie token.
+
+CSRF token entregado vía endpoint /csrf-token.
+
+Protección en rutas POST, usando encabezado o body.
+
+🧩 1. Instala csrf-sync
+npm install csrf-sync
+
+🧠 2. Configura csrf-sync en lugar de csurf
+
+En tu servidor, reemplaza las partes relacionadas con csurf por lo siguiente:
+
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { csrfSync } from 'csrf-sync';
+
+dotenv.config();
+const app = express();
+
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors({
+  origin: 'https://frontend.com',
+  credentials: true,
+}));
+
+// 🧩 Configurar csrf-sync
+const {
+  generateToken,    // genera un token por usuario
+  validateToken,    // valida el token recibido
+  invalidCsrfTokenError, // error lanzado si el token no es válido
+  getTokenFromHeaders,   // helper para leer encabezados
+} = csrfSync({
+  getTokenFromRequest: (req) => req.headers['x-csrf-token'], // cómo lo envía el frontend
+});
+
+// 🧱 Middleware de autenticación
+function authMiddleware(req, res, next) {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ message: 'No token' });
+  try {
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    next();
+  } catch {
+    res.status(401).json({ message: 'Token inválido' });
+  }
+}
+
+// 🔹 Endpoint para obtener el token CSRF
+app.get('/csrf-token', (req, res) => {
+  const csrfToken = generateToken(req);
+  res.json({ csrfToken });
+});
+
+// 🔹 Middleware para validar CSRF (solo en rutas sensibles)
+function csrfProtection(req, res, next) {
+  try {
+    validateToken(req);
+    next();
+  } catch (err) {
+    if (err === invalidCsrfTokenError) {
+      return res.status(403).json({ message: 'Token CSRF inválido o ausente' });
+    }
+    next(err);
+  }
+}
+
+// 🔹 Login (genera JWT)
+app.post('/login', (req, res) => {
+  const { username } = req.body;
+  const jwtToken = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+  res.cookie('token', jwtToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+    maxAge: 60 * 60 * 1000,
+  });
+
+  res.json({ success: true });
+});
+
+// 🔹 Ruta protegida con JWT + CSRF
+app.post('/update-profile', authMiddleware, csrfProtection, (req, res) => {
+  res.json({ message: `Perfil de ${req.user.username} actualizado correctamente.` });
+});
+
+// 🔹 Logout
+app.post('/logout', (req, res) => {
+  res.clearCookie('token', { sameSite: 'none', secure: true });
+  res.json({ success: true });
+});
+
+app.listen(4000, () => console.log('✅ Backend con csrf-sync activo'));
+
+💡 3. En el frontend
+
+Cuando obtienes el token CSRF (por ejemplo desde /csrf-token), lo guardas (en memoria, no en cookies) y lo envías en el header X-CSRF-Token en cada petición POST/PUT/DELETE.
+
+const res = await fetch('https://backend.com/csrf-token', { credentials: 'include' });
+const { csrfToken } = await res.json();
+
+await fetch('https://backend.com/update-profile', {
+  method: 'POST',
+  credentials: 'include',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRF-Token': csrfToken,
+  },
+  body: JSON.stringify({ ...data }),
+});
+
+⚙️ 4. Diferencias clave entre csurf y csrf-sync
+Característica	csurf	csrf-sync
+Basado en cookie/sesión	Sí	No
+Ideal para APIs sin sesión	❌	✅
+Requiere middleware de sesión	A veces sí	No
+Generación manual del token	Menos flexible	Muy flexible
+Soporte TypeScript	Limitado	Excelente
+
+básicamente con ese código ya basta para reemplazar csurf por csrf-sync en tu backend.
+El flujo completo (emisión y validación del token) ya está cubierto con esas pocas líneas.
+
+Pero déjame puntualizar qué cosas son esenciales y cuáles opcionales, para que sepas si “basta” depende de tu caso 👇
+
+✅ Esencial (lo mínimo que necesitas)
+
+Lo que ya tienes es suficiente para un backend funcional y seguro:
+
+Importar y configurar csrfSync:
+
+const { generateToken, validateToken, invalidCsrfTokenError } = csrfSync({
+  getTokenFromRequest: (req) => req.headers['x-csrf-token'],
+});
+
+
+Endpoint para entregar el token CSRF:
+
+app.get('/csrf-token', (req, res) => {
+  res.json({ csrfToken: generateToken(req) });
+});
+
+
+Middleware para proteger rutas sensibles:
+
+function csrfProtection(req, res, next) {
+  try {
+    validateToken(req);
+    next();
+  } catch (err) {
+    if (err === invalidCsrfTokenError) {
+      return res.status(403).json({ message: 'Token CSRF inválido' });
+    }
+    next(err);
+  }
+}
+
+
+Usarlo junto con tu authMiddleware:
+
+app.post('/update-profile', authMiddleware, csrfProtection, (req, res) => {
+  res.json({ message: 'Perfil actualizado.' });
+});
+
+
+Frontend envía el token CSRF en cada request POST/PUT/DELETE:
+
+fetch('/update-profile', {
+  method: 'POST',
+  credentials: 'include',
+  headers: { 'X-CSRF-Token': csrfToken },
+  body: JSON.stringify(data),
+});
+
+⚙️ Opcional (solo si lo necesitas)
+
+Persistencia o caché de tokens: por defecto csrf-sync los guarda en memoria, lo cual está bien para un solo proceso.
+Si tienes varias instancias del servidor (cluster o load balancer), deberías usar una opción de almacenamiento compartido (Redis, por ejemplo).
+
+Refrescar el token automáticamente: si tu frontend usa un framework SPA (React, Vue, etc.), podrías pedir un nuevo /csrf-token al cargar o antes de cada acción protegida.
+
+Validación personalizada: puedes cambiar getTokenFromRequest para aceptar el token desde body o query si lo prefieres.
+
+✅ En resumen
+
+Sí, basta con el código que te mostré.
+Con eso reemplazas csurf completamente y mantienes el mismo nivel de seguridad CSRF, pero sin depender de cookies secretas ni sesiones.
+
+*************************
+*************************
+OJO
+*************************
+    pero antes mostraste código con csrf-sync sin necesidad de session
+Excelente observación 👏
+Tienes toda la razón — csrf-sync puede usarse sin express-session, pero solo si configuras manualmente cómo almacena el token por usuario.
+Si no se lo indicas, por defecto intenta usar req.session, y ahí es donde te lanza el error:
+
+TypeError: Cannot read properties of undefined (reading 'csrfToken')
+
+🧠 Explicación clara
+
+csrf-sync necesita algún “estado” donde guardar el token sincronizado entre el cliente y el servidor.
+Por defecto, ese “estado” es req.session.
+Si no usas sesiones, tienes que indicarle tú cómo mantener ese token.
+
+✅ Solución sin express-session
+
+Puedes decirle a csrf-sync que guarde el token directamente en una cookie firmada o simplemente en memoria (no recomendable para producción, pero útil para APIs sin estado).
+
+Aquí te dejo una forma correcta sin sesiones, usando cookies:
+
+🔧 Ejemplo adaptado a tu código
+import express from "express";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import { csrfSync } from "csrf-sync";
+
+const app = express();
+app.use(cookieParser());
+app.use(express.json());
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://calendar2-6wyj.onrender.com'
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Origen no permitido por CORS'));
+    }
+  },
+  credentials: true
+}));
+
+// ⚙️ Configurar csrf-sync SIN sesión
+const {
+  generateToken,
+  validateToken,
+  invalidCsrfTokenError,
+  getTokenFromHeaders
+} = csrfSync({
+  getTokenFromRequest: (req) => req.headers['x-csrf-token'],
+  // 💡 Aquí definimos un "store" basado en cookies en lugar de session
+  getTokenFromState: (req) => req.cookies._csrf,
+  setTokenOnState: (req, res, token) => {
+    res.cookie('_csrf', token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    });
+  }
+});
+
+// 📍 Endpoint para generar y enviar token CSRF
+app.get('/api/v1/erroak/csrf-token', (req, res) => {
+  const csrfToken = generateToken(req, res);
+  console.log("imprimo csrfToken:", csrfToken);
+  res.json({ csrfToken });
+});
+
+// 📍 Ejemplo de endpoint protegido por CSRF
+app.post('/api/v1/erroak/test', validateToken, (req, res) => {
+  res.json({ message: "Petición POST protegida por CSRF" });
+});
+
+// 🟢 Iniciar servidor
+app.listen(5000, () => console.log("Server running on http://localhost:5000"));
+
+🔑 Claves del cambio
+Función	Antes (con sesiones)	Ahora (sin sesiones)
+getTokenFromState	usa req.session.csrfToken (por defecto)	usa req.cookies._csrf
+setTokenOnState	guarda en sesión	guarda en cookie
+generateToken(req, res)	ahora también pasa res	para que pueda setear la cookie
+🚀 Resultado
+
+Ahora:
+
+Cuando el cliente pide /api/v1/erroak/csrf-token, el servidor:
+
+Genera un token.
+
+Lo guarda en una cookie _csrf.
+
+Lo devuelve también en el JSON (para React, por ejemplo).
+
+Cuando el cliente hace un POST:
+
+Incluye el header x-csrf-token.
+
+validateToken compara ese token con el de la cookie.
+
+Si coinciden → ✅ éxito.
+
+Si no → ❌ lanza invalidCsrfTokenError.

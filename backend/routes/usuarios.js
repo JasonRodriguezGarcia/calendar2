@@ -1,4 +1,5 @@
 import { Router} from 'express';
+import { csrfProtection } from "../middleware/login.js";
 import { authenticateToken, checkToken, loginLimiter, registerLimiter, updateUserLimiter } from '../middleware/login.js';
 // import { validateQuery, validateUserId } from '../middleware/users.js';
 import { getUsuarios, postLogin, postRecoveryPassword, postNewPassword, postUsuario, getSignUpFormData, getUsuario,
@@ -54,7 +55,7 @@ router.post('/logout', authenticateToken, (req, res) => {
 
 // /api/v1/erroak/me
 // Datos para hacer una petición de datos de un usuario via cookie
-router.get('/me', checkToken, async (req, res) => {
+router.get('/me', checkToken, csrfProtection, async (req, res) => {
     const user = req.user // extraído del JWT
   // const usuario = await getUsuario(userId);
     // console.log("imprimo /me usuario: ", usuario)
@@ -109,7 +110,7 @@ router.get('/getsignupformdata', async(req, res) => {
 
 // /api/v1/erroak/usuario 
 // Crear usuario
-router.post('/usuario', registerLimiter, async(req, res) => {
+router.post('/usuario', registerLimiter, csrfProtection, async(req, res) => {
     const usuario = req.body
     console.log("Recibido en backend post usuario: ", usuario)
     const resultUsuario = await postUsuario(usuario)
@@ -119,7 +120,7 @@ router.post('/usuario', registerLimiter, async(req, res) => {
 
 // /api/v1/erroak/usuario/:id
 // router.get('/usuario/:id', authenticateToken, async(req, res) => {
-router.get('/usuario', authenticateToken, async(req, res) => {
+router.get('/usuario', authenticateToken, csrfProtection, async(req, res) => {
     console.log("Imprimmo req.user: ", req.user)
     const id = req.user.usuarioID; // <- Datos conseguidos desde JWT en cookie httpOnly
     console.log("imprimo id en get usuario: ", id)
@@ -129,7 +130,7 @@ router.get('/usuario', authenticateToken, async(req, res) => {
 
 // /api/v1/erroak/usuario/:id
 // Modificar los datos de un usuario
-router.put('/usuario', authenticateToken, updateUserLimiter, async(req, res) => {
+router.put('/usuario', authenticateToken, updateUserLimiter, csrfProtection, async(req, res) => {
     const id = req.user.usuarioID
     const updatedUser = req.body
     console.log("imprimo id en put usuario/:id : ", id)

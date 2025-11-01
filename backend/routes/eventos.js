@@ -1,4 +1,5 @@
 import { Router} from 'express';
+import { csrfProtection } from "../middleware/login.js";
 import { authenticateToken } from '../middleware/login.js';
 // import { validateQuery, validateUserId } from '../middleware/users.js';
 import { getNewEventFormData, postEvento, deleteEvento, putEvento, getEventos, getEventosUsuario } from "../models/eventosModel.js"
@@ -15,7 +16,7 @@ router.get('/getNewEventFormData', authenticateToken, async(req, res) => {
 
 // /api/v1/erroak/evento
 // Crear eventos
-router.post('/evento', authenticateToken, async(req, res) => {
+router.post('/evento', authenticateToken, csrfProtection, async(req, res) => {
     const evento = req.body
     console.log("Recibido en backend evento post: ", evento)
     // Validar que el usuario autenticado es el mismo que el del body
@@ -31,7 +32,7 @@ router.post('/evento', authenticateToken, async(req, res) => {
 
 // /api/v1/erroak/evento/:id
 // BORRAR UN EVENTO
-router.delete('/evento/:event_id', authenticateToken, async (req, res) => {
+router.delete('/evento/:event_id', authenticateToken, csrfProtection, async (req, res) => {
     const evento = req.body
     const {event_id} = req.params
     const userId = req.user.usuarioID; // <- Datos conseguidos desde JWT en cookie httpOnly
@@ -49,7 +50,7 @@ router.delete('/evento/:event_id', authenticateToken, async (req, res) => {
 
 //  /api/v1/erroak/evento/:id
 // MODIFICAR UN EVENTO
-router.put('/evento/:event_id', authenticateToken, async (req, res) => {
+router.put('/evento/:event_id', authenticateToken, csrfProtection, async (req, res) => {
     console.log("request body: ", req.body)
     const eventData = req.body
     const {event_id} = req.params

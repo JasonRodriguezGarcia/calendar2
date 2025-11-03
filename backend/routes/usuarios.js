@@ -20,7 +20,7 @@ router.get('/usuarios', authenticateToken, async(req, res) => {
 
 // /api/v1/erroak/login
 // Datos para hacer un login
-router.post('/login', loginLimiter, async(req, res) => {
+router.post('/login', loginLimiter, csrfProtection, async(req, res) => {
     const loginDetails = req.body
     console.log("loginDetails: ", loginDetails)
     const login = await postLogin(loginDetails)

@@ -5,7 +5,7 @@ import { Box } from '@mui/material';
 // import imagenFondo from "../assets/images/erroak-page.jpeg";
 import imagenFondo from "../assets/images/cuerda.jpg";
 
-const LoginPage = ({ logged, setLogged, user, setUser, token, setToken, selectedLanguage, setSelectedLanguage, languagesSelect }) =>{
+const LoginPage = ({ csrfToken, setCsrfToken, logged, setLogged, user, setUser, token, setToken, selectedLanguage, setSelectedLanguage, languagesSelect }) =>{
 
     if (logged)    // con esta opción ni siquiera se muestra brevemente el siguiente Componente
         // Esto interrumpe el renderizado del componente y lo redirige inmediatamente. 
@@ -21,9 +21,11 @@ const LoginPage = ({ logged, setLogged, user, setUser, token, setToken, selected
             backgroundPosition: "top center",
         }}>
             <MenuBarComponent 
+                csrfToken={csrfToken} setCsrfToken={setCsrfToken}
                 selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                 logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
             <LoginComponent 
+                csrfToken={csrfToken} setCsrfToken={setCsrfToken}
                 selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
                 logged={logged} setLogged={setLogged} user={user} setUser={setUser} token={token} setToken={setToken}/> {/* user={usuario} setUser={setUsuario} /> */}
         </Box>

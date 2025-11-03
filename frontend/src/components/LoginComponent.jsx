@@ -10,10 +10,9 @@ import {
   FormLabel,
   Input,
   Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
-
 } from '@mui/material';
 
-const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, selectedLanguage, setSelectedLanguage, languagesSelect }) => {
+const LoginComponent = ({ csrfToken, setCsrfToken, logged, setLogged, user, setUser, token, setToken, selectedLanguage, setSelectedLanguage, languagesSelect }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("login")
 
@@ -69,7 +68,10 @@ const LoginComponent = ({ logged, setLogged, user, setUser, token, setToken, sel
                 {
                     method: 'POST',
                     credentials: 'include', // IMPORTANTE: esto permite usar la cookie
-                    headers: {'Content-type': 'application/json; charset=UTF-8'},
+                    headers: {
+                        'Content-type': 'application/json; charset=UTF-8',
+                        'X-CSRF-Token': csrfToken,
+                    },
                     body: JSON.stringify(user)
                 }
             )

@@ -387,7 +387,7 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                 </div>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol1.formlabel")}:</FormLabel>
+                        <FormLabel htmlFor="useremail" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol1.formlabel")}:</FormLabel>
                         <Input
                             id="useremail"
                             name="useremail"
@@ -404,7 +404,7 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} justifyContent="left" alignItems="center">
-                        <FormLabel htmlFor="userpassword" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol2.formlabel")}:</FormLabel>
+                        <FormLabel htmlFor="userpassword" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol2.formlabel")}:</FormLabel>
                         <Input
                             id="userpassword"
                             name="userpassword"
@@ -423,7 +423,7 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="usernombre_apellidos" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol3.formlabel")}:</FormLabel>
+                        <FormLabel htmlFor="usernombre_apellidos" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol3.formlabel")}:</FormLabel>
                         <Input
                             id="usernombre_apellidos"
                             name="usernombre_apellidos"
@@ -440,7 +440,7 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="usermovil" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol4.formlabel")}:</FormLabel>
+                        <FormLabel htmlFor="usermovil" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol4.formlabel")}:</FormLabel>
                         <Input
                             id="usermovil"
                             name="usermovil"
@@ -457,7 +457,7 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="userextension" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol5.formlabel")}:</FormLabel>
+                        <FormLabel htmlFor="userextension" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol5.formlabel")}:</FormLabel>
                         <Input
                             id="userextension"
                             name="userextension"
@@ -473,7 +473,7 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="usercentro" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol6.formlabel")}:</FormLabel>
+                        <FormLabel htmlFor="usercentro" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol6.formlabel")}:</FormLabel>
                         <Select
                             fullWidth
                             labelId="select-label-centro"
@@ -492,7 +492,7 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                 <Stack direction={{ xs: "column", sm: "column", md: "row"}} spacing={2} justifyContent="center">
                     <FormControl fullWidth>
                         <Stack direction="row" spacing={2} alignItems="center">
-                            <FormLabel htmlFor="userllave" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol7.formlabel")}:</FormLabel>
+                            <FormLabel htmlFor="userllave" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol7.formlabel")}:</FormLabel>
                             <RadioGroup
                                 row //  esto los pone en horizontal
                                 aria-labelledby="demo-radio-buttons-group-label-llave"
@@ -508,7 +508,7 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                     </FormControl>
                     <FormControl fullWidth>
                         <Stack direction="row" spacing={2} alignItems="center">
-                            <FormLabel htmlFor="useralarma" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol8.formlabel")}:</FormLabel>
+                            <FormLabel htmlFor="useralarma" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol8.formlabel")}:</FormLabel>
                             <RadioGroup
                                 row //  esto los pone en horizontal
                                 aria-labelledby="demo-radio-buttons-group-label-alarma"
@@ -527,7 +527,7 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                 <Stack direction= {{ xs: "column", sm: "column", md: "row"}} spacing={2} justifyContent="center">
                     <FormControl fullWidth>
                         <Stack direction="row" spacing={2} alignItems="center">
-                            <FormLabel htmlFor="selectlenguaje" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol12.formlabel")}:</FormLabel>
+                            <FormLabel htmlFor="selectlenguaje" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol12.formlabel")}:</FormLabel>
                             <Select
                                 fullWidth
                                 labelId="select-label-lenguaje"
@@ -545,7 +545,7 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                     </FormControl>
                     <FormControl fullWidth>
                         <Stack direction="row" spacing={2} alignItems="center">
-                            <FormLabel htmlFor="selectturno" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol9.formlabel")}:</FormLabel>
+                            <FormLabel htmlFor="selectturno" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol9.formlabel")}:</FormLabel>
                             <Select
                                 fullWidth
                                 labelId="select-label-turno"
@@ -565,7 +565,7 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                 </Stack>
                 <FormControl fullWidth margin="dense">
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="selectedcolor" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol10.formlabel")}:</FormLabel>
+                        <FormLabel htmlFor="selectedcolor" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol10.formlabel")}:</FormLabel>
                         <Select
                             fullWidth
                             labelId="color-select-label"
@@ -594,7 +594,7 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="usertarde_invierno" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol11.formlabel")}:</FormLabel>
+                        <FormLabel htmlFor="usertarde_invierno" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol11.formlabel")}:</FormLabel>
                         <Select
                             fullWidth
                             labelId="select-label-tarde_invierno"

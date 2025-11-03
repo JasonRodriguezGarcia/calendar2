@@ -127,7 +127,7 @@ const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
                 </Typography>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>{t("boxformcontrol.formlabel")}</FormLabel>
+                        <FormLabel htmlFor="useremail" sx={{ color: "black", minWidth: 100 }}>{t("boxformcontrol.formlabel")}</FormLabel>
                         <Input
                             id="useremail"
                             name="useremail"

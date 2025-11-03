@@ -151,7 +151,7 @@ const LoginComponent = ({ csrfToken, setCsrfToken, logged, setLogged, user, setU
                 </Typography>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="useremail" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol1.formlabel")}</FormLabel>
+                        <FormLabel htmlFor="useremail" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol1.formlabel")}</FormLabel>
                         <Input
                             id="useremail"
                             name="useremail"
@@ -165,7 +165,7 @@ const LoginComponent = ({ csrfToken, setCsrfToken, logged, setLogged, user, setU
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} justifyContent="left" alignItems="center">
-                        <FormLabel htmlFor="userpassword" sx={{ color: "black", minwidth: 100 }}>{t("box.formcontrol2.formlabel")}</FormLabel>
+                        <FormLabel htmlFor="userpassword" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol2.formlabel")}</FormLabel>
                         <Input
                             id="userpassword"
                             name="userpassword"

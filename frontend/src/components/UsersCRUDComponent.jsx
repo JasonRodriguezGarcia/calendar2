@@ -489,7 +489,7 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                         </Select>
                     </Stack>
                 </FormControl>
-                <Stack direction={{ xs: "column", sm: "column", md: "row"}} spacing={2} justifyContent="center">
+                <Stack direction={{ xs: "column", sm: "column", md: "row"}} spacing={2} alignItems="center">
                     <FormControl fullWidth>
                         <Stack direction="row" spacing={2} alignItems="center">
                             <FormLabel htmlFor="userllave" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol7.formlabel")}:</FormLabel>
@@ -524,7 +524,7 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                     </FormControl>
                 </Stack>
                 {/* <Stack direction="row" spacing={2} justifyContent="center"> */}
-                <Stack direction= {{ xs: "column", sm: "column", md: "row"}} spacing={2} justifyContent="center">
+                <Stack direction= {{ xs: "column", sm: "column", md: "row"}} spacing={2} alignItems="center">
                     <FormControl fullWidth>
                         <Stack direction="row" spacing={2} alignItems="center">
                             <FormLabel htmlFor="selectlenguaje" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol12.formlabel")}:</FormLabel>

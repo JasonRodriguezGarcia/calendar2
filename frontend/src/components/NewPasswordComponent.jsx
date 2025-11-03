@@ -136,7 +136,7 @@ const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
                 </Typography>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="newpassword" sx={{ color: "black", minwidth: 100 }}>{t("boxform.formcontrol1.formlabel")}</FormLabel>
+                        <FormLabel htmlFor="newpassword" sx={{ color: "black", minWidth: 100 }}>{t("boxform.formcontrol1.formlabel")}</FormLabel>
                         <Input
                             id="newpassword"
                             name="newpassword"
@@ -153,7 +153,7 @@ const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="newpassword2" sx={{ color: "black", minwidth: 100 }}>{t("boxform.formcontrol2.formlabel")}</FormLabel>
+                        <FormLabel htmlFor="newpassword2" sx={{ color: "black", minWidth: 100 }}>{t("boxform.formcontrol2.formlabel")}</FormLabel>
                         <Input
                             id="newpassword2"
                             name="newpassword2"

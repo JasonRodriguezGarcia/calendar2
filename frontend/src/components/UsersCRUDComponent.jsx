@@ -27,20 +27,35 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("userscrud")
 
+    const [formUserData, setFormUserData] = useState({
+        userEmail: "",
+        userPassword: "",
+        userNombre_Apellidos: "",
+        userMovil: "",
+        userExtension: "",
+        userCentro: "",
+        userLlave: "false",
+        userAlarma: "false",
+        userLenguaje: "",
+        userTurno: "",
+        selectedColor: "",
+        userTarde_Invierno: "",
+        userObservaciones: ""
+    })
     const [tardesInvierno, setTardesInvierno] = useState([])
-    const [selectedColor, setSelectedColor] = useState("")
-    const [userEmail, setUserEmail] = useState("")
-    const [userPassword, setUserPassword] = useState("")
-    const [userNombre_Apellidos, setUserNombre_Apellidos] = useState("")
-    const [userMovil, setUserMovil] = useState("")
-    const [userExtension, setUserExtension] = useState("")
-    const [userCentro, setUserCentro] = useState("")
-    const [userLlave, setUserLlave] = useState("false")
-    const [userAlarma, setUserAlarma] = useState("false")
-    const [userTurno, setUserTurno] = useState("")
-    const [userLenguaje, setUserLenguaje] = useState("")
-    const [userTarde_Invierno, setUserTarde_Invierno] = useState("")
-    const [userObservaciones, setUserObservaciones] = useState("")
+    // const [userEmail, setUserEmail] = useState("")
+    // const [userPassword, setUserPassword] = useState("")
+    // const [userNombre_Apellidos, setUserNombre_Apellidos] = useState("")
+    // const [userMovil, setUserMovil] = useState("")
+    // const [userExtension, setUserExtension] = useState("")
+    // const [userCentro, setUserCentro] = useState("")
+    // const [userLlave, setUserLlave] = useState(false)
+    // const [userAlarma, setUserAlarma] = useState(false)
+    // const [userLenguaje, setUserLenguaje] = useState("")
+    // const [userTurno, setUserTurno] = useState("")
+    // const [selectedColor, setSelectedColor] = useState("")
+    // const [userTarde_Invierno, setUserTarde_Invierno] = useState("")
+    // const [userObservaciones, setUserObservaciones] = useState("")
     const [centros, setCentros] = useState([])
     const [lenguajes, setLenguajes] = useState([])
     const [turnos, setTurnos] = useState([])
@@ -110,19 +125,35 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                         setErrorMessage("usuario no válido")
                         return
                     } else {
-                        setUserEmail(dataUser.email)
-                        setUserPassword(dataUser.password)
-                        setUserNombre_Apellidos(dataUser.nombre_apellidos)
-                        setUserMovil(dataUser.movil)
-                        setUserExtension(dataUser.extension)
-                        setUserCentro(dataUser.centro_id)
-                        setUserLlave(dataUser.llave)
-                        setUserAlarma(dataUser.alarma)
-                        setUserLenguaje(dataUser.lenguaje_id)
-                        setUserTurno(dataUser.turno_id)
-                        setSelectedColor(dataUser.color)
-                        setUserTarde_Invierno(dataUser.tarde_invierno)
-                        setUserObservaciones(dataUser.observaciones)
+                        setFormUserData(prevForm => ({
+                            ...prevForm,
+                                userEmail: dataUser.email,
+                                userPassword: dataUser.password,
+                                userNombre_Apellidos: dataUser.nombre_apellidos,
+                                userMovil: dataUser.movil,
+                                userExtension: dataUser.extension,
+                                userCentro: dataUser.centro_id,
+                                userLlave: dataUser.llave,
+                                userAlarma: dataUser.alarma,
+                                userLenguaje: dataUser.lenguaje_id,
+                                userTurno: dataUser.turno_id,
+                                selectedColor: dataUser.color,
+                                userTarde_Invierno: dataUser.tarde_invierno,
+                                userObservaciones:dataUser.observaciones
+                        }))
+                        // setUserEmail(dataUser.email)
+                        // setUserPassword(dataUser.password)
+                        // setUserNombre_Apellidos(dataUser.nombre_apellidos)
+                        // setUserMovil(dataUser.movil)
+                        // setUserExtension(dataUser.extension)
+                        // setUserCentro(dataUser.centro_id)
+                        // setUserLlave(dataUser.llave)
+                        // setUserAlarma(dataUser.alarma)
+                        // setUserLenguaje(dataUser.lenguaje_id)
+                        // setUserTurno(dataUser.turno_id)
+                        // setSelectedColor(dataUser.color)
+                        // setUserTarde_Invierno(dataUser.tarde_invierno)
+                        // setUserObservaciones(dataUser.observaciones)
                         const title = action === "read" ? t("action.text1") : t("action.text2")
                         setFormTitle(title)
                         setFormReadOnly(action === "read")
@@ -206,13 +237,22 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
 
     console.log("imprimo csrfToken desde usersCRUDComponent: ", csrfToken)
 
-    const handleChangeColor = (event) => {
-        setSelectedColor(event.target.value)
+    const handleChangeColor = (e) => {
+        // setSelectedColor(event.target.value)
+        setFormUserData(prev => ({
+                ...prev,
+                    selectedColor: e.target.value}
+        ))
     }
 
     const handleUserEmail = (e) => {
         if (e.target.value.length > 50) return
-        setUserEmail(e.target.value)
+        // setUserEmail(e.target.value)
+        setFormUserData(prev => ({
+            ...prev,
+                userEmail: e.target.value}
+        ))
+        
         if (e.target.value.length < 7)
             setErrorMessage(t("error.message1"))
         else
@@ -221,7 +261,11 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
 
     const handleUserPassword = (e) => {
         if (e.target.value.length > 15) return
-        setUserPassword(e.target.value)
+        // setUserPassword(e.target.value)
+        setFormUserData(prev => ({
+            ...prev,
+                userPassword: e.target.value}
+        ))
         if (e.target.value.length < minPasswordLength)
             setErrorMessage(t("error.message2"))
         else
@@ -230,7 +274,11 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
 
     const handleUserNombre_Apellidos = (e) => {
         if (e.target.value.length > 50) return
-        setUserNombre_Apellidos(e.target.value)
+        // setUserNombre_Apellidos(e.target.value)
+        setFormUserData(prev => ({
+            ...prev,
+                userNombre_Apellidos: e.target.value}
+        ))
         if (e.target.value.length < 7)
             setErrorMessage(t("error.message3"))
         else
@@ -239,12 +287,20 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
 
     const handleUserMovil = (e) => {
         let numbersOnly = e.target.value.replace(/\D/g, '').slice(0, 9) // solo 9 números
-        setUserMovil(numbersOnly)
+        // setUserMovil(numbersOnly)
+        setFormUserData(prev => ({
+            ...prev,
+                userMovil: numbersOnly}
+        ))
     }
 
     const handleUserExtension = (e) => {
         let numbersOnly = e.target.value.replace(/\D/g, '').slice(0, 3) // solo 3 números
-        setUserExtension(numbersOnly)
+        // setUserExtension(numbersOnly)
+        setFormUserData(prev => ({
+            ...prev,
+                userExtension: numbersOnly}
+        ))
         if (e.target.value > 3) {
             setErrorMessage(t("error.message4"))
             return
@@ -258,15 +314,16 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
             navigate(`/`, { replace: true })
             return
         }
-        if (userEmail.length < 18 && !userEmail.includes("@erroak.sartu.org")) {
+        // if (userEmail.length < 18 && !userEmail.includes("@erroak.sartu.org")) {
+        if (!formUserData.userEmail.includes("@erroak.sartu.org") || formUserData.userEmail.length < 18) {
             setErrorMessage(t("error.message5"))
             return
         }
-        if (userPassword.length < minPasswordLength) {
+        if (formUserData.userPassword.length < formUserData.minPasswordLength) {
             setErrorMessage(t("error.message6"))
             return
         }
-        if (userNombre_Apellidos.length < 8) {
+        if (formUserData.userNombre_Apellidos.length < 8) {
             setErrorMessage(t("error.message7"))
             return
         }
@@ -275,19 +332,19 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
             console.log("paso por hadleSignUp")
             const userTmp = {
                 // id: user.id,
-                email: userEmail,
-                password: userPassword,
-                nombre_apellidos: userNombre_Apellidos,
-                movil: userMovil.replace('-', ''),
-                extension: userExtension,
-                centro_id: userCentro,
-                llave: userLlave,
-                alarma: userAlarma,
-                lenguaje_id: userLenguaje,
-                turno_id: userTurno,
-                color: selectedColor,
-                tarde_invierno: userTarde_Invierno,
-                observaciones: userObservaciones
+                email: formUserData.userEmail,
+                password: formUserData.userPassword,
+                nombre_apellidos: formUserData.userNombre_Apellidos,
+                movil: formUserData.userMovil.replace('-', ''),
+                extension: formUserData.userExtension,
+                centro_id: formUserData.userCentro,
+                llave: formUserData.userLlave,
+                alarma: formUserData.userAlarma,
+                lenguaje_id: formUserData.userLenguaje,
+                turno_id: formUserData.userTurno,
+                color: formUserData.selectedColor,
+                tarde_invierno: formUserData.userTarde_Invierno,
+                observaciones: formUserData.userObservaciones
             }
             console.log("user: ", userTmp)
             const endPoint = `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario`
@@ -324,7 +381,8 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                 const usuario = {
                     id: resultado.usuario_id,
                     // password: userPassword,
-                    nombre_apellidos: userNombre_Apellidos,
+                    // nombre_apellidos: userNombre_Apellidos,
+                    nombre_apellidos: formUserData.userNombre_Apellidos,
                     emailUsuario: resultado.email
                 }
                 setUser(usuario)
@@ -333,7 +391,8 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                 setDialogNewUserOpen(true)
             }
             // const lenguajeUsuario = userLenguaje === 0 ? "es" : "eu"
-            const lenguajeUsuario = languagesSelect[userLenguaje].lang
+            // const lenguajeUsuario = languagesSelect[userLenguaje].lang
+            const lenguajeUsuario = languagesSelect[formUserData.userLenguaje].lang
             setSelectedLanguage(lenguajeUsuario)
             i18n.changeLanguage(lenguajeUsuario)      
 
@@ -396,7 +455,8 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                             placeholder={t("box.formcontrol1.placeholder")}
                             required
                             fullWidth
-                            value={userEmail}
+                            // value={userEmail}
+                            value={formUserData.userEmail}
                             disabled={formReadOnly}
                             onChange={(e)=> handleUserEmail(e)}
                         />
@@ -415,7 +475,8 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                             placeholder={`(${t("box.formcontrol2.placeholder.text1")}. ${minPasswordLength} - ${t("box.formcontrol2.placeholder.text2")}.)`}
                             required
                             fullWidth
-                            value={userPassword}
+                            // value={userPassword}
+                            value={formUserData.userPassword}
                             disabled={formReadOnly}
                             onChange={(e)=> handleUserPassword(e)}
                         />
@@ -432,7 +493,8 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                             placeholder={t("box.formcontrol3.placeholder")}
                             required
                             fullWidth
-                            value={userNombre_Apellidos}
+                            // value={userNombre_Apellidos}
+                            value={formUserData.userNombre_Apellidos}
                             disabled={formReadOnly}
                             onChange={(e)=> handleUserNombre_Apellidos(e)}
                         />
@@ -449,7 +511,8 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                             // placeholder="Ej.: 699616161 (9 dígitos)"
                             placeholder={t("box.formcontrol4.placeholder")}
                             fullWidth
-                            value={userMovil}  // esta línea es esencial para poder usarse en la funcion handleUserMovil
+                            // value={userMovil}  // esta línea es esencial para poder usarse en la funcion handleUserMovil
+                            value={formUserData.userMovil}  // esta línea es esencial para poder usarse en la funcion handleUserMovil
                             disabled={formReadOnly}
                             onChange={(e)=> handleUserMovil(e)}
                         />
@@ -465,7 +528,8 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                             autoComplete="extension"
                             placeholder={t("box.formcontrol5.placeholder")}
                             fullWidth
-                            value={userExtension}
+                            // value={userExtension}
+                            value={formUserData.userExtension}
                             disabled={formReadOnly}
                             onChange={(e)=> handleUserExtension(e)}
                         />
@@ -478,9 +542,15 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                             fullWidth
                             labelId="select-label-centro"
                             id="select-centro"
-                            value={userCentro}
+                            // value={userCentro}
+                            value={formUserData.userCentro}
                             disabled={formReadOnly}
-                            onChange={(e) => setUserCentro(e.target.value)}
+                            // onChange={(e) => setUserCentro(e.target.value)}
+                            onChange={(e)=> setFormUserData(prev => ({
+                                    ...prev,
+                                        userCentro: e.target.value}
+                                ))
+                            }
                             required
                         >
                             {centros.map((centro) => (
@@ -498,8 +568,14 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                                 aria-labelledby="demo-radio-buttons-group-label-llave"
                                 defaultValue="false"
                                 name="radio-buttons-group-llave"
-                                value={userLlave}
-                                onChange={(e)=> setUserLlave(e.target.value)}
+                                // value={userLlave}
+                                value={formUserData.userLlave}
+                                // onChange={(e)=> setUserLlave(e.target.value)}
+                                onChange={(e)=> setFormUserData(prev => ({
+                                        ...prev,
+                                            userLlave: e.target.value}
+                                    ))
+                                }
                             >
                                 <FormControlLabel value="true" control={<Radio />} label={t("box.formcontrol7.radio.label1")} disabled={formReadOnly}/>
                                 <FormControlLabel value="false" control={<Radio />} label={t("box.formcontrol7.radio.label2")} disabled={formReadOnly}/>
@@ -514,8 +590,14 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                                 aria-labelledby="demo-radio-buttons-group-label-alarma"
                                 defaultValue="false"
                                 name="radio-buttons-group-alarma"
-                                value={userAlarma}
-                                onChange={(e)=> setUserAlarma(e.target.value)}
+                                // value={userAlarma}
+                                value={formUserData.userAlarma}
+                                // onChange={(e)=> setUserAlarma(e.target.value)}
+                                onChange={(e)=> setFormUserData(prev => ({
+                                        ...prev,
+                                            userAlarma: e.target.value}
+                                    ))
+                                }
                             >
                                 <FormControlLabel value="true" control={<Radio />} label={t("box.formcontrol8.radio.label1")} disabled={formReadOnly}/>
                                 <FormControlLabel value="false" control={<Radio />} label={t("box.formcontrol8.radio.label2")} disabled={formReadOnly}/>
@@ -532,9 +614,15 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                                 fullWidth
                                 labelId="select-label-lenguaje"
                                 id="selectlenguaje"
-                                value={userLenguaje}
+                                // value={userLenguaje}
+                                value={formUserData.userLenguaje}
                                 disabled={formReadOnly}
-                                onChange={(e) => setUserLenguaje(e.target.value)}
+                                // onChange={(e) => setUserLenguaje(e.target.value)}
+                                onChange={(e)=> setFormUserData(prev => ({
+                                        ...prev,
+                                            userLenguaje: e.target.value}
+                                    ))
+                                }
                                 required
                             >
                                 {lenguajes.map((lenguaje) => (
@@ -550,9 +638,15 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                                 fullWidth
                                 labelId="select-label-turno"
                                 id="selectturno"
-                                value={userTurno}
+                                // value={userTurno}
+                                value={formUserData.userTurno}
                                 disabled={formReadOnly}
-                                onChange={(e) => setUserTurno(e.target.value)}
+                                // onChange={(e) => setUserTurno(e.target.value)}
+                                onChange={(e)=> setFormUserData(prev => ({
+                                        ...prev,
+                                            userTurno: e.target.value}
+                                    ))
+                                }
                                 required
                             >
                                 {turnos.map((turno) => (
@@ -570,7 +664,8 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                             fullWidth
                             labelId="color-select-label"
                             id="selectedcolor"
-                            value={selectedColor}
+                            // value={selectedColor}
+                            value={formUserData.selectedColor}
                             disabled={formReadOnly}
                             onChange={handleChangeColor}
                         >
@@ -599,9 +694,15 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                             fullWidth
                             labelId="select-label-tarde_invierno"
                             id="usertarde_invierno"
-                            value={userTarde_Invierno}
+                            // value={userTarde_Invierno}
+                            value={formUserData.userTarde_Invierno}
                             disabled={formReadOnly}
-                            onChange={(e) => setUserTarde_Invierno(e.target.value)}
+                            // onChange={(e) => setUserTarde_Invierno(e.target.value)}
+                            onChange={(e)=> setFormUserData(prev => ({
+                                    ...prev,
+                                        userTarde_Invierno: e.target.value}
+                                ))
+                            }
                             required
                         >
                             {tardesInvierno.map((tarde) => (
@@ -614,9 +715,15 @@ const UsersCRUDComponent = ({  csrfToken, setCsrfToken, logged, setLogged, user,
                     fullWidth
                     label={t("box.textfieldlabel")}
                     name="observaciones"
-                    value={userObservaciones}
+                    // value={userObservaciones}
+                    value={formUserData.userObservaciones}
                     disabled={formReadOnly}
-                    onChange={(e) => setUserObservaciones(e.target.value)}
+                    // onChange={(e) => setUserObservaciones(e.target.value)}
+                    onChange={(e)=> setFormUserData(prev => ({
+                            ...prev,
+                                userObservaciones: e.target.value}
+                        ))
+                    }
                     margin="dense"
                     multiline
                     rows={3}

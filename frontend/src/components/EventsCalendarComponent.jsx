@@ -28,6 +28,7 @@ import {
     TextField,
     MenuItem,
     FormControl, 
+    FormLabel,
     InputLabel,
     Select,
     Stack,
@@ -51,20 +52,15 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 });
-// const locales = { es };
-// const locales = { eu: localeEu };
-// const localizer = dateFnsLocalizer({
-//   format,
-//   parse,
-//   startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
-//   getDay,
-//   locales,
-// });
 
 const saltosTiempo = 30 // step={15}
 const saltosHora = 2 // timeslots={4}
 const horaMinima = new Date(1970, 1, 1, 7, 0) // Limitación hora mínima
 const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
+const minYearSelect = 2025
+const maxYearSelect = 2055
+const yearsSelect = Array.from({ length: maxYearSelect - minYearSelect + 1 }, (elemento, index) => minYearSelect + index);
+const monthsSelect = Array.from({ length: 12 }, (elemento, index) => index);
 
 const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLanguage } ) => {
     
@@ -81,8 +77,6 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
     const [errorDialogOpen, setErrorDialogOpen] = useState(false)
     const [errorDialogMessage, setErrorDialogMessage] = useState('')
-    // const [actionEventMessage, setActionEventMessage] = useState(['Agregar', 'Editar'])
-    // const [actionEventMessage, setActionEventMessage] = useState([t("actioneventmessage.message1"), t("actioneventmessage.message2")])
     const [actionEventMessage, setActionEventMessage] = useState([])
     const [usuarios, setUsuarios] = useState([])
     const [espacios, setEspacios] = useState([])
@@ -96,27 +90,9 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
     const [errorMessageRepeated, setErrorMessageRepeated] = useState("")
     const [isRepeatableSpace, setIsRepeatableSpace] = useState(false)
     const [repeatableSpaces, setRepeatableSpaces] = useState([
-        28 // Exterior
+        28 // Espacios especiales que se pueden repetir: Exterior (28) - añadir más en caso de
     ])
-    // const locales = { es: localeEs, eu: localeEu };
-    // const [localizer, setLocalizer] = useState(null); // null al inicio
-
-    // useEffect(() => {
-    //     const currentLocale = locales[selectedLanguage] || localeEs;
-
-    //     const newLocalizer = dateFnsLocalizer({
-    //     format: (date, formatStr, options) =>
-    //         format(date, formatStr, { ...options, locale: currentLocale }),
-    //     parse: (value, formatStr, options) =>
-    //         parse(value, formatStr, new Date(), { ...options, locale: currentLocale }),
-    //     startOfWeek: (date) => startOfWeek(date, { locale: currentLocale }),
-    //     getDay,
-    //     locales
-    //     });
-
-    //     setLocalizer(newLocalizer);
-    // }, [selectedLanguage]);
-
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
 
     useEffect(() => {
         const getNewEventFormData = async () => {
@@ -198,7 +174,6 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
             // Llamando a backend para presentar los datos
             try {
                 const response = await fetch(
-                //   `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventosuser/${user.id}/${start.toISOString()}/${end.toISOString()}`,
                   `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventosuser/${start.toISOString()}/${end.toISOString()}`,
                     {
                         method: 'GET',
@@ -296,7 +271,7 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
         const isWeekend = newStart.getDay() === 0 || newStart.getDay() === 6
 
         if (isWeekend) {
-            // setErrorDialogMessage('Solo se permiten eventos en días laborales.')
+            // 'Solo se permiten eventos en días laborales.'
             setErrorDialogMessage(t("errordialog.message1"))
             setErrorDialogOpen(true)
             return
@@ -333,14 +308,14 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
     const handleSaveRepeat = async () => { 
         console.log("Repetir !!", selectedEvent, eventDataRepeatStart, eventDataRepeatEnd)
         if (eventDataRepeatEnd < eventDataRepeatStart) {
-            // setErrorDialogMessage(`Fecha Fin menor que fecha Inicio`)
+            // `Fecha Fin menor que fecha Inicio`
             setErrorDialogMessage(t("errordialog.message2"))
             setErrorDialogOpen(true)
             return
         }
         // Permitir repetir 30 dias máximo
         if(restaDias(eventDataRepeatStart, eventDataRepeatEnd) > 30) {
-            // setErrorDialogMessage(`Maximo repeticiones 30 días`)
+            // `Maximo repeticiones 30 días`
             setErrorDialogMessage(t("errordialog.message3"))
             setErrorDialogOpen(true)
             return
@@ -348,7 +323,6 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
         const newEvents = []
         let currentDate = new Date(eventDataRepeatStart)      // Copia de eventDataRepatStart
         let endDate = new Date(eventDataRepeatEnd)
-        let dayCounter = 0
         const startHours = selectedEvent.start.getHours()
         const startMinutes = selectedEvent.start.getMinutes()
         const endHours = selectedEvent.end.getHours()
@@ -417,7 +391,6 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
                 setErrorMessageRepeated([...alreadyExistSpaces])
             }
             setDialogRepeatedResultOpen(true)
-            // const
         }
 
         setEvents([...events, ...newEvents]);
@@ -438,13 +411,13 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
 
         // Limitar inicio y fin si están fuera de los límites
         if (eventData.start >= eventData.end) {
-            // setErrorDialogMessage('La hora de inicio debe ser menor que la hora de fin')
+            // 'La hora de inicio debe ser menor que la hora de fin'
             setErrorDialogMessage(t("errordialog.message4"))
             setErrorDialogOpen(true)
             return
         }
         if (eventData.start < minTime || eventData.end > maxTime) {
-            // setErrorDialogMessage(`La hora del evento debe estar entre ${horaMinima.getHours()}hrs y ${horaMaxima.getHours()}hrs (dentro del mismo día)`)
+            // `La hora del evento debe estar entre ${horaMinima.getHours()}hrs y ${horaMaxima.getHours()}hrs (dentro del mismo día)`
             setErrorDialogMessage(`${t("message5.part1")} ${horaMinima.getHours()}${t("message5.part2")} ${horaMaxima.getHours()}${t("message5.part3")}`)
             setErrorDialogOpen(true)
             return
@@ -452,28 +425,28 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
 
         const day = eventData.start.getDay()
         if (day === 0 || day === 6) {
-            // setErrorDialogMessage('Solo se permiten eventos en días laborales')
+            // 'Solo se permiten eventos en días laborales'
             setErrorDialogMessage(t("errordialog.message1"))
             setErrorDialogOpen(true)
             return
         }
 
         if (eventData.usuario_id < 1) {
-            // setErrorDialogMessage('Seleccionar un Usuario')
+            // 'Seleccionar un Usuario'
             setErrorDialogMessage(t("errordialog.message6"))
             setErrorDialogOpen(true)
             return
         }
 
         if (eventData.espacio_id < 1) {
-            // setErrorDialogMessage('Seleccionar un Espacio');
+            // 'Seleccionar un Espacio'
             setErrorDialogMessage(t("errordialog.message7"))
             setErrorDialogOpen(true)
             return
         }
 
         if (eventData.programa_id < 1) {
-            // setErrorDialogMessage('Seleccionar un Programa');
+            // 'Seleccionar un Programa'
             setErrorDialogMessage(t("errordialog.message8"))
             setErrorDialogOpen(true)
             return
@@ -504,7 +477,7 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
                     return
                 }
                 if (data.result === "Espacio ya existente") {
-                    // setErrorMessage("Espacio OCUPADO, elegir otro")
+                    // "Espacio OCUPADO, elegir otro"
                     setErrorMessage(t("errormessage.message1"))
                     setDialogError(true)
                     return
@@ -545,7 +518,7 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
                     return
                 }
                 if (data.result === "Espacio ya existente") {
-                    // setErrorMessage("Espacio en uso en ese rango de tiempo")
+                    // "Espacio en uso en ese rango de tiempo"
                     setErrorMessage(t("errormessage.message2"))
                     setDialogError(true)
                     return
@@ -574,7 +547,7 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
     const handleEventDrop = async ({ event, start, end }) => {
         const day = start.getDay()
         if (day === 0 || day === 6) {
-            // setErrorDialogMessage('Solo se permiten eventos en días laborales.')
+            // 'Solo se permiten eventos en días laborales.'
             setErrorDialogMessage(t("errordialog.message1"))
             setErrorDialogOpen(true)
             return
@@ -606,7 +579,7 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
                 return
             }
             if (data.result === "Espacio ya existente") {
-                // setErrorMessage("Espacio en uso en ese rango de tiempo.")
+                // "Espacio en uso en ese rango de tiempo."
                 setErrorMessage(t("errormessage.message2"))
                 setDialogError(true)
                 return
@@ -626,7 +599,7 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
 
     const confirmDelete = async () => {
         if (!selectedEvent || !selectedEvent.event_id) {
-            // setErrorDialogMessage('No hay evento válido para eliminar.')
+            // 'No hay evento válido para eliminar.'
             setErrorDialogMessage(t("errordialog.message9"))
             setErrorDialogOpen(true)
             return
@@ -742,12 +715,105 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
             })
     }
 
+    const handleSelectedYear = (e) => {
+        setSelectedYear(e.target.value)
+        const newSelectedYear = new Date(date)
+        newSelectedYear.setFullYear(e.target.value)
+        setDate(newSelectedYear)
+    }
+
     return (
     <>
         <Toolbar />
-        {/* <h2>EVENTOS AÑO: {date.getFullYear()}</h2> */}
-        <h2>{t("mainheader.text1")}: {date.getFullYear()}</h2>
-
+        <Stack justifyContent="space-between" alignItems="center" mb={0}
+            sx={{
+                position: "fixed",  top: 60,
+                left: 0,
+                right: 0,
+                zIndex: 1100, // mayor que AppBar (por defecto en MUI)
+                backgroundColor: 'white',
+                // paddingY: 1,
+                // paddingX: 2,
+                borderBottom: '1px solid #ddd',
+                fontSize: {
+                    xs: '8px',   // móviles
+                    sm: '12px',  // tablets
+                    md: '14px',  // escritorio
+                }
+            }}
+            direction={{ 
+                xs: "column",   // móviles
+                sm: "row",  // tablets
+                md: "row",  // escritorio
+             }}
+            flexDirection={{ 
+                xs: "column-reverse",   // móviles
+                sm: "row",  // tablets
+                md: "row",  // escritorio
+             }}
+        >
+            <Box sx={{ flex: 1}}>
+                <FormControl>
+                    <Stack direction="row" spacing={2} alignItems="center" justifyContent="left"
+                    >
+                        <FormLabel htmlFor="selectselectedyear" 
+                            sx={{ color: "black", minWidth: 50,
+                                fontSize: {
+                                    xs: '10px',   // móviles
+                                    sm: '14px',  // tablets
+                                    md: '14px',  // escritorio
+                                }
+                            }}
+                        >{t("mainheader.text1")}:</FormLabel>
+                        <Select 
+                            fullWidth
+                            labelId="select-label-selectedyear"
+                            id="selectselectedyear"
+                            value={selectedYear}
+                            onChange={handleSelectedYear}
+                            variant='outlined'
+                            sx= {{fontSize: {
+                                xs: '10px',   // móviles
+                                sm: '14px',  // tablets
+                                md: '14px',  // escritorio
+                            }}}
+                        >
+                            {yearsSelect.map((year, index) => (
+                                <MenuItem key={index} value={year}
+                                    // sx={{ fontWeight: 'bold' }}  // también negrita en opciones
+                                >
+                                    {year}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </Stack>
+                </FormControl>
+            </Box>
+            {/* <h2>EVENTOS AÑO: {date.getFullYear()}</h2> */}
+            {/* <h2>{t("mainheader.text1")}: {date.getFullYear()}</h2> */}
+            {/* <Typography variant="h4" sx={{my: "0.83em"}}> */}
+            <Typography variant="h4" component="h4"
+                sx={{  
+                    flex: 1,
+                    fontSize: "1.5em",
+                    my: "0.83em",
+                    fontWeight: "bold",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center" ,
+}}>
+                    {t("mainheader.text2")}: {date.getFullYear()}
+            </Typography>
+            <Box sx={{ flex: 1}}>
+                <Box> </Box>
+            </Box>
+        </Stack>
+        <Toolbar />
+        {/* <Toolbar sx={{ display:{
+                xs: "flex",   // móviles
+                sm: "none",  // tablets
+                md: "none",  // escritorio
+        }}}/> */}
         {/* OCULTANDO LA LÍNEA SUPERIOR (NO NECESARIA) DE EVENTOS QUE DURAN VARIOS DÍAS */}
         {(view === 'work_week' || view === 'day') && (
         <style>
@@ -829,13 +895,6 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
                 }
             }}
             messages={{
-                // next: 'Sig.',
-                // previous: 'Ant.',
-                // today: 'Hoy',
-                // month: 'Mes',
-                // work_week: "Semana",                          // ponemos el texto Semana para work_week, sino aparecería "Work week"
-                // day: 'Día',
-                // agenda: 'Agenda',
                 next: t("calendar.next"),
                 previous: t("calendar.previous"),
                 today: t("calendar.today"),
@@ -844,27 +903,22 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
                 day: t("calendar.day"),
                 agenda: t("calendar.agenda"),
                 noEventsInRange: t("calendar.noeventsinrange"),
-                // showMore: t("calendar.showmore")
                 showMore: (count) => t("calendar.showmore", { count })  // Usar como función
-
             }}
         />
 
         {/* <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeEs}> */}
         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeEs}>
             <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth>
-                {/* <DialogTitle>{!isEditing ? actionEventMessage[0] : actionEventMessage[1]} evento</DialogTitle> */}
                 <DialogTitle>{!isEditing ? actionEventMessage[0] : actionEventMessage[1]}</DialogTitle>
                 <DialogContent>
                     <Stack spacing={1} mt={1}> 
                         <FormControl fullWidth margin='dense'>
-                            {/* <InputLabel id="select-label-usuario_id">Usuario *</InputLabel> */}
+                            {/*>Usuario *< */}
                             <InputLabel id="select-label-usuario_id">{t("dialogcontents.formcontrol1.inputlabel")} *</InputLabel>
                             <Select
-                                // fullWidth
                                 labelId="select-label-usuario_id"
                                 id="select-usuario_id"
-                                // label="Usuario *"
                                 label={`${t("dialogcontents.formcontrol1.selectlabel")} *`}
                                 value={eventData.usuario_id}
                                 onChange={(e) => setEventData({ ...eventData, usuario_id: e.target.value})}
@@ -876,13 +930,11 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
                             </Select>
                         </FormControl>
                         <FormControl fullWidth margin='dense'>
-                            {/* <InputLabel id="select-label-espacio_id">Espacio *</InputLabel> */}
+                            {/* >Espacio *< */}
                             <InputLabel id="select-label-espacio_id">{t("dialogcontents.formcontrol2.inputlabel")} *</InputLabel>
                             <Select
-                                // fullWidth // al ser un FormControl no es necesario ponerlo en sus Select
                                 labelId="select-label-espacio_id"
                                 id="select-espacio_id"
-                                // label="Espacio *"
                                 label={`${t("dialogcontents.formcontrol2.selectlabel")} *`}
                                 value={eventData.espacio_id}
                                 onChange={(e) => setEventData({ ...eventData, espacio_id: e.target.value, repetible: repeatableSpaces.includes(e.target.value)})}
@@ -894,12 +946,11 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
                             </Select>
                         </FormControl>
                         <FormControl fullWidth margin='dense'>
-                            {/* <InputLabel id="select-label-programa_id">Programa *</InputLabel> */}
+                            {/* >Programa *<*/}
                             <InputLabel id="select-label-programa_id">{t("dialogcontents.formcontrol3.inputlabel")} *</InputLabel>
                             <Select
                                 labelId="select-label-programa_id"
                                 id="select-programa_id"
-                                // label="Programa *"
                                 label={`${t("dialogcontents.formcontrol3.selectlabel")} *`}
                                 value={eventData.programa_id}
                                 onChange={(e) => setEventData({ ...eventData, programa_id: e.target.value})}
@@ -912,14 +963,12 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
 
                         <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
                             <DateTimePicker
-                                // label="Inicio *"
                                 label={`${t("dialogcontents.stackdatetimepickerlabel1")} *`}
                                 value={eventData.start}
                                 onChange={(newValue) => setEventData({ ...eventData, start: newValue })}
                                 slotProps={{ textField: { fullWidth: true, margin: 'dense' } }}
                             />
                             <DateTimePicker
-                                // label="Fin *"
                                 label={`${t("dialogcontents.stackdatetimepickerlabel2")} *`}
                                 value={eventData.end}
                                 onChange={(newValue) => setEventData({ ...eventData, end: newValue })}
@@ -929,7 +978,6 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
 
                         <TextField
                             fullWidth
-                            // label="Observaciones"
                             label={`${t("dialogcontents.textfield")}`}
                             name="observaciones"
                             value={eventData.observaciones}
@@ -942,47 +990,45 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
                 </DialogContent>
                 <DialogActions>
                     {isEditing &&
-                        // <Button onClick={handleDeleteEvent} color="error" variant="contained">Eliminar</Button>
+                        // >Eliminar<
                         <Button onClick={handleDeleteEvent} color="error" variant="contained">{t("buttontexts.text1")}</Button>
                     }
                     {isEditing && !isRepeatableSpace && (
-                        // <Button onClick={handleRepeatEvent} variant="contained">Repetir</Button>
+                        // >Repetir<
                         <Button onClick={handleRepeatEvent} variant="contained">{t("buttontexts.text2")}</Button>
                     )}
-                    {/* <Button onClick={handleSaveEvent} variant="contained">Guardar</Button> */}
+                    {/* >Guardar< */}
                     <Button onClick={handleSaveEvent} variant="contained">{t("buttontexts.text3")}</Button>
-                    {/* <Button onClick={handleCloseDialog} variant="contained">Cancelar</Button> */}
+                    {/* >Cancelar< */}
                     <Button onClick={handleCloseDialog} variant="contained">{t("buttontexts.text4")}</Button>
                 </DialogActions>
             </Dialog>
             <Dialog open={confirmDeleteOpen} onClose={cancelDelete}>
-                {/* <DialogTitle>¿Eliminar evento?</DialogTitle> */}
+                {/* >¿Eliminar evento?<*/}
                 <DialogTitle>{t("dialogtitles.title1")}</DialogTitle>
                 <DialogContent>
                     {/* ¿Estás seguro de que deseas eliminar el evento <strong>{selectedEvent?.title}</strong>? */}
                     ¿{t("dialogcontents.text")} <strong>{selectedEvent?.title}</strong>?
                 </DialogContent>
                 <DialogActions>
-                    {/* <Button onClick={confirmDelete} color="error" variant="contained">Eliminar</Button> */}
+                    {/* >Eliminar< */}
                     <Button onClick={confirmDelete} color="error" variant="contained">{t("buttontexts.text1")}</Button>
-                    {/* <Button onClick={cancelDelete} variant="contained">Cancelar</Button> */}
+                    {/* >Cancelar< */}
                     <Button onClick={cancelDelete} variant="contained">{t("buttontexts.text4")}</Button>
                 </DialogActions>
             </Dialog>
             <Dialog open={dialogRepeatOpen} onClose={handleCloseRepeat}>
-                {/* <DialogTitle>Repetir evento (max. 30)</DialogTitle> */}
+                {/* >Repetir evento (max. 30)< */}
                 <DialogTitle>{t("dialogtitles.title2")}</DialogTitle>
                 <DialogContent>
                         <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
                             <DatePicker
-                                // label="Inicio *"
                                 label={`${t("dialogcontents.stackdatetimepickerlabel1")} *`}
                                 value={eventDataRepeatStart}
                                 onChange={(value) => handleEventDataRepeatStart(value)}
                                 slotProps={{ textField: { fullWidth: true, margin: 'dense', sx: { mt: 1 }} }}
                             />
                             <DatePicker
-                                // label="Fin *"
                                 label={`${t("dialogcontents.stackdatetimepickerlabel2")} *`}
                                 value={eventDataRepeatEnd}
                                 onChange={(value) => handleEventDataRepeatEnd(value)}
@@ -991,36 +1037,36 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
                         </Stack>
                 </DialogContent>
                 <DialogActions>
-                    {/* <Button onClick={handleSaveRepeat} color="error" variant="contained">Repetir</Button> */}
+                    {/* >Repetir<*/}
                     <Button onClick={handleSaveRepeat} color="error" variant="contained">{t("buttontexts.text2")}</Button>
-                   {/* <Button onClick={handleCloseRepeat} variant="contained">Cancelar</Button> */}
+                   {/* >Cancelar< */}
                     <Button onClick={handleCloseRepeat} variant="contained">{t("buttontexts.text4")}</Button>
                 </DialogActions>
             </Dialog>
             <Dialog open={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>
-                {/* <DialogTitle>Advertencia</DialogTitle> */}
+                {/* >Advertencia< */}
                 <DialogTitle>{t("dialogtitles.title3")}</DialogTitle>
                 <DialogContent>{errorDialogMessage}</DialogContent>
                 <DialogActions>
-                    {/* <Button onClick={() => setErrorDialogOpen(false)} autoFocus>Cerrar</Button> */}
+                    {/* >Cerrar< */}
                     <Button onClick={() => setErrorDialogOpen(false)} variant="contained" autoFocus>{t("buttontexts.text5")}</Button>
                 </DialogActions>
             </Dialog>
             <Dialog open={dialogError} onClose={handleCloseError}>
-                {/* <DialogTitle>No se puede guardar</DialogTitle> */}
+                {/* >No se puede guardar< */}
                 <DialogTitle>{t("dialogtitles.title4")}</DialogTitle>
                 <DialogContent>
                     <DialogContent>
                         {errorMessage}
                     </DialogContent>
                     <DialogActions>
-                        {/* <Button onClick={handleCloseError} variant="contained">Continuar</Button> */}
+                        {/* >Continuar< */}
                         <Button onClick={handleCloseError} variant="contained">{t("buttontexts.text6")}</Button>
                     </DialogActions>
                 </DialogContent>
             </Dialog>
             <Dialog open={dialogRepeatedResultOpen} onClose={handleCloseRepeatedResult}>
-                {/* <DialogTitle>Resultado Repetición</DialogTitle> */}
+                {/* >Resultado Repetición< */}
                 <DialogTitle>{t("dialogtitles.title5")}</DialogTitle>
                 <DialogContent>
                     <DialogContent>
@@ -1062,14 +1108,14 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
                                 ))}
                                 {/* Botón para copiar al portapapeles */}
                                 <Box mt={2}>
-                                    {/* <Button variant="outlined" onClick={handleCopyToClipboard}>Copiar incidencias</Button> */}
+                                    {/* >Copiar incidencias<*/}
                                     <Button variant="outlined" onClick={handleCopyToClipboard}>{t("buttontexts.text7")}</Button>
                                 </Box>
                             </>
                         }
                     </DialogContent>
                     <DialogActions>
-                        {/* <Button onClick={handleCloseRepeatedResult} variant="contained">Continuar</Button> */}
+                        {/* >Continuar< */}
                         <Button onClick={handleCloseRepeatedResult} variant="contained">{t("buttontexts.text6")}</Button>
                     </DialogActions>
                 </DialogContent>

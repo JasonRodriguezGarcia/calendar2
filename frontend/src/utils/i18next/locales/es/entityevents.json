@@ -1,6 +1,7 @@
 {
     "mainheader": {
-        "text1": "EVENTOS ENTIDAD AÑO"
+        "text1": "Año",
+        "text2": "EVENTOS ENTIDAD AÑO"
     },
     "grid": {
         "header": {

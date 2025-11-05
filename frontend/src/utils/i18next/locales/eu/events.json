@@ -1,29 +1,30 @@
 {
     "mainheader": {
-        "text1": "URTEKO GERTAERAK"
+        "text1": "Urte",
+        "text2": "URTEKO GERTAERAK"
     },
     "errordialog": {
-        "message1": "Ekitaldiak lanegunetan bakarrik baimenduta daude.",
+        "message1": "Gertaerak lanegunetan bakarrik baimenduta daude.",
         "message2": "Amaiera-data Hasiera-data baino txikiagoa",
         "message3": "Gehienezko errepikapenak 30 egun",
-        "message4": "Hasiera ordua Amaiera ordua baino txikiagoa izan behar da.",
+        "message4": "Hasiera orduak, Amaiera ordua baino txikiagoa izan behar du.",
         "message5": {
             "part1": "Ekitaldiaren ordua goizeko",
             "part2": "etatik",
-            "part3": "etara izan behar da"
+            "part3": "etara izan behar du"
         },
-        "message6": "Hautatu Erabiltzaile bat",
-        "message7": "Hautatu Espazio bat",
-        "message8": "Hautatu Programa bat",
+        "message6": "Erabiltzaile bat hautatu ",
+        "message7": "Espazio bat hautatu",
+        "message8": "Programa bat hautatu",
         "message9": "Ez dago ezabatzeko gertaera baliozkorik"
     },
     "errormessage": {
-        "message1": "OKUPATUTA dagoen espazioa, aukeratu beste bat",
-        "message2": "Denbora-tarte horretan erabiltzen den espazioa"
+        "message1": "Espazioa OKUPATUTA dago, aukeratu beste bat",
+        "message2": "Espazioa, denbora-tarte horretan erabiltzen ari da"
     },
     "actioneventmessage": {
-        "message1": "Gehitu gertaera",
-        "message2": "Editatu gertaera"
+        "message1": "Gertaera gehitu",
+        "message2": "Gertaera editatu"
     },
     "buttontexts": {
         "text1": "Ezabatu",
@@ -59,20 +60,20 @@
         "textfield": "Oharrak",
         "text": "Ziur zaude gertaera ezabatu nahi duzula",
         "dialogcontent": {
-            "typography1": "Errepikapena gorabeherarik gabe",
+            "typography1": "Gertakaririk gabeko errepikapena",
             "typography2": {
             "text1": "Hasieratik",
             "text2": "Amaierara"
             },
-            "typography3": "Errepikapena GORABEHEREKIN"
+            "typography3": "Errepikapena GERTAKARIEKIN"
         }
     },
     "calendar": {
         "next": "Hur.",
         "previous": "Aur.",
         "today": "Gaur",
-        "month": "Hila",
-        "workweek": "Lan astea",
+        "month": "Hilabetea",
+        "workweek": "Astea",
         "day": "Eguna",
         "agenda": "Agenda",
         "noeventsinrange": "Ez dago gertaerarik tarte honetan.",

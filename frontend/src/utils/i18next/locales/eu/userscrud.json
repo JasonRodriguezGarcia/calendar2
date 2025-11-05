@@ -2,11 +2,11 @@
   "error": {
     "message1": "Emaila laburregia da",
     "message2": "Pasahitza laburregia da",
-    "message3": "Izena eta abizenak laburregiak dira",
+    "message3": "Izen-abizenak laburregiak dira",
     "message4": "Karaktere kopuru maximoa gaindituta",
     "message5": "Baliozko emaila sartu",
     "message6": "Pasahitz luzeagoa sartu",
-    "message7": "Izena eta abizenak luzeagoak izan behar dira",
+    "message7": "Izen-abizenak luzeagoak izan behar dira",
     "message8": "Emaila lehendik existitzen da"
   },
   "lengua": {
@@ -92,7 +92,7 @@
     "dialog": {
       "title": "Erabiltzailea sortu da",
       "content": {
-          "content": "Erabiltzaile berria arrakastaz sortu da. Saioa hasi dezakezu sistemara sartzeko.",
+          "content": "Erabiltzaile berria ondo sortu da. Saioa hasi dezakezu sistemara sartzeko.",
           "actions": "Jarraitu"
       }
     }

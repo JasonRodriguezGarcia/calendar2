@@ -19,6 +19,12 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import {
     Toolbar,
     Box, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
+    FormControl,
+    FormLabel,
+    Stack,
+    Select,
+    MenuItem,
+    Typography
 } from '@mui/material';
 const locales = { es, eu };
 const localizer = dateFnsLocalizer({
@@ -28,6 +34,10 @@ const localizer = dateFnsLocalizer({
     getDay,
     locales,
 });
+const minYearSelect = 2025
+const maxYearSelect = 2055
+const yearsSelect = Array.from({ length: maxYearSelect - minYearSelect + 1 }, (elemento, index) => minYearSelect + index);
+const monthsSelect = Array.from({ length: 12 }, (elemento, index) => index);
 
 const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
 
@@ -39,7 +49,8 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
     const [view, setView] = useState(Views.MONTH);      // POR DEFECTO VISTA SEMANA LABORAL
     const [diasUsadosVacaciones, setDiasUsadosVacaciones] = useState(0)
     const { t, i18n } = useTranslation("holidays")
-    
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+
     console.log("selectedLanguage", selectedLanguage)
 
     const fetchCheckHolidays = async () => {
@@ -257,11 +268,108 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
         )
     }
 
+    const handleSelectedYear = (e) => {
+        setSelectedYear(e.target.value)
+        const newSelectedYear = new Date(date)
+        newSelectedYear.setFullYear(e.target.value)
+        setDate(newSelectedYear)
+    }
+
     return (
-        <Box>
+        <>
             <Toolbar />
-            <h2>{t("mainheader.text1")}: {date.getFullYear()} ({t("mainheader.text2")}: {diasUsadosVacaciones})</h2>
-            <p>({t("mainheader.text3")})</p>
+            {/* <h2>{t("mainheader.text1")}: {date.getFullYear()} ({t("mainheader.text2")}: {diasUsadosVacaciones})</h2>
+            <p>({t("mainheader.text3")})</p> */}
+            <Stack justifyContent="space-between" alignItems="center" mb={0}
+                sx={{
+                    position: "fixed",  top: 60,
+                    left: 0,
+                    right: 0,
+                    zIndex: 1100, // mayor que AppBar (por defecto en MUI)
+                    backgroundColor: 'white',
+                    // paddingY: 1,
+                    // paddingX: 2,
+                    borderBottom: '1px solid #ddd',
+                    fontSize: {
+                        xs: '8px',   // móviles
+                        sm: '10px',  // tablets
+                        md: '14px',  // escritorio
+                    }
+                }}
+                    direction={{ 
+                        xs: "column",   // móviles
+                        sm: "row",  // tablets
+                        md: "row",  // escritorio
+                    }}
+                    flexDirection={{ 
+                        xs: "column-reverse",   // móviles
+                        sm: "row",  // tablets
+                        md: "row",  // escritorio
+                    }}
+                >
+                <Box sx={{ flex: 1}}>
+                    <FormControl>
+                        <Stack direction="row" spacing={2} alignItems="center" justifyContent="left" mb={0}
+                        >
+                            <FormLabel htmlFor="selectselectedyear" 
+                                sx={{ color: "black", minWidth: 50,
+                                    fontSize: {
+                                        xs: '10px',   // móviles
+                                        sm: '14px',  // tablets
+                                        md: '14px',  // escritorio
+                                    }
+                                }}
+                            >
+                                {t("mainheader.text1")}:</FormLabel>
+                            <Select 
+                                fullWidth
+                                labelId="select-label-selectedyear"
+                                id="selectselectedyear"
+                                value={selectedYear}
+                                onChange={handleSelectedYear}
+                                variant='outlined'
+                                sx= {{fontSize: {
+                                    xs: '10px',   // móviles
+                                    sm: '14px',  // tablets
+                                    md: '14px',  // escritorio
+                                }}}
+                            >
+                                {yearsSelect.map((year, index) => (
+                                    <MenuItem key={index} value={year}
+                                        // sx={{ fontWeight: 'bold' }}  // también negrita en opciones
+                                    >
+                                        {year}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </Stack>
+                    </FormControl>
+                </Box>
+                {/* <h2>EVENTOS AÑO: {date.getFullYear()}</h2> */}
+                {/* <h2>{t("mainheader.text1")}: {date.getFullYear()}</h2> */}
+                {/* <Typography variant="h4" sx={{my: "0.83em"}}> */}
+                <Typography variant="h4" component="h4"
+                    sx={{  
+                        flex: 1,
+                        fontSize: "1.5em",
+                        my: "0.83em",
+                        fontWeight: "bold",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center" 
+                    }}>
+                        {t("mainheader.text2")}: {date.getFullYear()} ({t("mainheader.text3")}: {diasUsadosVacaciones})
+                </Typography>
+                <Box sx={{ flex: 1}}>
+                    <Box> </Box>
+                </Box>
+            </Stack>
+            {/* <Toolbar sx={{ display:{
+                    xs: "flex",   // móviles
+                    sm: "none",  // tablets
+                    md: "none",  // escritorio
+            }}}/> */}
+            <p>({t("mainheader.text4")})</p>
 
             <Calendar
                 localizer={localizer}
@@ -272,7 +380,8 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
                 views={{month: true}}                           // Solo vista mensual permitida
                 onSelectSlot={handleSelectSlot}                 // Crear nuevo evento
                 onSelectEvent={handleSelectEvent}               // Editar evento existente
-                style={{ height: "calc(100vh - 150px)" }}
+                // style={{ height: "calc(100vh - 150px)"}}
+                style={{ minHeight: 500}}
                 date={date}
                 view={view}
                 onNavigate={handleNavigate}                     // Cuando el usuario cambia de mes, Calendar ejecuta handleNavigate(newDate).
@@ -306,7 +415,7 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
                     month: t("calendar.month"),
                 }}
             />
-        </Box>
+        </>
     );
 }
 

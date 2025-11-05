@@ -1,6 +1,7 @@
 {
     "mainheader": {
-        "text1": "EVENTOS AÑO"
+        "text1": "Año",
+        "text2": "EVENTOS AÑO"
     },
     "errordialog": {
         "message1": "Solo se permiten eventos en días laborales",

@@ -26,6 +26,7 @@ import {
     MenuItem,
     FormControl, 
     Grid,
+    FormLabel,
     InputLabel,
     ListItemText,
     Select,
@@ -49,6 +50,10 @@ const saltosTiempo = 60 // step={15}
 const saltosHora = 1 // timeslots={4}
 const horaMinima = new Date(1970, 1, 1, 7, 0) // Limitación hora mínima
 const horaMaxima =new Date(1970, 1, 1, 21, 0) // Limitacion hora máxima
+const minYearSelect = 2025
+const maxYearSelect = 2055
+const yearsSelect = Array.from({ length: maxYearSelect - minYearSelect + 1 }, (elemento, index) => minYearSelect + index);
+const monthsSelect = Array.from({ length: 12 }, (elemento, index) => index);
 
 const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }) => {
     
@@ -66,6 +71,7 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
     const [selectedUsuarios, setSelectedUsuarios] = useState([])
     const [selectedProgramas, setSelectedProgramas] = useState([])
     const [selectedEspacios, setSelectedEspacios] = useState([])
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
 
     useEffect(() => {
         const getNewEventFormData = async () => {
@@ -259,11 +265,102 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
         setEvents(allEvents)
     }
 
+    const handleSelectedYear = (e) => {
+        setSelectedYear(e.target.value)
+        const newSelectedYear = new Date(date)
+        newSelectedYear.setFullYear(e.target.value)
+        setDate(newSelectedYear)
+    }
+
     return (
     <>
         <Toolbar />
-        <h2>{t("mainheader.text1")}: {date.getFullYear()}</h2>
-
+        {/* <h2>{t("mainheader.text1")}: {date.getFullYear()}</h2> */}
+        <Stack justifyContent="space-between" alignItems="center" mb={0}
+            sx={{
+                position: "fixed",  top: 60,
+                left: 0,
+                right: 0,
+                zIndex: 1100, // mayor que AppBar (por defecto en MUI)
+                backgroundColor: 'white',
+                // paddingY: 1,
+                // paddingX: 2,
+                borderBottom: '1px solid #ddd',
+                    fontSize: {
+                        xs: '8px',   // móviles
+                        sm: '10px',  // tablets
+                        md: '14px',  // escritorio
+                    }
+            }}
+            direction={{ 
+                xs: "column",   // móviles
+                sm: "row",  // tablets
+                md: "row",  // escritorio
+             }}
+            flexDirection={{ 
+                xs: "column-reverse",   // móviles
+                sm: "row",  // tablets
+                md: "row",  // escritorio
+             }}
+        >
+            <Box sx={{ flex: 1}}>
+                <FormControl>
+                    <Stack direction="row" spacing={2} alignItems="center" justifyContent="left"
+                    >
+                        <FormLabel htmlFor="selectselectedyear" sx={{ color: "black", minWidth: 50,
+                                fontSize: {
+                                    xs: '10px',   // móviles
+                                    sm: '14px',  // tablets
+                                    md: '14px',  // escritorio
+                                }
+                            }}
+                        >
+                            {t("mainheader.text1")}:
+                        </FormLabel>
+                        <Select 
+                            fullWidth
+                            labelId="select-label-selectedyear"
+                            id="selectselectedyear"
+                            value={selectedYear}
+                            onChange={handleSelectedYear}
+                            variant='outlined'
+                            sx= {{fontSize: {
+                                xs: '10px',   // móviles
+                                sm: '14px',  // tablets
+                                md: '14px',  // escritorio
+                            }}}
+                        >
+                            {yearsSelect.map((year, index) => (
+                                <MenuItem key={index} value={year}
+                                    // sx={{ fontWeight: 'bold' }}  // también negrita en opciones
+                                >
+                                    {year}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </Stack>
+                </FormControl>
+            </Box>
+            {/* <h2>EVENTOS AÑO: {date.getFullYear()}</h2> */}
+            {/* <h2>{t("mainheader.text1")}: {date.getFullYear()}</h2> */}
+            {/* <Typography variant="h4" sx={{my: "0.83em"}}> */}
+            <Typography variant="h4" component="h4"
+                sx={{  
+                    flex: 1,
+                    fontSize: "1.5em",
+                    my: "0.83em",
+                    fontWeight: "bold",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center" 
+                }}>
+                    {t("mainheader.text2")}: {date.getFullYear()}
+            </Typography>
+            <Box sx={{ flex: 1}}>
+                <Box> </Box>
+            </Box>
+        </Stack>
+        <Toolbar />
         {/* OCULTANDO LA LÍNEA SUPERIOR (NO NECESARIA) DE EVENTOS QUE DURAN VARIOS DÍAS */}
         {(view === 'work_week' || view === 'day') && (
         <style>
@@ -285,13 +382,13 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
             }} 
         />
     <Box sx={{ flexGrow: 1 }}>  {/* equivale a width: "100%" */}
-        <Grid container spacing={2} 
+        <Grid container spacing={1} 
             direction={{
                 xs: "column",
                 md: "row",
             }}
         >
-            <Grid size={{ xs: 8, md: 3 }}>
+            <Grid size={{ xs: 8, md: 3 }} mt={1}>
                 <h2>{t("grid.header.text1")}</h2>
                 <Button onClick={handleResetFilters} variant="contained">{t("grid.button1text")}</Button>
                 <Stack spacing={1} m={3}> 
@@ -304,7 +401,6 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
                             label={t("stack1formcontrol.selectlabel")}
                             value={selectedUsuarios}
                             onChange={(e)=> handleChangeSelectedValues("usuarios", e)}
-                            // input={<OutlinedInput label="Tag" />} // Estilo borde exterior
                             // renderValue indica cómo queremos mostrar esos datos en este caso un array selectedUsuarios
                             // CON OBJETOS que es seleccionado como "selected"
                             // Aquí usamos el array de objetos para mostrar solo los nombre_apellidos

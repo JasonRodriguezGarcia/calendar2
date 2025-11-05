@@ -1,13 +1,14 @@
 {
     "mainheader": {
-        "text1": "URTEKO OPORRAK",
-        "text2": "Erabiltzen diren opor egunak",
-        "text3": "Egin klik egun batean gehitzeko/kentzeko"
+        "text1": "Urte",
+        "text2": "URTEKO OPORRAK",
+        "text3": "Erabilitako opor egunak",
+        "text4": "Egin klik egun batean gehitzeko/kentzeko"
     },
     "calendar": {
         "next": "Hur.",
         "previous": "Aur.",
         "today": "Gaur",
-        "month": "Hila"
+        "month": "Hilabetea"
     }
 }

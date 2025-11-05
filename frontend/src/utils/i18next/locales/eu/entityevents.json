@@ -1,12 +1,13 @@
 {
     "mainheader": {
-        "text1": "GERTAERAK ERAKUNDEA URTEA"
+        "text1": "Urte",
+        "text2": "GERTAERAK ERAKUNDEA URTEA"
     },
     "grid": {
         "header": {
             "text1": "Iragazkiak"
         },
-        "button1text": "Garbitu iragazkiak"
+        "button1text": "Iragazkiak garbitu"
     },
     "stack1formcontrol": {
         "inputlabel": "Erabiltzaileak",
@@ -24,8 +25,8 @@
         "next": "Hur.",
         "previous": "Aur.",
         "today": "Gaur",
-        "month": "Hila",
-        "workweek": "Lan astea",
+        "month": "Hilabetea",
+        "workweek": "Astea",
         "day": "Eguna",
         "agenda": "Agenda",
         "showmore": "+{{count}} gehiago"

@@ -203,9 +203,9 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
                                             border: '1px solid rgba(224, 224, 224, 1)', // borde completo
                                             padding: '8px',
                                             fontSize: {
-                                            xs: '6px',
-                                            sm: '10px',
-                                            md: '14px',
+                                                xs: '6px',
+                                                sm: '10px',
+                                                md: '14px',
                                             },
                                         }}
                                     >
@@ -215,10 +215,11 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
                                             border: '1px solid rgba(224, 224, 224, 1)', // borde completo
                                             padding: '8px',
                                             fontSize: {
-                                            xs: '6px',
-                                            sm: '10px',
-                                            md: '14px',
+                                                xs: '6px',
+                                                sm: '10px',
+                                                md: '14px',
                                             },
+                                            wordWrap: "break-word"
                                         }}
                                     >
                                         {usuario.email}
@@ -227,9 +228,9 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
                                             border: '1px solid rgba(224, 224, 224, 1)', // borde completo
                                             padding: '8px',
                                             fontSize: {
-                                            xs: '6px',
-                                            sm: '10px',
-                                            md: '14px',
+                                                xs: '6px',
+                                                sm: '10px',
+                                                md: '14px',
                                             },
                                         }}
                                     >
@@ -239,9 +240,9 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
                                             border: '1px solid rgba(224, 224, 224, 1)', // borde completo
                                             padding: '8px',
                                             fontSize: {
-                                            xs: '6px',
-                                            sm: '10px',
-                                            md: '14px',
+                                                xs: '6px',
+                                                sm: '10px',
+                                                md: '14px',
                                             },
                                         }}
                                     >
@@ -251,9 +252,9 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
                                             border: '1px solid rgba(224, 224, 224, 1)', // borde completo
                                             padding: '8px',
                                             fontSize: {
-                                            xs: '6px',
-                                            sm: '10px',
-                                            md: '14px',
+                                                xs: '6px',
+                                                sm: '10px',
+                                                md: '14px',
                                             },
                                         }}
                                     >
@@ -263,9 +264,10 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
                                             border: '1px solid rgba(224, 224, 224, 1)', // borde completo
                                             padding: '8px',
                                             fontSize: {
-                                            xs: '6px',
-                                            sm: '10px',
-                                            md: '14px',
+                                                xs: '6px',
+                                                sm: '10px',
+                                                md: '14px',
+                                                wordWrap: "break-word"
                                             },
                                         }}
                                     >

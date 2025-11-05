@@ -364,11 +364,12 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
                     <Box> </Box>
                 </Box>
             </Stack>
-            {/* <Toolbar sx={{ display:{
+            <Toolbar />
+            <Toolbar sx={{ display:{
                     xs: "flex",   // móviles
                     sm: "none",  // tablets
                     md: "none",  // escritorio
-            }}}/> */}
+            }}}/>
             <p>({t("mainheader.text4")})</p>
 
             <Calendar

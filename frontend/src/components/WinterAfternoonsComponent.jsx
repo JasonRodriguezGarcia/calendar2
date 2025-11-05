@@ -95,7 +95,7 @@ const WinterAfternoonsComponent = ({ logged, user, token, selectedLanguage }) =>
     <>
         <Toolbar />
 
-        <Stack direction="row" justifyContent="center" alignItems="center" mb={3}>
+        <Stack direction="row" justifyContent="center" alignItems="center" mb={1}>
             <Typography variant="h6">
                 {/* TARDES DE INVIERNO */}
                 {t("stacktypography")}
@@ -142,15 +142,19 @@ const WinterAfternoonsComponent = ({ logged, user, token, selectedLanguage }) =>
                                             border: '1px solid rgba(224, 224, 224, 1)', // borde completo
                                             padding: '8px',
                                             fontSize: {
-                                            xs: '6px',
-                                            sm: '10px',
-                                            md: '14px',
+                                                xs: '6px',
+                                                sm: '10px',
+                                                md: '14px',
                                             },
                                         }}
                                     >
                                         {el ? (
-                                            <>
-                                                <Box sx={{ display: "flex", flexDirection: "row", alignItems: "start" }}>
+                                            // <>
+                                                <Box sx={{ 
+                                                        display: "flex", flexDirection: "row", alignItems: "start",
+                                                        flexWrap: "wrap"
+                                                    }}
+                                                >
                                                     {el.nombre_apellidos}
                                                     {el.alarma && (
                                                         <Tooltip title="Tiene alarma" arrow>
@@ -159,9 +163,9 @@ const WinterAfternoonsComponent = ({ logged, user, token, selectedLanguage }) =>
                                                                     ml: 0.5, 
                                                                     color: "red",
                                                                     fontSize: {
-                                                                    xs: '10px',
-                                                                    sm: '10px',
-                                                                    md: '14px',
+                                                                        xs: '10px',
+                                                                        sm: '10px',
+                                                                        md: '14px',
                                                                     },
                                                                 }}
                                                             />
@@ -174,9 +178,9 @@ const WinterAfternoonsComponent = ({ logged, user, token, selectedLanguage }) =>
                                                                     ml: 0.5, 
                                                                     color: "green",
                                                                     fontSize: {
-                                                                    xs: '10px',
-                                                                    sm: '10px',
-                                                                    md: '14px',
+                                                                        xs: '10px',
+                                                                        sm: '10px',
+                                                                        md: '14px',
                                                                     },
                                                                 }}
                                                             />
@@ -187,9 +191,9 @@ const WinterAfternoonsComponent = ({ logged, user, token, selectedLanguage }) =>
                                                             sx={{
                                                                 ml: 0.5, 
                                                                 fontSize: {
-                                                                xs: '6px',
-                                                                sm: '10px',
-                                                                md: '14px',
+                                                                    xs: '6px',
+                                                                    sm: '10px',
+                                                                    md: '14px',
                                                                 },
                                                             }}
                                                         >
@@ -197,7 +201,8 @@ const WinterAfternoonsComponent = ({ logged, user, token, selectedLanguage }) =>
                                                         </Typography>
                                                     )}
                                                 </Box>
-                                            </>)
+                                            // </>
+                                            )
                                             : ""
                                         }
                                     </TableCell>

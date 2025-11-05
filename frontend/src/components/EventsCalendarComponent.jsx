@@ -809,11 +809,11 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
             </Box>
         </Stack>
         <Toolbar />
-        {/* <Toolbar sx={{ display:{
+        <Toolbar sx={{ display:{
                 xs: "flex",   // móviles
                 sm: "none",  // tablets
                 md: "none",  // escritorio
-        }}}/> */}
+        }}}/>
         {/* OCULTANDO LA LÍNEA SUPERIOR (NO NECESARIA) DE EVENTOS QUE DURAN VARIOS DÍAS */}
         {(view === 'work_week' || view === 'day') && (
         <style>

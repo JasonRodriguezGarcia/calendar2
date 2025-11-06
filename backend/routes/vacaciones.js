@@ -1,5 +1,6 @@
 import { Router} from 'express';
 import { authenticateToken } from '../middleware/login.js';
+import { csrfProtection } from "../middleware/login.js";
 // import { validateQuery, validateUserId } from '../middleware/users.js';
 import { getVacaciones, postVacacion, deleteVacacion, getVacacionesCount } from '../models/vacacionesModel.js';
 
@@ -7,7 +8,7 @@ const router = Router()
 
 // /api/v1/erroak/vacacion 
 // Crear vacaciones
-router.post('/vacacion', authenticateToken, async(req, res) => {
+router.post('/vacacion', authenticateToken, csrfProtection, async(req, res) => {
     const vacacion = req.body
     console.log("Recibido en backend vacacion post: ", vacacion)
     // Validar que el usuario autenticado es el mismo que el del body
@@ -23,7 +24,7 @@ router.post('/vacacion', authenticateToken, async(req, res) => {
 
 // /api/v1/erroak/vacacion/:event_id
 // BORRAR UN EVENTO EN VACACIONES
-router.delete('/vacacion/:event_id', authenticateToken, async (req, res) => {
+router.delete('/vacacion/:event_id', authenticateToken, csrfProtection, async (req, res) => {
     // const evento = req.body
     const {event_id} = req.params
     console.log("Recibido en backend vacacion delete: ", event_id)
@@ -42,8 +43,7 @@ router.delete('/vacacion/:event_id', authenticateToken, async (req, res) => {
 // Orden de las rutas en Express importa: Las rutas más generales deben estar después de las rutas más específicas.
 // /api/v1/erroak/vacaciones/count/:user/:year
 // Cuenta las vacaciones que tiene un usuario en un año
-// router.get('/vacaciones/count/:user/:anio', authenticateToken, async(req, res) => {
-router.get('/vacaciones/count/:anio', authenticateToken, async(req, res) => {
+router.get('/vacaciones/count/:anio', authenticateToken, csrfProtection, async(req, res) => {
     const {anio} = req.params
     const id = req.user.usuarioID; // <- Datos conseguidos desde JWT en cookie httpOnly
     // console.log("imprimo en vacacionesCount user-anio-mes: user, anio, mes")
@@ -60,11 +60,10 @@ router.get('/vacaciones/count/:anio', authenticateToken, async(req, res) => {
 
 // /api/v1/erroak/vacaciones/:user/:year/:month
 // Devuelve los datos de las vacaciones de un usuario en un año y mes
-// router.get('/vacaciones/:user/:start/:end/:mode', authenticateToken, async(req, res) => {
-router.get('/vacaciones/:start/:end/:mode', authenticateToken, async(req, res) => {
+router.get('/vacaciones/:start/:end/:mode', authenticateToken, csrfProtection, async(req, res) => {
     // const {user, start, end, mode} = req.params
     const {start, end, mode} = req.params
-    const user = req.user.usuarioID; // <- Datos conseguidos desde JWT en cookie httpOnly
+    const user = req.user.usuarioID // <- Datos conseguidos desde JWT en cookie httpOnly via authenticateToken
     console.log("Imprimo en getVacaciones: user, start, end, mode: ", user, start, end, mode)
     // console.log("Imprimo en getVacaciones: user, start, end, mode: ", user, start, end, mode)
     // Validar que el usuario autenticado es el mismo que el del body

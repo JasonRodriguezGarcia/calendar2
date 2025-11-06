@@ -31,7 +31,6 @@ export async function postLogin(loginDetails) {
             const nombreapellidos = userData.nombre_apellidos
             // const passwordUsuario = userData[0].password
             const emailUsuario = userData.email
-            const lenguajeUsuario = userData.lenguaje_id
             const token = jwt.sign(
                 { usuarioID, nombreapellidos, emailUsuario },
                 JWT_SECRET_KEY,

@@ -14,7 +14,7 @@ import {
     useTheme,
 } from '@mui/material';
 
-const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
+const ContactsComponent = ({ csrfToken, setCsrfToken, logged, user, token, selectedLanguage }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER;
     const { t, i18n } = useTranslation("contacts")
 
@@ -27,11 +27,13 @@ const ContactsComponent = ({ logged, user, token, selectedLanguage }) => {
             const response = await fetch(
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuarios`,
                 {
-                    method: 'GET',
+                    // method: 'GET',
+                    method: 'POST', // CAMBIADO A POST PARA PODER EJECUTAR EN BACKEND CSRFTOKEN PARA MAYOR SEGURIDAD
                     credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                     headers: {
                         // 'Authorization': `Bearer ${token}`,
-                        'Content-type': 'application/json; charset=UTF-8'
+                        'Content-type': 'application/json; charset=UTF-8',
+                        'X-CSRF-Token': csrfToken,
                     }
                 }
             )

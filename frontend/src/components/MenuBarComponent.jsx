@@ -92,10 +92,10 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
                 break
         }
         setAnchorElUser(null);
-    };
+    }
 
     const handleClickedPage = (page, event) => {
-        console.log("Página pulsada:", page);
+        console.log("Página pulsada:", page)
 
         switch (page) {
             case t("pages.listados"):
@@ -453,7 +453,8 @@ const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, 
                                 <IconButton onClick={handleOpenUserMenu}
                                 sx={{ p: 0 }}
                                 >
-                                    <Avatar alt={user.nombre_apellidos} src="/static/images/avatar/2.jpg" />
+                                    {/* <Avatar alt={user.nombre_apellidos} src="/assets/images/avatar/1.jpg" /> */}
+                                    <Avatar alt={user.nombre_apellidos} src="" />
                                 </IconButton>
                             </Tooltip>
                         </Box >

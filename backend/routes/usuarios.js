@@ -12,7 +12,9 @@ const router = Router()
 
 // /api/v1/erroak/usuarios
 // Conseguir los usuarios que hay en la bbdd
-router.get('/usuarios', authenticateToken, async(req, res) => {
+// CAMBIADO A POST EN LUGAR DE GET PARA PODER EJECUTAR csrfProtection
+// PARA MAYOR SEGURIDAD
+router.post('/usuarios', authenticateToken, csrfProtection, async(req, res) => {
     const usuarios = await getUsuarios()
     console.log(usuarios)
     res.json (usuarios)
@@ -119,10 +121,9 @@ router.post('/usuario', registerLimiter, csrfProtection, async(req, res) => {
 })
 
 // /api/v1/erroak/usuario/:id
-// router.get('/usuario/:id', authenticateToken, async(req, res) => {
 router.get('/usuario', authenticateToken, csrfProtection, async(req, res) => {
     console.log("Imprimmo req.user: ", req.user)
-    const id = req.user.usuarioID; // <- Datos conseguidos desde JWT en cookie httpOnly
+    const id = req.user.usuarioID // <- Datos conseguidos desde JWT en cookie httpOnly via authenticateToken
     console.log("imprimo id en get usuario: ", id)
     const resultUsuario = await getUsuario(id)
     res.json (resultUsuario)
@@ -131,7 +132,7 @@ router.get('/usuario', authenticateToken, csrfProtection, async(req, res) => {
 // /api/v1/erroak/usuario/:id
 // Modificar los datos de un usuario
 router.put('/usuario', authenticateToken, updateUserLimiter, csrfProtection, async(req, res) => {
-    const id = req.user.usuarioID
+    const id = req.user.usuarioID  // <- Datos conseguidos desde JWT en cookie httpOnly via authenticateToken
     const updatedUser = req.body
     console.log("imprimo id en put usuario/:id : ", id)
     const resultUsuario = await putUsuario(id, updatedUser)

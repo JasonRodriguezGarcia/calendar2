@@ -55,7 +55,7 @@ const maxYearSelect = 2055
 const yearsSelect = Array.from({ length: maxYearSelect - minYearSelect + 1 }, (elemento, index) => minYearSelect + index);
 const monthsSelect = Array.from({ length: 12 }, (elemento, index) => index);
 
-const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }) => {
+const EntityEventsCalendarComponent = ({ csrfToken, setCsrfToken, logged, user, token, selectedLanguage }) => {
     
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("entityevents")
@@ -80,11 +80,13 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
                 const response = await fetch(
                     `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getNewEventFormData`,
                     {
-                        method: 'GET',
+                        // method: 'GET',
+                        method: 'POST', // CAMBIADO A POST PARA PODER EJECUTAR EN BACKEND CSRFTOKEN PARA MAYOR SEGURIDAD
                         credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                         headers: {
                             // 'Authorization': `Bearer ${token}`,
-                            'Content-type': 'application/json; charset=UTF-8'
+                            'Content-type': 'application/json; charset=UTF-8',
+                            'X-CSRF-Token': csrfToken,
                         },
                     }
                 )
@@ -153,7 +155,6 @@ const EntityEventsCalendarComponent = ({ logged, user, token, selectedLanguage }
             // Llamando a backend para presentar los datos
             try {
                 const response = await fetch(
-                    // `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${start.toISOString()}/${end.toISOString()}/${user.id}`,
                     `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${start.toISOString()}/${end.toISOString()}`,
                     {
                         method: "GET",

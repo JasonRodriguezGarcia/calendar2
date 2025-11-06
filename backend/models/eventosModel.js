@@ -90,7 +90,8 @@ export async function putEvento(event_ID, event) {
             console.log("imprimo existsEvento putEvento: ", existsEvento.rows[0].exists)
             if (!existsEvento.rows[0].exists)
                 return {result: "Evento event_id NO existente"}
-
+// NO HACE FALTA AÑADIR COMPROBAR SI EL EVENTO QUE EXISTE, ADEMÁS SEA DEL PROPIO USUARIO Y NO DE OTRO
+// YA QUE SE HACE EN EL EVENTOS.JR DE /ROUTES DE UNA MANERA MÁS RAPIDA VIA JWT SIN NECESIDAD DE MIRAR EN BBDD
             // Si el espacio está ocupado en algún rango de start o end, devolver espacio ocupado
             const existsEspacio = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.eventos WHERE event_id <> $1 AND espacio_id = $2
                 AND start < $4 AND "end" > $3);`,

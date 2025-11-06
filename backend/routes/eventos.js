@@ -8,7 +8,9 @@ const router = Router()
 
 // /api/v1/erroak/vacacion 
 // Conseguir los datos de los select del Formulario al crear un evento Nuevo
-router.get('/getNewEventFormData', authenticateToken, async(req, res) => {
+// CAMBIADO A POST EN LUGAR DE GET PARA PODER EJECUTAR csrfProtection
+// PARA MAYOR SEGURIDAD
+router.post('/getNewEventFormData', authenticateToken, csrfProtection, async(req, res) => {
     const result = await getNewEventFormData();
     console.log(result);
     res.json (result)
@@ -70,7 +72,6 @@ router.put('/evento/:event_id', authenticateToken, csrfProtection, async (req, r
 // /api/v1/erroak/eventos/:user/:year/:endDate
 // Devuelve los datos de los eventos de TODOS LOS USUARIOS en un fechaInicio fechaFin
 // Pasamos usuario igualmente por seguridad
-// router.get('/eventos/:anio/:endDate/:usuario', authenticateToken, async(req, res) => {
 router.get('/eventos/:anio/:endDate', authenticateToken, async(req, res) => {
     const {anio, endDate} = req.params
     const usuario = req.user.usuarioID; // <- Datos conseguidos desde JWT en cookie httpOnly

@@ -39,7 +39,7 @@ const maxYearSelect = 2055
 const yearsSelect = Array.from({ length: maxYearSelect - minYearSelect + 1 }, (elemento, index) => minYearSelect + index);
 const monthsSelect = Array.from({ length: 12 }, (elemento, index) => index);
 
-const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
+const HolidaysComponent = ({ csrfToken, setCsrfToken, logged, user, token, selectedLanguage } ) => {
 
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     
@@ -56,14 +56,14 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
     const fetchCheckHolidays = async () => {
         // Llamada a la cuenta del año en curso de las vacaciones acumuladas
         try {
-            // const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/count/${user.id}/${date.getFullYear()}`,
             const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/count/${date.getFullYear()}`,
                 {
                     method: 'GET',
                     credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                     headers: {
                         // 'Authorization': `Bearer ${token}`,
-                        'Content-type': 'application/json; charset=UTF-8'
+                        'Content-type': 'application/json; charset=UTF-8',
+                        'X-CSRF-Token': csrfToken,
                     }
                 }
             )
@@ -100,14 +100,14 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
             // Llamando a backend para presentar los datos
             try {
                 const response = await fetch(
-                //   `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${user.id}/${start.toISOString()}/${end.toISOString()}/uno`,
                   `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${start.toISOString()}/${end.toISOString()}/uno`,
                     {
                         method: 'GET',
                         credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                         headers: {
                             // 'Authorization': `Bearer ${token}`,
-                            'Content-type': 'application/json; charset=UTF-8'
+                            'Content-type': 'application/json; charset=UTF-8',
+                            'X-CSRF-Token': csrfToken,
                         }
                     }
                 )
@@ -187,14 +187,14 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
         try {
             // Llamada a backend para guardar
             // fetch vacaciones
-            // const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacacion`,
             const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacacion`,
                 {
                     method: "POST",
                     credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                     headers: {
                         // 'Authorization': `Bearer ${token}`,
-                        'Content-type': 'application/json; charset=UTF-8'
+                        'Content-type': 'application/json; charset=UTF-8',
+                        'X-CSRF-Token': csrfToken,
                     },
                     body: JSON.stringify(newVacacion)
                 }
@@ -228,7 +228,8 @@ const HolidaysComponent = ({ logged, user, token, selectedLanguage } ) => {
                     credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                     headers: {
                         // 'Authorization': `Bearer ${token}`,
-                        'Content-type': 'application/json; charset=UTF-8'
+                        'Content-type': 'application/json; charset=UTF-8',
+                        'X-CSRF-Token': csrfToken,
                     },
                     // body: JSON.stringify(event)
                 }

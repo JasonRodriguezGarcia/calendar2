@@ -15,7 +15,7 @@ export function authenticateToken (req, res, next) {
     // const token = authHeader && authHeader.split(" ")[1]
 
     if (!token) {
-        console.log("Missing token")
+        console.log("Missing token in authenticateToken")
         return res.status(401).json({message: "Missing token"}) // Unauthorized. Token faltante o inválido
     }
 
@@ -40,7 +40,7 @@ export function checkToken (req, res, next) {
     // const token = authHeader && authHeader.split(" ")[1]
 
     if (!token) {
-        console.log("Missing token")
+        console.log("Missing token in checkToken")
         return res.status(401).json({message: "Missing token"}) // Unauthorized. Token faltante o inválido
     }
 

@@ -101,11 +101,13 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
                 const response = await fetch(
                     `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getNewEventFormData`,
                     {
-                        method: 'GET',
+                        // method: 'GET',
+                        method: 'POST', // CAMBIADO A POST PARA PODER EJECUTAR EN BACKEND CSRFTOKEN PARA MAYOR SEGURIDAD
                         credentials: 'include', // IMPORTANTE: esto permite usar la cookie
                         headers: {
                             // 'Authorization': `Bearer ${token}`,
-                            'Content-type': 'application/json; charset=UTF-8'
+                            'Content-type': 'application/json; charset=UTF-8',
+                            'X-CSRF-Token': csrfToken,
                         }
                     }
                 )
@@ -213,7 +215,7 @@ const EventsCalendarComponent = ({ csrfToken, logged, user, token, selectedLangu
         setActionEventMessage([t("actioneventmessage.message1"), t("actioneventmessage.message2")])
     }, [selectedLanguage])
     
-  if (!localizer) return null; // o loader si quieres
+    if (!localizer) return null; // o loader si quieres
 
     const handleNavigate = (newDate) => { // Permite desplazar de fecha del calendario
         setDate(newDate)

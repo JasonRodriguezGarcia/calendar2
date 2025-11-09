@@ -1,17 +1,19 @@
-import MenuBarComponent from '../components/MenuBarComponent';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import AppContext from '../context/AppContext';
+import MenuBarComponent from '../components/MenuBarComponent';
 import PasswordRecoveryComponent from '../components/PasswordRecoveryComponent';
 import { Box } from '@mui/material';
 // import imagenFondo from "../assets/images/erroak-page.jpeg";
 import imagenFondo from "../assets/images/cuerda.jpg";
 
-const PasswordRecoveryPage = ({ logged, setLogged, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect }) =>{
+const PasswordRecoveryPage = () =>{
+    const { logged } = useContext(AppContext)
 
     if (logged)    // con esta opción ni siquiera se muestra brevemente el componente
         // Esto interrumpe el renderizado del componente y lo redirige inmediatamente. 
         // No se ejecuta código de más, ni se renderiza MenuBarComponent ni el otro componente.
         return <Navigate to="/" replace /> // navigate(`/`, { replace: true }) solo puede ser usado en useEffect
-
 
     return (
         <>
@@ -22,12 +24,8 @@ const PasswordRecoveryPage = ({ logged, setLogged, user, setUser, selectedLangua
             backgroundPosition: "top center",
         }}>
 
-            <MenuBarComponent 
-                selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
-            <PasswordRecoveryComponent 
-                selectedLanguage={selectedLanguage}
-                logged={logged} setLogged={setLogged} /> {/* user={usuario} setUser={setUsuario} /> */}
+            <MenuBarComponent />
+            <PasswordRecoveryComponent />
         </Box>
         </>
     )

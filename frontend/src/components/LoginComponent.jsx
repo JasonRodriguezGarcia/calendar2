@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useContext } from 'react';
+import AppContext from '../context/AppContext';
 import Box from '@mui/material/Box';
 // MUI
 import {
@@ -12,9 +14,10 @@ import {
   Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 } from '@mui/material';
 
-const LoginComponent = ({ csrfToken, setCsrfToken, logged, setLogged, user, setUser, token, setToken, selectedLanguage, setSelectedLanguage, languagesSelect }) => {
+const LoginComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("login")
+    const { csrfToken, setLogged, setUser, setToken, setSelectedLanguage, languagesSelect } = useContext(AppContext)
 
     const [userName, setUserName] = useState("")
     const [userEmail, setUserEmail] = useState("")

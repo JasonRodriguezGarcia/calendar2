@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useContext } from 'react';
+import AppContext from '../context/AppContext';
 import Box from '@mui/material/Box';
 // MUI
 import {
@@ -16,9 +18,10 @@ import {
     Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 } from '@mui/material';
 
-const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
+const PasswordRecoveryComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("passwordrecovery")
+    const { logged } = useContext(AppContext)
 
     const [userEmail, setUserEmail] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
@@ -33,7 +36,7 @@ const PasswordRecoveryComponent = ({ logged, setLogged, selectedLanguage }) => {
             return () => clearTimeout(intervalo)
         }
     }, [errorMessage])
-    console.log("logged: ", logged)
+
     useEffect(() => {
         if (logged) {
             navigate("/", { replace: true });

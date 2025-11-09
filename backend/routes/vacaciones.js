@@ -1,6 +1,6 @@
 import { Router} from 'express';
-import { authenticateToken } from '../middleware/login.js';
-import { csrfProtection } from "../middleware/login.js";
+import { authenticateToken } from '../middleware/token.js';
+import { csrfProtection } from "../middleware/csrf.js";
 // import { validateQuery, validateUserId } from '../middleware/users.js';
 import { getVacaciones, postVacacion, deleteVacacion, getVacacionesCount } from '../models/vacacionesModel.js';
 

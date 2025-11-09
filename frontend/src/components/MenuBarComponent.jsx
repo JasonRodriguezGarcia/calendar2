@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate , Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useContext } from 'react';
+import AppContext from '../context/AppContext';
 import logo from "../assets/images/erroaksartu.jpg"
 import {
     AppBar,
@@ -31,8 +33,9 @@ import HomeIcon from '@mui/icons-material/Home';
 //     // { lang: 'En', icon: ReinoUnido },
 // ];
 
-const MenuBarComponent = ({ logged, setLogged, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect }) => {
+const MenuBarComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
+    const { logged, setLogged, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect } = useContext(AppContext)
 
     const navigate = useNavigate()
     const [anchorElNav, setAnchorElNav] = useState(null);

@@ -4,6 +4,8 @@ import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { useTranslation } from 'react-i18next';
+import { useContext } from 'react';
+import AppContext from '../context/AppContext';
 import { es, eu } from 'date-fns/locale';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
@@ -55,10 +57,11 @@ const maxYearSelect = 2055
 const yearsSelect = Array.from({ length: maxYearSelect - minYearSelect + 1 }, (elemento, index) => minYearSelect + index);
 const monthsSelect = Array.from({ length: 12 }, (elemento, index) => index);
 
-const EntityEventsCalendarComponent = ({ csrfToken, setCsrfToken, logged, user, token, selectedLanguage }) => {
+const EntityEventsCalendarComponent = () => {
     
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("entityevents")
+    const { csrfToken, user, selectedLanguage } = useContext(AppContext)
     
     const [events, setEvents] = useState([])
     const [allEvents, setAllEvents] = useState([])

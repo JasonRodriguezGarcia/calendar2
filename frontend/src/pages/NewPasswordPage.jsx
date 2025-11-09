@@ -1,11 +1,14 @@
-import MenuBarComponent from '../components/MenuBarComponent';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import AppContext from '../context/AppContext';
+import MenuBarComponent from '../components/MenuBarComponent';
 import NewPasswordComponent from '../components/NewPasswordComponent';
 import { Box } from '@mui/material';
 // import imagenFondo from "../assets/images/erroak-page.jpeg";
 import imagenFondo from "../assets/images/cuerda.jpg";
 
-const NewPasswordPage = ({ logged, setLogged, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect }) =>{
+const NewPasswordPage = () =>{
+    const { logged } = useContext(AppContext)
 
     if (logged)    // con esta opción ni siquiera se muestra brevemente el componente
         // Esto interrumpe el renderizado del componente y lo redirige inmediatamente. 
@@ -20,12 +23,8 @@ const NewPasswordPage = ({ logged, setLogged, user, setUser, selectedLanguage, s
             minHeight: "100vh",
             backgroundPosition: "top center",
         }}>
-            <MenuBarComponent 
-                selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
-            <NewPasswordComponent 
-                selectedLanguage={selectedLanguage}
-                logged={logged} /> {/* user={usuario} setUser={setUsuario} /> */}
+            <MenuBarComponent />
+            <NewPasswordComponent />
         </Box>
         </>
     )

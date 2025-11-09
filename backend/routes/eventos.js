@@ -1,6 +1,6 @@
 import { Router} from 'express';
-import { csrfProtection } from "../middleware/login.js";
-import { authenticateToken } from '../middleware/login.js';
+import { csrfProtection } from "../middleware/csrf.js";
+import { authenticateToken } from '../middleware/token.js';
 // import { validateQuery, validateUserId } from '../middleware/users.js';
 import { getNewEventFormData, postEvento, deleteEvento, putEvento, getEventos, getEventosUsuario } from "../models/eventosModel.js"
 

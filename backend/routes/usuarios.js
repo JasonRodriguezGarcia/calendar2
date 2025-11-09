@@ -1,6 +1,7 @@
 import { Router} from 'express';
-import { csrfProtection } from "../middleware/login.js";
-import { authenticateToken, checkToken, loginLimiter, registerLimiter, updateUserLimiter } from '../middleware/login.js';
+import { csrfProtection } from "../middleware/csrf.js";
+import { authenticateToken, checkToken } from '../middleware/token.js';
+import { loginLimiter, registerLimiter, updateUserLimiter } from '../middleware/limiter.js';
 // import { validateQuery, validateUserId } from '../middleware/users.js';
 import { getUsuarios, postLogin, postRecoveryPassword, postNewPassword, postUsuario, getSignUpFormData, getUsuario,
     putUsuario, getWinterAfternoons, postMe } from '../models/usuariosModel.js';

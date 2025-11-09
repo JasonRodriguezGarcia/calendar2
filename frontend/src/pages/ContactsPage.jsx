@@ -1,8 +1,11 @@
+import { Navigate, useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import AppContext from '../context/AppContext';
 import ContactsComponent from '../components/ContactsComponent';
 import MenuBarComponent from '../components/MenuBarComponent';
-import { Navigate, useNavigate } from 'react-router-dom';
 
-const ContactsPage = ({ csrfToken, setCsrfToken, logged, setLogged, user, setUser, token, selectedLanguage, setSelectedLanguage, languagesSelect }) =>{
+const ContactsPage = () =>{
+    const { logged } = useContext(AppContext)
 
     // Si no está logeado se sale del componente
     if (!logged)    // con esta opción ni siquiera se muestra brevemente EventsCalendarComponent
@@ -12,14 +15,8 @@ const ContactsPage = ({ csrfToken, setCsrfToken, logged, setLogged, user, setUse
 
     return (
         <>
-            <MenuBarComponent 
-                csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
-            <ContactsComponent 
-                csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                selectedLanguage={selectedLanguage}
-                logged={logged} user={user} token={token} />
+            <MenuBarComponent />
+            <ContactsComponent />
         </>
     )
 }

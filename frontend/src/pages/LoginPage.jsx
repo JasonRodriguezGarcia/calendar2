@@ -1,11 +1,14 @@
 import { Navigate } from 'react-router-dom';
+import { useContext } from 'react';
+import AppContext from '../context/AppContext';
 import MenuBarComponent from '../components/MenuBarComponent';
 import LoginComponent from '../components/LoginComponent';
 import { Box } from '@mui/material';
 // import imagenFondo from "../assets/images/erroak-page.jpeg";
 import imagenFondo from "../assets/images/cuerda.jpg";
 
-const LoginPage = ({ csrfToken, setCsrfToken, logged, setLogged, user, setUser, token, setToken, selectedLanguage, setSelectedLanguage, languagesSelect }) =>{
+const LoginPage = () =>{
+    const { logged } = useContext(AppContext)
 
     if (logged)    // con esta opción ni siquiera se muestra brevemente el siguiente Componente
         // Esto interrumpe el renderizado del componente y lo redirige inmediatamente. 
@@ -20,14 +23,8 @@ const LoginPage = ({ csrfToken, setCsrfToken, logged, setLogged, user, setUser, 
             minHeight: "100vh",
             backgroundPosition: "top center",
         }}>
-            <MenuBarComponent 
-                csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
-            <LoginComponent 
-                csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                logged={logged} setLogged={setLogged} user={user} setUser={setUser} token={token} setToken={setToken}/> {/* user={usuario} setUser={setUsuario} /> */}
+            <MenuBarComponent />
+            <LoginComponent />
         </Box>
         </>
     )

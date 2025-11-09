@@ -1,4 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
+import { useContext } from 'react';
+import AppContext from '../context/AppContext';
 import { useTranslation } from 'react-i18next';
 import {
     Box,
@@ -14,9 +16,10 @@ import {
     useTheme,
 } from '@mui/material';
 
-const ContactsComponent = ({ csrfToken, setCsrfToken, logged, user, token, selectedLanguage }) => {
+const ContactsComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER;
     const { t, i18n } = useTranslation("contacts")
+    const { csrfToken, user } = useContext(AppContext)
 
     const theme = useTheme();
     const [usuarios, setUsuarios] = useState([])

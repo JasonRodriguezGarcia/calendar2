@@ -16,7 +16,7 @@ import {
     Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 } from '@mui/material';
 
-const NewPasswordComponent = ({ logged, setLogged, selectedLanguage }) => {
+const NewPasswordComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("newpassword")
 

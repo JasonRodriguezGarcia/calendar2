@@ -4,7 +4,11 @@ import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Navigate, useNavigate } from 'react-router-dom';
 import './utils/i18next/i18n';  // Path is relative to the current file in App.jsx
-import { useTranslation } from 'react-i18next';
+// OJO useTranslation tiene su propio context, ni solo se usa la traducción pero no se harían cambios
+// del lenguaje en el propio componente a lo MenuBarComponent, no haría falta pasar parámetros, ya que al usar en el 
+// componente const { t, i18n } = useTranslation("passwordrecovery") se selecciona el lenguaje actual de App.jsx
+import { useTranslation } from 'react-i18next'; 
+import AppContext from './context/AppContext';
 import Cookies from 'js-cookie';
 import EventsCalendarPage from './pages/EventsCalendarPage';
 import HolidaysPage from './pages/HolidaysPage';
@@ -28,8 +32,8 @@ import ReinoUnido from "./assets/images/flags/reinounido.png"
 
 const App = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
-    const [logeado, setLogeado] = useState(false)
-    const [usuario, setUsuario] = useState({})
+    const [logged, setLogged] = useState(false)
+    const [user, setUser] = useState({})
     const [token, setToken] = useState("")
     const [csrfToken, setCsrfToken] = useState(null);
     const languagesSelect = [
@@ -54,7 +58,7 @@ const App = () => {
             console.log("Data: ", data)
             if (data.message) {
                 console.log("NO HAY TOKEN")
-                setLogeado(false)
+                setLogged(false)
                 return <Navigate to="/" replace />
             }
             const usuarioToken = data.token
@@ -71,14 +75,14 @@ const App = () => {
                             nombre_apellidos: nombreapellidos,
                             emailUsuario: emailUsuario
                         }
-                        setUsuario(usuario)
-                        setLogeado(true)
+                        setUser(usuario)
+                        setLogged(true)
                 } catch (e) {
                     // logout();
                 }
 
             } else {
-                setLogeado(false)
+                setLogged(false)
             }
         }
 
@@ -123,67 +127,33 @@ const App = () => {
     }, [selectedLanguage]);
 
     return (
+    // envolvemos en el provider los valores globales a usar
+    <AppContext.Provider value={{
+        csrfToken, setCsrfToken,
+        token, setToken,
+        selectedLanguage, setSelectedLanguage, languagesSelect,
+        logged, setLogged, user, setUser
+    }} >  
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<MainPage 
-                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                    logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario}/>} />
-                <Route path="/eventos" element={<EventsCalendarPage 
-                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/holidays" element={<HolidaysPage 
-                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/login" element={<LoginPage 
-                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                    token={token} setToken={setToken}
-                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                    logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/signup" element={<SignUpPage 
-                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/profile" element={<ProfilePage 
-                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/editprofile" element={<EditProfilePage 
-                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/entityevents" element={<EntityEventsCalendarPage 
-                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/staffholidays" element={<HolidaysViewPage 
-                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/winterafternoons" element={<WinterAfternoonsPage 
-                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/contacts" element={<ContactsPage 
-                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                    token={token} logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/passwordrecovery" element={<PasswordRecoveryPage 
-                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                    logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/newpassword/:token" element={<NewPasswordPage 
-                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                    logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
-                <Route path="/about" element={<UnderConstructionPage
-                    csrfToken={csrfToken} setCsrfToken={setCsrfToken}
-                    selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                    logged={logeado} setLogged={setLogeado} user={usuario} setUser={setUsuario} />} />
+                <Route path="/" element={<MainPage />} />
+                <Route path="/eventos" element={<EventsCalendarPage />} />
+                <Route path="/holidays" element={<HolidaysPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/editprofile" element={<EditProfilePage />} />
+                <Route path="/entityevents" element={<EntityEventsCalendarPage />} />
+                <Route path="/staffholidays" element={<HolidaysViewPage />} />
+                <Route path="/winterafternoons" element={<WinterAfternoonsPage />} />
+                <Route path="/contacts" element={<ContactsPage />} />
+                <Route path="/passwordrecovery" element={<PasswordRecoveryPage />} />
+                <Route path="/newpassword/:token" element={<NewPasswordPage />} />
+                <Route path="/about" element={<UnderConstructionPage />} />
             </Routes>
-        </BrowserRouter>  )
+        </BrowserRouter>  
+    </AppContext.Provider>
+    )
 }
 
 export default App;

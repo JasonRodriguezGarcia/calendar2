@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useContext } from 'react';
+import AppContext from '../context/AppContext';
 import {
     Box,
     Stack,
@@ -17,9 +19,11 @@ import {
 import VpnKeyIcon from '@mui/icons-material/VpnKey'; // llave
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive'; // sirena
 
-const WinterAfternoonsComponent = ({ logged, user, token, selectedLanguage }) => {
+// const WinterAfternoonsComponent = ({ logged, user, token, selectedLanguage }) => {
+const WinterAfternoonsComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER;
     const { t, i18n } = useTranslation("winterafternoons")
+    const { user, selectedLanguage } = useContext(AppContext)
 
     const theme = useTheme();
     const [events, setEvents] = useState([])

@@ -4,7 +4,7 @@ import imagenFondo from "../assets/images/cuerda.jpg";
 import imagenLogo1 from "../assets/images/erroak_logo-1.png";
 import imagenLogo2 from "../assets/images/sartu_logo-1.png";
 
-const MainPage = ({ logged, setLogged, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect }) => {
+const MainPage = () => {
 
     return (
         <Box sx={{
@@ -24,9 +24,7 @@ const MainPage = ({ logged, setLogged, user, setUser, selectedLanguage, setSelec
                 minHeight: "25vh",
                 backgroundPosition: "center",
             }}></Box>
-            <MenuBarComponent 
-                selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage} languagesSelect={languagesSelect}
-                logged={logged} setLogged={setLogged} user={user} setUser={setUser} />
+            <MenuBarComponent />
             <Box sx={{
                 backgroundImage: `url(${imagenLogo2})`,
                 backgroundSize: "contain", // La imagen se escala para ajustarse completamente dentro del contenedor, manteniendo su relación de aspecto

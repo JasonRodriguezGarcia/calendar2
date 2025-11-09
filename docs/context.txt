@@ -1,0 +1,54 @@
+El Context API en React es una herramienta que te permite compartir datos entre componentes sin necesidad de pasar props
+ manualmente por cada nivel del árbol de componentes.
+Es muy útil para manejar estado global o configuración compartida, como el tema (oscuro/claro), idioma, usuario autenticado, 
+etc.
+Usamos Context para no hacer propDrilling, osea pasar un montón de props entre componentes y hacer el código
+más lioso
+
+En directorio /src/context se crea el LoginContext
+    LoginContext.jsx
+El fichero contiene
+import { createContext } from "react";
+
+const LoginContext = createContext();
+
+export default LoginContext;
+
+
+Fichero App.jsx
+...
+import LoginPage from './pages/LoginPage';
+import LoginContext from './context/LoginContext';
+function App() {
+    const [logged, setLogged] = useState(false);
+    const [userNick, setUserNick] = useState('')
+  return (
+    <>
+    // envolvemos en el provider los valores globales a usar
+    <LoginContext.Provider value={{logged, setLogged, userNick, setUserNick}} >  
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<MainPage />} />
+                <Route path="/games" element={<PlayArenaPage />} />      
+                <Route path="/signup" element={<SignUpPage />} />      
+                <Route path="/login" element={<LoginPage />} />      
+            </Routes>
+        </BrowserRouter>
+    </LoginContext.Provider>
+    </>
+  )
+}
+export default App
+
+
+en fichero LoginComponent.jsx
+import {createContext, useContext} from 'react';
+import LoginContext from '../context/LoginContext';
+
+....
+
+    const {logged, setLogged, userNick, setUserNick} = useContext(LoginContext)
+
+....
+....
+        setLogged(true)

@@ -1,5 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useContext } from 'react';
+import AppContext from '../context/AppContext';
 import {
   Box,
   Stack,
@@ -21,9 +23,10 @@ import {
   endOfMonth,
 } from 'date-fns';
 
-const HolidaysViewComponent = ({ csrfToken, setCsrfToken, logged, user, token, selectedLanguage }) => {
+const HolidaysViewComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("holidaysview")
+    const { csrfToken, user, selectedLanguage } = useContext(AppContext)
     const theme = useTheme()
 
     const [events, setEvents] = useState([])

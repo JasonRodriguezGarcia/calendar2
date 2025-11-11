@@ -5,6 +5,34 @@ Una de las formas más eficaces de protegerte contra los ataques de fuerza bruta
 inicio de sesión fallidos que un usuario puede hacer en un corto período de tiempo. Esto reduce el riesgo de que un atacante 
 pueda probar muchas combinaciones de contraseñas rápidamente.
 
+*****
+OJO !!! Por defecto, Express no confía en proxies, así que ignora esa cabecera.
+express-rate-limit detecta que existe X-Forwarded-For pero que trust proxy está en false, y te lanza la advertencia porque 
+así no podrá identificar correctamente a los usuarios (pensará que todos vienen de la misma IP: la del proxy).
+Simplemente dile a Express que confíe en el proxy de Render.
+Haz esto al inicio de tu archivo principal del servidor (por ejemplo, server.js o app.js):
+// 👇 Añade esta línea antes de usar express-rate-limit o cualquier middleware relacionado con IPs
+app.set('trust proxy', 1); // 1 = confía en el primer proxy (Render, Heroku, etc.)
+// Luego sigue con tus middlewares
+
+💡 Por qué 1
+El valor 1 indica que Express debe confiar en el primer proxy en la cadena de X-Forwarded-* headers (Render usa uno).
+Si usas más proxies (por ejemplo, Cloudflare + Render), podrías necesitar ajustar este número o usar 
+app.set('trust proxy', true) para confiar en todos.
+
+Qué hace realmente true
+Cuando pones true, Express confía en toda la cadena de proxies que puedan aparecer en la cabecera X-Forwarded-For.
+Esto permite que, si en el futuro tu backend pasa por varios proxies (por ejemplo):
+Cliente → Cloudflare → Nginx → Render → Express
+
+Express aún será capaz de identificar correctamente la IP real del cliente, y tus middlewares que dependen de la IP 
+(como express-rate-limit) seguirán funcionando bien.
+
+⚠️ Importante
+Sin esta configuración, express-rate-limit puede contar todas las solicitudes como si vinieran de una sola IP (la del proxy), 
+lo que puede hacer que el rate limit se active incorrectamente.
+****
+
 Puedes usar un middleware en Express.js como express-rate-limit para implementar esto.
 Instalar express-rate-limit:
     npm install express-rate-limit

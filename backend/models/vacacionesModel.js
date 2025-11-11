@@ -1,11 +1,9 @@
 import pool from '../db-pg.js';
 
 export async function postVacacion(vacacion) {
-    console.log("imprimo vacacion: ", vacacion)
     try {
         const { event_id, start, end, cellColor, usuario_id } = vacacion
         const existsVacacion = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.vacaciones WHERE event_id = $1);`, [event_id])
-        console.log("imprimo existsVacacion: ", existsVacacion.rows[0].exists)
         if (existsVacacion.rows[0].exists)
             return {result: "Vacacion ya existente"}
 
@@ -15,7 +13,7 @@ export async function postVacacion(vacacion) {
             VALUES ($1, $2, $3, $4, $5)
             RETURNING event_id;`, 
             [event_id, start, end, cellColor, usuario_id])
-        console.log("vacacion creada: ", result)
+        console.log("POST - vacacion")
         return {success: true, message: "OK", id: result.rows[0].event_id}
 
     } catch (err) {
@@ -25,18 +23,18 @@ export async function postVacacion(vacacion) {
 }
 
 export async function deleteVacacion(event_id) {
-    console.log("imprimo vacacion deleteVacacion: ", event_id)
     try {
         const existsVacacion = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.vacaciones WHERE event_id = $1);`, [event_id])
-        console.log("imprimo existsVacacion deleteVacacion: ", existsVacacion.rows[0].exists)
-        if (!existsVacacion.rows[0].exists)
+        if (!existsVacacion.rows[0].exists) {
+            console.losg("Vacacion event_id NO existente")
             return {result: "Vacacion event_id NO existente"}
+        }
 
         const result = await pool.query(`
             DELETE FROM erroak.vacaciones
 	        WHERE event_id = $1;`, 
             [event_id])
-        console.log("vacacion borrada: ", result)
+        console.log("DEL - vacacion")
         return {success: true, message: "OK", id: event_id}
 
     } catch (err) {
@@ -47,7 +45,7 @@ export async function deleteVacacion(event_id) {
 
 
 export async function getVacaciones(user, startDate, endDate, all) {
-    console.log("imprimo user-year-month: ", user, startDate, endDate, all)
+    console.log("user-year-month: ", user, startDate, endDate, all)
     try {
         let query = ''
         let fields = []
@@ -70,7 +68,7 @@ export async function getVacaciones(user, startDate, endDate, all) {
         const result = await pool.query(
             query,
             fields)
-        console.log("imprimo result getVacaciones: ", result)
+        console.log("GET - vacaciones")
         return result.rows;
 
     } catch (err) {
@@ -80,14 +78,14 @@ export async function getVacaciones(user, startDate, endDate, all) {
 }
 
 export async function getVacacionesCount(user, year) {
-    console.log("imprimo getVacacionesCount user-year: ", user, year)
+    console.log("getVacacionesCount user-year: ", user, year)
     try {
         const result = await pool.query(`
             SELECT COUNT(*) FROM erroak.vacaciones
             WHERE usuario_id = $1 
             AND DATE_PART('year', start) = $2;`, 
             [user, year])
-        console.log("imprimo result getVacacionesCount: ", result)
+        console.log("GET - vacacionesCount")
         return result.rows[0];
 
     } catch (err) {

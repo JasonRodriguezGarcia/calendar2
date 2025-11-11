@@ -12,6 +12,7 @@ sgMail.setApiKey(process.env.SENDGRID_APIKEY);
 export async function getUsuarios() {
     try {
         const result = await pool.query("SELECT * FROM erroak.usuarios ORDER BY nombre_apellidos;");
+        console.log("GET - usuarios")
         return result.rows;
 
     } catch (err) {
@@ -24,12 +25,10 @@ export async function postLogin(loginDetails) {
     try {
         const { useremail , password } = loginDetails
         const result = await pool.query("SELECT * FROM erroak.usuarios WHERE email = $1 AND password = $2;", [useremail, password]);
-        console.log("result: ", result)
         const userData = result.rows[0]
         if (result.rows.length > 0) {
             const usuarioID = userData.usuario_id
             const nombreapellidos = userData.nombre_apellidos
-            // const passwordUsuario = userData[0].password
             const emailUsuario = userData.email
             const token = jwt.sign(
                 { usuarioID, nombreapellidos, emailUsuario },
@@ -37,7 +36,8 @@ export async function postLogin(loginDetails) {
                 // { expiresIn: '1h', algorithm: 'HS256' },
                 { algorithm: 'HS256' },
             )
-            console.log("JWT: ", token)
+            console.log("POST - login")
+            console.log("JWT CREADO en postLogin")
             return ({ result: userData, success: true, token: token })
             
         } 
@@ -54,21 +54,17 @@ export async function postMe(loginMeDetails) {
     try {
         const { usuarioID , emailUsuario } = loginMeDetails
         const result = await pool.query("SELECT * FROM erroak.usuarios WHERE usuario_id = $1 AND email = $2;", [usuarioID, emailUsuario]);
-        console.log("result: ", result)
         const userData = result.rows[0]
         if (result.rows.length > 0) {
-            // const usuarioID = userData.usuario_id
             const nombreapellidos = userData.nombre_apellidos
-            // const passwordUsuario = userData[0].password
-            // const emailUsuario = userData.email
             const token = jwt.sign(
                 { usuarioID, nombreapellidos, emailUsuario },
                 JWT_SECRET_KEY,
                 // { expiresIn: '1h', algorithm: 'HS256' },
                 { algorithm: 'HS256' },
             )
-            console.log("JWT: ", token)
-            // return ({ result: result.rows[0], token: token })
+            console.log(" POST - me")
+            console.log("JWT CREADO en LoginMeDetails")
             return ({ result: userData, success: true, token: token })
             
         } 
@@ -84,10 +80,8 @@ export async function postMe(loginMeDetails) {
 export async function postRecoveryPassword(recoveryPasswordDetails) {
     try {
         const { useremail, emailmsg } = recoveryPasswordDetails
-        console.log("useremail: ", useremail)
         const result = await pool.query("SELECT usuario_id, password, nombre_apellidos FROM erroak.usuarios WHERE email = $1",
             [useremail]);
-        console.log("result: ", result)
         if (result.rows.length > 0) {
             const recoveryData = result.rows[0]
             const {usuario_id, nombre_apellidos} = recoveryData
@@ -98,7 +92,6 @@ export async function postRecoveryPassword(recoveryPasswordDetails) {
                 { expiresIn: '1h', algorithm: 'HS256' },
             )
 
-            // const resetLink = `http://localhost:5173/newpassword/${usuario_id}`
             const resetLink = `${FRONTEND_URL_RENDER}/newpassword/${tokenRecovery}`
             const msg = {
                     to: useremail,
@@ -116,7 +109,7 @@ export async function postRecoveryPassword(recoveryPasswordDetails) {
 
             try {
                 await sgMail.send(msg);
-                console.log("Correo enviado correctamente a", nombre_apellidos);
+                console.log("POST - recoveryPassword");
                 return result.rows
             } catch (error) {
                 console.error("Error al enviar correo:", error.response?.body || error)
@@ -136,9 +129,7 @@ export async function postRecoveryPassword(recoveryPasswordDetails) {
 export async function postNewPassword(newPasswordDetails) {
     try {
         const { token, newpassword } = newPasswordDetails
-        console.log("token - newpassword: ", token, newpassword)
         // verificar y decodificar el token
-        // const decoded = jwt.verify(token, JWT_SECRET_KEY)
         let decoded
         try {
             decoded = jwt.verify(token, JWT_SECRET_KEY)
@@ -154,18 +145,14 @@ export async function postNewPassword(newPasswordDetails) {
         const userid = decoded.usuario_id
         const result = await pool.query(`UPDATE erroak.usuarios SET password = $1 WHERE usuario_id = $2 RETURNING *;`,
             [newpassword, userid]);
-        console.log("result: ", result)
         if (result.rows.length > 0) {
-            console.log("Usuario encontrado y CONTRASEÑA actualizada: ", result.rows[0])
-            // return result.rows[0]  // retornamos el usuario actualizado
+            console.log("POST - newPassword")
             return ({success: true, message: "Contraseña actualizada correctamente"})
         }
         else
             return ({result: "No encontrado"})
 
     } catch (err) {
-        // console.error("Error en postNewPassword:", err.message);
-        // return { error: "Error interno del servidor" };
         console.error('Error en postRecoveryPassword:', err.message)
             throw err
     }
@@ -177,12 +164,10 @@ export async function postUsuario(usuario) {
             observaciones, lenguaje_id 
         } = usuario
         const existsEmail = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.usuarios WHERE email = $1);`, [email])
-        console.log("imprimo exists: ", existsEmail.rows[0].exists)
         if (existsEmail.rows[0].exists)
             return {result: "Email ya existente"}
 
         const existsNombre_Apellidos = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.usuarios WHERE nombre_apellidos = $1);`, [nombre_apellidos])
-        console.log("imprimo exists: ", existsNombre_Apellidos.rows[0].exists)
         if (existsNombre_Apellidos.rows[0].exists)
             return {result: "Nombre y apellidos ya existente"}
 
@@ -195,11 +180,9 @@ export async function postUsuario(usuario) {
             [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno,
                  observaciones, lenguaje_id
             ])
-        console.log("usuario creado: ", result)
         const userData = result.rows[0]
         const usuarioID = userData.usuario_id
         const nombreapellidos = userData.nombre_apellidos
-        // const passwordUsuario = result.rows[0].password
         const emailUsuario = userData.email
         const tokenPost = jwt.sign(
             { usuarioID, nombreapellidos, emailUsuario },
@@ -207,7 +190,8 @@ export async function postUsuario(usuario) {
             // { expiresIn: '1h', algorithm: 'HS256' },
             { algorithm: 'HS256' },
         )
-        console.log("JWT: ", tokenPost)
+        console.log("POST - usuario")
+        console.log("JWT CREADO EN postUsuario")
         return ({ result: result.rows[0], token: tokenPost })
 
     } catch (err) {
@@ -219,14 +203,17 @@ export async function postUsuario(usuario) {
 export async function getSignUpFormData() {
     try {
         const centros = await pool.query(`SELECT * from erroak.centros ORDER BY centro`)
-        console.log("centros: ", centros.rows)
-        if (!centros.rows.length)
+        if (!centros.rows.length) {
+            console.log("NO HAY DATOS DE centros")
             return {result: "Error. No hay datos en Centros"}
-        const turnos = await pool.query(`SELECT * from erroak.turnos ORDER BY turno`)
-        console.log("turnos: ", turnos.rows)
-        if (!turnos.rows.length)
-            return {result: "Error. No hay datos en Turnos"}
+        }
 
+        const turnos = await pool.query(`SELECT * from erroak.turnos ORDER BY turno`)
+        if (!turnos.rows.length) {
+            console.log("NO HAY DATOS DE turnos")
+            return {result: "Error. No hay datos en Turnos"}
+        }
+        console.log ("GET - signUpFormData")
         return {centros: centros.rows, turnos: turnos.rows}
 
     } catch (err) {
@@ -238,9 +225,8 @@ export async function getSignUpFormData() {
 export async function getUsuario(id) {
     try {
         const result = await pool.query("SELECT * FROM erroak.usuarios WHERE usuario_id = $1", [id]);
-        console.log("result getUsuario: ", result)
         if (result.rows.length > 0) {
-            console.log("Usuario encontrado en getUsuario: ", result.rows[0])
+            console.log("GET - usuario")
             return result.rows[0]
         }
         else
@@ -260,9 +246,10 @@ export async function putUsuario(id, updatedUser) {
         } = updatedUser
 
         const existsEmail = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.usuarios WHERE email = $1 AND usuario_id != $2);`, [email, id])
-        console.log("imprimo exists1: ", existsEmail.rows[0].exists)
-        if (existsEmail.rows[0].exists)
+        if (existsEmail.rows[0].exists) {
+            console.log("Email ya existente")
             return {result: "Email ya existente"}
+        }
 
         const result = await pool.query(
             `UPDATE erroak.usuarios SET
@@ -274,13 +261,10 @@ export async function putUsuario(id, updatedUser) {
                 observaciones, lenguaje_id, parseInt(id)
             ]
         )
-        console.log("result: ", result.command)
         const userData = result.rows[0]
         if (result.rows.length > 0) {
-            console.log("Usuario encontrado y actualizado: ", userData)
             const usuarioID = userData.usuario_id
             const nombreapellidos = userData.nombre_apellidos
-            // const passwordUsuario = result.rows[0].password
             const emailUsuario = userData.email
             const token = jwt.sign(
                 { usuarioID, nombreapellidos, emailUsuario },
@@ -288,7 +272,8 @@ export async function putUsuario(id, updatedUser) {
                 // { expiresIn: '1h', algorithm: 'HS256' },
                 { algorithm: 'HS256' },
             )
-            console.log("JWT: ", token)
+            console.log("PUT - usuario")
+            console.log("JWT CREADO EN putUsuario")
             return ({ result: result.rows[0], token: token })
         }
         else
@@ -307,8 +292,8 @@ export async function getWinterAfternoons() {
                 JOIN erroak.centros c ON u.centro_id = c.centro_id
                 WHERE u.tarde_invierno > 0 
                 ORDER BY u.tarde_invierno, u.nombre_apellidos;`);
+        console.log("GET - winterafternoons")
         return result.rows;
-
     } catch (err) {
         console.error('Error:', err.message);
         throw err;

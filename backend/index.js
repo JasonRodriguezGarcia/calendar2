@@ -1,10 +1,9 @@
-// USERS versión final con usersRouter y usando el directorio routes, osea enrutamiento avanzado
+// USERS versión final con usersRouter y usando el directorio routes (enrutamiento avanzado)
 import express from "express";
 import path from "path";
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { fileURLToPath } from "url";
-// import { apiLimiter, csrfProtection } from "./middleware/login.js";
 import { apiLimiter } from "./middleware/limiter.js";
 import { csrfProtection } from "./middleware/csrf.js";
 import usuariosRouter from './routes/usuarios.js'
@@ -19,22 +18,34 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 5000;
 // const HOSTNAME = "127.0.0.1"
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://calendar2-6wyj.onrender.com'
-];
+const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS.split(',');
 
+// Añadimos esta línea antes de usar express-rate-limit o cualquier middleware relacionado con IPs
+// app.set('trust proxy', 1); // 1 = confía en el primer proxy (Render, Heroku, etc.)
+// Poniendo true, Express confía en toda la cadena de proxies que puedan aparecer en la cabecera X-Forwarded-For.
+// Así de cara al futuro si migramos puede que haya varios proxies (ejemplo como Cliente → Cloudflare → Nginx → Render → Express
+// si migramos a otro lado alojamiento) en lugar de uno (que es como Render está ahora) y así seguría funcionando.
+
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', true);
+  console.log("✅ Trust proxy habilitado para entorno de producción");
+} else {
+  app.set('trust proxy', 1);
+  console.log("💻 Trust proxy en modo local/desarrollo");
+}
 
 // Middleware
 // Servir archivos desde la carpeta 'public'
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
 // cors() permite el acceso entre dominios (Cross-Origin Resource Sharing).
-// Esto es necesario cuando tienes React y Express en distintos orígenes (por ejemplo, React en localhost:3000 y Express en localhost:5000).
+// Esto es necesario cuando tienes React y Express en distintos orígenes (por ejemplo, React en localhost:3000 y 
+// Express en localhost:5000).
 // Sin esto, el navegador bloquearía las peticiones por razones de seguridad.
 app.use(cors({
   origin: (origin, callback) => {
     // Permitir solicitudes sin origin (como Postman) o si está en la lista
-    if (!origin || allowedOrigins.includes(origin)) {
+    // if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Origen no permitido por CORS'));
@@ -44,7 +55,8 @@ app.use(cors({
 })); // para tener acceso desde React, ya que React y Express no están en el mismo directorio
 app.use(cookieParser()); // Para el uso de cookies
 // Habilita el parsing de JSON en los requests.
-// Es decir, cuando un cliente (como React) envía datos en formato JSON (por ejemplo, en un POST o PUT), Express puede leerlos desde req.body.
+// Es decir, cuando un cliente (como React) envía datos en formato JSON (por ejemplo, en un POST o PUT), Express puede leerlos
+//  desde req.body.
 app.use(express.json());
 
 // Aplica rate limit a toda la API

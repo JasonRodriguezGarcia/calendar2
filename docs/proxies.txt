@@ -166,7 +166,7 @@ en esa lista.
 En el ejemplo anterior, Express usará:
     req.ip === "198.51.100.5"
 
-Si confías en 2 proxies:
+Si confías en 2 proxies: 
     app.set('trust proxy', 2);
 
 Entonces Express usará:
@@ -180,6 +180,12 @@ trust proxy = 1	        La IP justo antes del último proxy	                    
 trust proxy = 2	        Sube un nivel más en la cadena	                        Cloudflare + balanceador
 trust proxy = 3	        IP original del cliente si hay 3 proxies	            Infra compleja
 
+# En el caso a día de hoy (12Nov2025) solo hay 1 proxie entre el Cliente(nosotros) y Express que es Render:
+#    Render (Cliente → Cloudflare → Express) Dicho proxi es confiable y se salta (TRUST_PROXY=1) para tener la ip del cliente
+# Si en Render cambiase y hubiese más o en un futuro se despliege la aplicación en otro alojamiento web, cabe la 
+# Posibilidad de que en el nuevo alojamiento hubiese más proxies (TRUST_PROXY=3) en medio en los que confiar hasta tener
+# la IP del cliente
+#   (Cliente → Cloudflare → Nginx → Render → Express)
 
 
 ⚠️ Importante

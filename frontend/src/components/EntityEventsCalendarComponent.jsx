@@ -191,9 +191,12 @@ const EntityEventsCalendarComponent = () => {
         fetchEventos()
     }, [date, user])
 
-    const handleNavigate = (newDate) => { // Permite desplazar de fecha del calendario
+    const handleNavigate = (newDate, view, action) => { // Permite desplazar de fecha del calendario
         setDate(newDate)
-    };
+        if (action === "TODAY") {
+            setSelectedYear(new Date(newDate).getFullYear())
+        }
+    }
 
     const handleViewChange = (newView) => { // Permite cambiar la vista del calendario
         setEvents(filterEvents(allEvents, selectedUsuarios, selectedProgramas, selectedEspacios))
@@ -202,13 +205,13 @@ const EntityEventsCalendarComponent = () => {
         } else {
             setView(newView)
         }
-    };
+    }
 
     // Personalizando la visualizacion de eventos en el calendario, por defecto "start-end title"
     const CustomEvent = ({ event }) => {
-        const usuario = usuarios.find(p => p.usuario_id === event.usuario_id);
-        const espacio = espacios.find(p => p.espacio_id === event.espacio_id);
-        const programa = programas.find(p => p.programa_id === event.programa_id);
+        const usuario = usuarios.find(p => p.usuario_id === event.usuario_id)
+        const espacio = espacios.find(p => p.espacio_id === event.espacio_id)
+        const programa = programas.find(p => p.programa_id === event.programa_id)
 
         return (
             <div>

@@ -18,6 +18,8 @@ export function configureTrustProxy(app) {
         }
     }
 
+    // Guarda un valor de configuración dentro de Express para el tema de los proxies
+    // Se podría recuperar con app.get("trust proxy")
     app.set('trust proxy', trustProxyValue)
     console.log(`🔧 Trust proxy configurado en: ${trustProxyValue}`)
 
@@ -34,10 +36,11 @@ export function configureTrustProxy(app) {
             const expressIP = req.ip;
             const expressIPs = req.ips; // array de IPs según trust proxy
 
-            console.log(`🧩 Cadena de proxies detectada (${chain.length}):`, chain);
-            console.log(`➡️ IP original del cliente: ${clientIP}`);
-            console.log(`➡️ IP considerada por Express (req.ip): ${expressIP}`);
-            console.log(`➡️ IPs confiables según trust proxy (req.ips):`, expressIPs);
+            // Descomentar en caso diagnóstico para revisión de proxies
+            // console.log(`🧩 Cadena de proxies detectada (${chain.length}):`, chain);
+            // console.log(`➡️ IP original del cliente: ${clientIP}`);
+            // console.log(`➡️ IP considerada por Express (req.ip): ${expressIP}`);
+            // console.log(`➡️ IPs confiables según trust proxy (req.ips):`, expressIPs);
 
             // Detecta posible desajuste
             if (typeof trustProxyValue === 'number' && numProxies > trustProxyValue) {

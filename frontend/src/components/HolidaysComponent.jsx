@@ -136,32 +136,34 @@ const HolidaysComponent = () => {
         fetchCheckHolidays()
     }, [date, user])
 
-    const handleNavigate = (newDate) => { // Permite desplazar de fecha del calendario, parámetro newDate que es la fecha a la que se desplaza
-        console.log("Navegando a nueva fecha:", newDate)
+    const handleNavigate = (newDate, view, action) => { // Permite desplazar de fecha del calendario, parámetro newDate que es la fecha a la que se desplaza
         setDate(newDate)
-    };
+        if (action === "TODAY") {
+            setSelectedYear(new Date(newDate).getFullYear())
+        }
+    }
 
     // Creando un nuevo evento
     // Activando la celda clickada
     const handleSelectSlot = async (slotInfo) => {
         // Esto ayuda a que el evento no se "expanda" a otras celdas y se mantenga en la celda seleccionada.
         const start = new Date(slotInfo.start)
-        const end = new Date(start); // mismo día
-        const day = start.getDay(); // 0 = domingo, 6 = sábado
+        const end = new Date(start) // mismo día
+        const day = start.getDay() // 0 = domingo, 6 = sábado
 
         // Evitar que zona horaria te reste un día por la diferencia horaria
-        start.setHours(12, 0, 0, 0);
-        end.setHours(12, 0, 0, 0);
+        start.setHours(12, 0, 0, 0)
+        end.setHours(12, 0, 0, 0)
 
         // No permitir seleccionar sábados ni domingos
-        if (day === 0 || day === 6) return;
+        if (day === 0 || day === 6) return
 
         // ✅ Generar un ID único combinando timestamp + aleatorio
-        let newEventId = Date.now() + Math.floor(Math.random() * 100000);
+        let newEventId = Date.now() + Math.floor(Math.random() * 100000)
 
         // Asegurarse que no se repita ID
         while (events.some(e => e.event_id === newEventId)) {
-            newEventId = Date.now() + Math.floor(Math.random() * 100000);
+            newEventId = Date.now() + Math.floor(Math.random() * 100000)
         }
         const eventExists = events.find(evento => 
             evento.start.getDate() === start.getDate() &&
@@ -181,8 +183,8 @@ const HolidaysComponent = () => {
         }
 
         console.log("newVacacion: ", newVacacion)
-        setEventData(newVacacion);
-        setEvents([...events, newVacacion]);
+        setEventData(newVacacion)
+        setEvents([...events, newVacacion])
 // Ya que estamos comenzando y los campos start y end vienen de JavaScript, es recomendable guardar las fechas en 
 // formato UTC (como .toISOString() en JS) y usar TIMESTAMPTZ en PostgreSQL.
 // Así evitaremos problemas futuros con zonas horarias.
@@ -215,7 +217,7 @@ const HolidaysComponent = () => {
             // setLoading(false); // Set loading to false once data is fetched or error occurs
         }
 
-        fetchCheckHolidays();
+        fetchCheckHolidays()
     }
 
     // Borrando evento viejo

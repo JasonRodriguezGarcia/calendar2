@@ -28,16 +28,6 @@ const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS.split(',');
 // la variable de entorno TRUST_PROXY al valor adecuado.
 configureTrustProxy(app);
 
-// app.set('trust proxy', 1); // 1 = confía en el primer proxy (Render, Heroku, etc.)
-// Poniendo true, Express confía en toda la cadena de proxies que puedan aparecer en la cabecera X-Forwarded-For.
-// if (process.env.NODE_ENV === 'production') {
-//   app.set('trust proxy', true);
-//   console.log("✅ Trust proxy habilitado para entorno de producción");
-// } else {
-//   app.set('trust proxy', 1);
-//   console.log("💻 Trust proxy en modo local/desarrollo");
-// }
-
 // Middleware
 // Servir archivos desde la carpeta 'public'
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
@@ -76,6 +66,12 @@ app.use('/api/v1/erroak', usuariosRouter)
 app.use('/api/v1/erroak', vacacionesRouter)
 app.use('/api/v1/erroak', eventosRouter)
 
+// Cuándo tiene sentido especificar HOST
+// Situación	                                            HOST recomendado	Razón
+// 🧪 Desarrollo local, sólo quieres usar el propio PC	    '127.0.0.1'	        Aisla el servidor, mejora seguridad local
+// 🌐 Producción (Render, Vercel, etc.)	                    No pongas HOST	    Render ya gestiona la red y necesita 0.0.0.0
+// 🧱 Entorno Docker o Kubernetes	                        '0.0.0.0'	        Para que sea accesible fuera del contenedor
+// 🏠 Servidor casero o red local	                        '0.0.0.0'	        Permite acceder desde otros dispositivos
 // // Start Server
 // app.listen(PORT, HOSTNAME, () => {
 // console.log(`Server running on http://localhost:${PORT} IP:${HOSTNAME}`);

@@ -92,8 +92,12 @@ const EventsCalendarComponent = () => {
     const [dialogRepeatedResultOpen, setDialogRepeatedResultOpen] = useState(false)
     const [errorMessageRepeated, setErrorMessageRepeated] = useState("")
     const [isRepeatableSpace, setIsRepeatableSpace] = useState(false)
+    // Espacios especiales que se pueden repetir: 
+        // KANPOALDEA / EXTERIOR (28) - añadir más en caso de
+        // BILERA / REUNION (30)
     const [repeatableSpaces, setRepeatableSpaces] = useState([
-        28 // Espacios especiales que se pueden repetir: Exterior (28) - añadir más en caso de
+        28,
+        30
     ])
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
 
@@ -220,9 +224,12 @@ const EventsCalendarComponent = () => {
     
     if (!localizer) return null; // o loader si quieres
 
-    const handleNavigate = (newDate) => { // Permite desplazar de fecha del calendario
+    const handleNavigate = (newDate, view, action) => { // Permite desplazar de fecha del calendario
         setDate(newDate)
-    };
+        if (action === "TODAY") {
+            setSelectedYear(new Date(newDate).getFullYear())
+        }
+    }
 
     const handleViewChange = (newView) => { // Permite cambiar la vista del calendario
         if (newView === 'week') {
@@ -230,7 +237,7 @@ const EventsCalendarComponent = () => {
         } else {
             setView(newView)
         }
-    };
+    }
 
     const eventGenerator = () => {
         // Generar un ID único combinando timestamp + aleatorio
@@ -240,10 +247,9 @@ const EventsCalendarComponent = () => {
         while (events.some(e => e.event_id === newEventIdGenerated)) {
             newEventIdGenerated = Date.now() + Math.floor(Math.random() * 100000)
         }
-
         return newEventIdGenerated
-
     }
+
     const restaDias = (finicial, ffinal) => {
         const dia = 1000 * 60 * 60 * 24; // Milisegundos en un día
 
@@ -259,14 +265,8 @@ const EventsCalendarComponent = () => {
 
     // Creando un nuevo evento
     const handleSelectSlot = ({ start, end }) => {
-
         const newStart = start
-        let newEnd
-        if (view === "month") {
-            newEnd = new Date(end)
-        } else {
-            newEnd = new Date(newStart.getTime() + 60 * 60 * 1000); // +60 minutos
-        }
+        const newEnd = end
 
         // En vista "month" el "end" es por defecto un día mas, le restamos un día
         if (view === "month") {
@@ -299,7 +299,7 @@ const EventsCalendarComponent = () => {
         setIsRepeatableSpace(false)
         setSelectedEvent(null)
         setDialogOpen(true)
-    };
+    }
 
     // Editando un evento
     const handleSelectEvent = async (event) => {
@@ -308,7 +308,7 @@ const EventsCalendarComponent = () => {
         setIsRepeatableSpace(repeatableSpaces.includes(event.espacio_id))
         setSelectedEvent(event)
         setDialogOpen(true)
-    };
+    }
 
     const handleSaveRepeat = async () => { 
         console.log("Repetir !!", selectedEvent, eventDataRepeatStart, eventDataRepeatEnd)
@@ -539,15 +539,15 @@ const EventsCalendarComponent = () => {
 
         }
         handleCloseDialog()
-    };
+    }
 
     const handleDeleteEvent = () => {
         setConfirmDeleteOpen(true)
-    };
+    }
 
     const handleRepeatEvent = () => {
         setDialogRepeatOpen(true)
-    };
+    }
 
     const handleEventDrop = async ({ event, start, end }) => {
         const day = start.getDay()
@@ -600,7 +600,7 @@ const EventsCalendarComponent = () => {
             // setLoading(false); // Set loading to false once data is fetched or error occurs
         }
 
-    };
+    }
 
     const confirmDelete = async () => {
         if (!selectedEvent || !selectedEvent.event_id) {
@@ -643,21 +643,21 @@ const EventsCalendarComponent = () => {
             // setLoading(false); // Set loading to false once data is fetched or error occurs
         }
 
-    };
+    }
 
     const cancelDelete = () => {
         setConfirmDeleteOpen(false);
-    };
+    }
 
     const handleCloseDialog = () => {
         setDialogOpen(false)
-    };
+    }
 
     const handleCloseRepeat = () => {
         setEventDataRepeatStart('')
         setEventDataRepeatEnd('')
         setDialogRepeatOpen(false)
-    };
+    }
 
     const handleEventDataRepeatStart = (value) => {
         console.log("value: ", value)
@@ -667,6 +667,7 @@ const EventsCalendarComponent = () => {
             setEventDataRepeatStart(tempValue)
         }
     }
+    
     const handleEventDataRepeatEnd = (value) => {
         console.log("value: ", value)
         if (value) {
@@ -700,8 +701,8 @@ const EventsCalendarComponent = () => {
                 - <strong>{usuario?.nombre_apellidos || 'Sin nombre'}</strong> 
                 - {espacio?.descripcion || 'Sin nombre'}
             </div>
-        );
-    };
+        )
+    }
 
     const handleCopyToClipboard = () => {
         if (!errorMessageRepeated || errorMessageRepeated.length === 0) return

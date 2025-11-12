@@ -27,13 +27,21 @@ export function configureTrustProxy(app) {
         const forwardedFor = req.headers['x-forwarded-for']
         if (forwardedFor) {
             const chain = forwardedFor.split(',').map(ip => ip.trim())
+            const clientIP = chain[0]; // IP original del cliente
             const numProxies = chain.length - 1 // cliente real + proxies
             
+            // Calcula la IP que Express considera
+            const expressIP = req.ip;
+            const expressIPs = req.ips; // array de IPs según trust proxy
+
+            console.log(`🧩 Cadena de proxies detectada (${chain.length}):`, chain);
+            console.log(`➡️ IP original del cliente: ${clientIP}`);
+            console.log(`➡️ IP considerada por Express (req.ip): ${expressIP}`);
+            console.log(`➡️ IPs confiables según trust proxy (req.ips):`, expressIPs);
+
             // Detecta posible desajuste
             if (typeof trustProxyValue === 'number' && numProxies > trustProxyValue) {
                 // Muestra información de diagnóstico
-                console.log(`🧩 Cadena de proxies detectada (${chain.length}):`, chain)
-                console.log(`➡️  IP considerada por Express: ${req.ip}`)
                 console.warn(`⚠️  Parece haber ${numProxies} proxies delante, pero 'trust proxy' está en ${trustProxyValue}.`)
                 console.warn("👉  Considera aumentar TRUST_PROXY en tu .env para reflejar la cadena real.")
             }

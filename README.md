@@ -2,11 +2,12 @@ Web para el uso de calendario minimalista adaptado a los requerimientos requerid
 
 - Uso librería react big-calendar con la creación de eventos en la agenda con CRUD y repetición eventos, generación de vacaciones del personal
 - CRUD de usuarios
-- Gestión de vacaciones
+- Gestión de vacaciones usuario
 - Listado de 
     eventos de todos los usuarios
     vacaciones de todos los usuario
     situación de la posesión de llaves y alarma de cada día
+    contactos
 - Login con posibilidad de Recuperación de contraseña
 - Manejo desde backend de la seguridad con
     cookies en apis con JWT permitiendo o no acceso 
@@ -14,7 +15,7 @@ Web para el uso de calendario minimalista adaptado a los requerimientos requerid
 - Recuperación de contraseña con envío vía email de un link que al usarlo, se chequea que no esté caducado o sea inválido
 - Limitación de intentos de login de usuario por fuerza bruta
 - Limitación de llamadas API al backend (anti DoS)
-- 
+- Uso de Context para un mejor manejo de los props
 
 
 Notas varias:

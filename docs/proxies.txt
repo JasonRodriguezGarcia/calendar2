@@ -1,0 +1,187 @@
+Al desplegar el backend en Render, tenía los siguientes comandos en index.js
+    const allowedOrigins = [
+    'http://localhost:5173',
+    'https://calendar2-6wyj.onrender.com'
+    ];
+
+    app.use(cors({
+    origin: (origin, callback) => {
+        // Permitir solicitudes sin origin (como Postman) o si está en la lista
+        if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        } else {
+        callback(new Error('Origen no permitido por CORS'));
+        }
+    },
+    credentials: true
+    })); 
+
+Y se muestra el siguiente error:
+
+    Server running on http://localhost:10000 ValidationError: The 'X-Forwarded-For' header is set but the Express 
+    'trust proxy' setting is false (default). 
+    This could indicate a misconfiguration which would prevent express-rate-limit from accurately identifying users. 
+    See https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/ for more information. 
+    at Object.xForwardedForHeader (file:///opt/render/project/src/backend/node_modules/express-rate-limit/dist/index.mjs:337:13) 
+    at wrappedValidations.<computed> [as xForwardedForHeader] (file:///opt/render/project/src/backend/node_modules/express-rate-limit/dist/index.mjs:609:22) 
+    at Object.keyGenerator (file:///opt/render/project/src/backend/node_modules/express-rate-limit/dist/index.mjs:711:20) 
+    at file:///opt/render/project/src/backend/node_modules/express-rate-limit/dist/index.mjs:772:32 
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) 
+    at async file:///opt/render/project/src/backend/node_modules/express-rate-limit/dist/index.mjs:753:5 
+    { code: 'ERR_ERL_UNEXPECTED_X_FORWARDED_FOR', help: 'https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/'
+    ... bla bla bla }
+
+express-rate-limit detecta que existe X-Forwarded-For pero que trust proxy está en false, y te lanza la advertencia porque 
+así no podrá identificar correctamente a los usuarios (pensará que todos vienen de la misma IP: la del proxy).
+Simplemente dile a Express que confíe en el proxy de Render.
+Haz esto al inicio de tu archivo principal del servidor (por ejemplo, server.js o app.js):
+// 👇 Añade esta línea antes de usar express-rate-limit o cualquier middleware relacionado con IPs
+app.set('trust proxy', 1); // 1 = confía en el primer proxy (Render, Heroku, etc.)
+// Luego sigue con tus middlewares
+
+💡 Por qué 1
+El valor 1 indica que Express debe confiar en el primer proxy en la cadena de X-Forwarded-* headers (Render USA UNO).
+    Cliente → Cloudflare → Express
+Si usas más proxies (por ejemplo, Cloudflare + Render), podrías necesitar ajustar este número o usar 
+app.set('trust proxy', true) para confiar en todos. COSA NO RECOMENDABLE.
+    Cliente → Cloudflare → Nginx → Render → Express (RECOMENDABLE PONER 3 en este caso)
+
+Qué hace realmente true
+Cuando pones true, Express confía en toda la cadena de proxies que puedan aparecer en la cabecera X-Forwarded-For.
+Esto permite que, si en el futuro tu backend pasa por varios proxies (por ejemplo):
+    Cliente → Cloudflare → Nginx → Render → Express (HABRÍA QUE PONER EL VALOR 3, QUE ES LO QUE HAY ENTRE CLIENTE Y EXPRESS)
+Express aún será capaz de identificar correctamente la IP real del cliente, y tus middlewares que dependen de la IP 
+(como express-rate-limit) seguirán funcionando bien. NO RECOMENDABLE
+ESTO DA EL SIGUIENTE MENSAJE  EN CONSOLA DE BACKEND EN Render
+ValidationError: The Express 'trust proxy' setting is true, which allows anyone to trivially bypass IP-based rate limiting. See https://express-rate-limit.github.io/ERR_ERL_PERMISSIVE_TRUST_PROXY/ for more information.
+    at Object.trustProxy (file:///opt/render/project/src/backend/node_modules/express-rate-limit/dist/index.mjs:319:13)
+    at wrappedValidations.<computed> [as trustProxy] (file:///opt/render/project/src/backend/node_modules/express-rate-limit/dist/index.mjs:609:22)
+    at Object.keyGenerator (file:///opt/render/project/src/backend/node_modules/express-rate-limit/dist/index.mjs:710:20)
+    at file:///opt/render/project/src/backend/node_modules/express-rate-limit/dist/index.mjs:772:32
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/backend/node_modules/express-rate-limit/dist/index.mjs:753:5 {
+  code: 'ERR_ERL_PERMISSIVE_TRUST_PROXY',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_PERMISSIVE_TRUST_PROXY/'
+}
+
+PEEEROOOO... LO MEJOR ES AJUSTAR EL NÚMERO YA QUE SI DESPLIEGA TU BACKEND EN OTRO SITIO PUEDE QUE TENGA MÁS
+PROXIES EN MEDIO Y PUEDE QUE DESCONOZCAMOS CUANTOS HAY.
+Para detectar y advertir si la configuración de trust proxy podría ser incorrecta.
+config/proxy.js
+export function configureTrustProxy(app) {
+  let rawValue = process.env.TRUST_PROXY;
+  let trustProxyValue;
+
+  if (rawValue === undefined) {
+    console.warn("⚠️  Variable TRUST_PROXY no definida. Usando 'false' por defecto (sin confiar en proxies).");
+    trustProxyValue = false;
+  } else if (rawValue === 'true') {
+    trustProxyValue = true;
+  } else if (rawValue === 'false') {
+    trustProxyValue = false;
+  } else {
+    trustProxyValue = parseInt(rawValue, 10);
+    if (isNaN(trustProxyValue)) {
+      console.warn(`⚠️  Valor inválido para TRUST_PROXY (${rawValue}). Usando 'false' por defecto.`);
+      trustProxyValue = false;
+    }
+  }
+
+  app.set('trust proxy', trustProxyValue);
+  console.log(`🔧 Trust proxy configurado en: ${trustProxyValue}`);
+
+  // Middleware para analizar X-Forwarded-For
+  app.use((req, res, next) => {
+    const forwardedFor = req.headers['x-forwarded-for'];
+    if (forwardedFor) {
+      const chain = forwardedFor.split(',').map(ip => ip.trim());
+      const numProxies = chain.length - 1; // cliente real + proxies
+
+      // Muestra información de diagnóstico (solo una vez por IP)
+      console.log(`🧩 Cadena de proxies detectada (${chain.length}):`, chain);
+      console.log(`➡️  IP considerada por Express: ${req.ip}`);
+
+      // Detecta posible desajuste
+      if (typeof trustProxyValue === 'number' && numProxies > trustProxyValue) {
+        console.warn(`⚠️  Parece haber ${numProxies} proxies delante, pero 'trust proxy' está en ${trustProxyValue}.`);
+        console.warn("👉  Considera aumentar TRUST_PROXY en tu .env para reflejar la cadena real.");
+      }
+    }
+    next();
+  });
+}
+En tu index.js
+Solo tienes que importar y usarla antes de tus middlewares:
+
+import express from "express";
+import { configureTrustProxy } from "./config/proxy.js";
+
+const app = express();
+
+// Configura automáticamente trust proxy según entorno
+configureTrustProxy(app);
+
+🔍 Qué hace esto
+
+Detecta automáticamente la cadena de IPs en la cabecera X-Forwarded-For.
+Muestra por consola todas las IPs (cliente real + cada proxy intermedio).
+Compara el número de proxies detectados con tu valor de TRUST_PROXY.
+Si hay más proxies de los que confías, lanza un aviso tipo:
+⚠️  Parece haber 3 proxies delante, pero 'trust proxy' está en 1.
+👉  Considera aumentar TRUST_PROXY en tu .env para reflejar la cadena real.
+💡 Resultado práctico
+
+Así, cuando muevas tu backend a otra plataforma (p. ej. de Render a AWS o Cloudflare), en cuanto llegue la primera 
+petición real, verás automáticamente en consola si tu TRUST_PROXY se quedó corto.
+Esto te evita tener que adivinar la cantidad exacta de proxies del nuevo entorno.
+
+
+La línea 
+    req.headers['x-forwarded-for']
+Nos da toda la cadena de proxies por los que ha pasado la petición, en el orden correcto.
+Cuando una petición HTTP pasa por proxies o balanceadores, cada uno añade su propia IP a la cabecera X-Forwarded-For.
+Por ejemplo:
+    X-Forwarded-For: 203.0.113.10, 198.51.100.5, 192.168.0.1
+Eso significa:
+    203.0.113.10 → la IP del cliente real (usuario final).
+    198.51.100.5 → el primer proxy que recibió la petición del cliente.
+    192.168.0.1 → el último proxy antes de llegar a tu aplicación Express.
+
+Por tanto:
+    req.headers['x-forwarded-for'].split(',').map(ip => ip.trim());
+
+
+Te devuelve:
+[
+  "203.0.113.10",  // cliente real
+  "198.51.100.5",  // proxy intermedio
+  "192.168.0.1"    // proxy justo antes del servidor
+]
+Y qué hace Express con esto
+Cuando configuras:
+    app.set('trust proxy', 1);
+
+Express “confía” solo en el último proxy (el más cercano) y considera que la IP real es la que está una posición antes 
+en esa lista.
+En el ejemplo anterior, Express usará:
+    req.ip === "198.51.100.5"
+
+Si confías en 2 proxies:
+    app.set('trust proxy', 2);
+
+Entonces Express usará:
+    req.ip === "203.0.113.10"
+
+(es decir, sube un nivel más en la cadena).
+🧠 En resumen
+Configuración	        IP que Express considera “real”	                        Cuándo usar
+trust proxy = false	    La IP del proxy más cercano (no usa X-Forwarded-For)	Desarrollo local
+trust proxy = 1	        La IP justo antes del último proxy	                    Render, Heroku
+trust proxy = 2	        Sube un nivel más en la cadena	                        Cloudflare + balanceador
+trust proxy = 3	        IP original del cliente si hay 3 proxies	            Infra compleja
+
+
+
+⚠️ Importante
+Sin esta configuración, express-rate-limit puede contar todas las solicitudes como si vinieran de una sola IP (la del proxy), 
+lo que puede hacer que el rate limit se active incorrectamente.

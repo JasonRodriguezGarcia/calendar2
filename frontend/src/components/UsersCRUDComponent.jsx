@@ -482,11 +482,13 @@ const UsersCRUDComponent = ( { action }) => {
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="usercentro" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol6.formlabel")}:</FormLabel>
+                        <FormLabel id="usercentro" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol6.formlabel")}:</FormLabel>
                         <Select
+                            aria-labelledby="usercentro"
                             fullWidth
                             labelId="select-label-centro"
                             id="select-centro"
+                            name="usercentro"
                             value={formUserData.userCentro}
                             disabled={formReadOnly}
                             onChange={(e)=> setFormUserData(prev => ({
@@ -505,10 +507,10 @@ const UsersCRUDComponent = ( { action }) => {
                 <Stack direction={{ xs: "column", sm: "column", md: "row"}} spacing={2} alignItems="center">
                     <FormControl fullWidth>
                         <Stack direction="row" spacing={2} alignItems="center">
-                            <FormLabel htmlFor="userllave" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol7.formlabel")}:</FormLabel>
+                            <FormLabel id="userllave" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol7.formlabel")}:</FormLabel>
                             <RadioGroup
                                 row //  esto los pone en horizontal
-                                aria-labelledby="demo-radio-buttons-group-label-llave"
+                                aria-labelledby="userllave"
                                 defaultValue="false"
                                 name="radio-buttons-group-llave"
                                 value={formUserData.userLlave}
@@ -525,10 +527,10 @@ const UsersCRUDComponent = ( { action }) => {
                     </FormControl>
                     <FormControl fullWidth>
                         <Stack direction="row" spacing={2} alignItems="center">
-                            <FormLabel htmlFor="useralarma" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol8.formlabel")}:</FormLabel>
+                            <FormLabel id="useralarma" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol8.formlabel")}:</FormLabel>
                             <RadioGroup
                                 row //  esto los pone en horizontal
-                                aria-labelledby="demo-radio-buttons-group-label-alarma"
+                                aria-labelledby="useralarma"
                                 defaultValue="false"
                                 name="radio-buttons-group-alarma"
                                 value={formUserData.userAlarma}
@@ -547,11 +549,13 @@ const UsersCRUDComponent = ( { action }) => {
                 <Stack direction= {{ xs: "column", sm: "column", md: "row"}} spacing={2} alignItems="center">
                     <FormControl fullWidth>
                         <Stack direction="row" spacing={2} alignItems="center">
-                            <FormLabel htmlFor="selectlenguaje" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol12.formlabel")}:</FormLabel>
+                            <FormLabel id="selectlenguaje" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol12.formlabel")}:</FormLabel>
                             <Select
+                                aria-labelledby="seleclenguaje"
                                 fullWidth
                                 labelId="select-label-lenguaje"
                                 id="selectlenguaje"
+                                name="selectlenguaje"
                                 value={formUserData.userLenguaje}
                                 disabled={formReadOnly}
                                 onChange={(e)=> setFormUserData(prev => ({
@@ -569,11 +573,13 @@ const UsersCRUDComponent = ( { action }) => {
                     </FormControl>
                     <FormControl fullWidth>
                         <Stack direction="row" spacing={2} alignItems="center">
-                            <FormLabel htmlFor="selectturno" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol9.formlabel")}:</FormLabel>
+                            <FormLabel id="selectturno" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol9.formlabel")}:</FormLabel>
                             <Select
+                                aria-labelledby="selectturno"
                                 fullWidth
                                 labelId="select-label-turno"
                                 id="selectturno"
+                                name="selectturno"
                                 value={formUserData.userTurno}
                                 disabled={formReadOnly}
                                 onChange={(e)=> setFormUserData(prev => ({
@@ -592,11 +598,13 @@ const UsersCRUDComponent = ( { action }) => {
                 </Stack>
                 <FormControl fullWidth margin="dense">
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="selectedcolor" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol10.formlabel")}:</FormLabel>
+                        <FormLabel id="selectedcolor" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol10.formlabel")}:</FormLabel>
                         <Select
+                            aria-labelledby="selectedcolor"
                             fullWidth
                             labelId="color-select-label"
                             id="selectedcolor"
+                            name="selectedcolor"
                             value={formUserData.selectedColor}
                             disabled={formReadOnly}
                             onChange={handleChangeColor}
@@ -621,11 +629,13 @@ const UsersCRUDComponent = ( { action }) => {
                 </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormLabel htmlFor="usertarde_invierno" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol11.formlabel")}:</FormLabel>
+                        <FormLabel id="usertarde_invierno" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol11.formlabel")}:</FormLabel>
                         <Select
+                            aria-labelledby="usertarde_invierno"
                             fullWidth
                             labelId="select-label-tarde_invierno"
                             id="usertarde_invierno"
+                            name="usertarde_invierno"
                             value={formUserData.userTarde_Invierno}
                             disabled={formReadOnly}
                             onChange={(e)=> setFormUserData(prev => ({
@@ -644,6 +654,7 @@ const UsersCRUDComponent = ( { action }) => {
                 <TextField
                     fullWidth
                     label={t("box.textfieldlabel")}
+                    id="observaciones"
                     name="observaciones"
                     value={formUserData.userObservaciones}
                     disabled={formReadOnly}

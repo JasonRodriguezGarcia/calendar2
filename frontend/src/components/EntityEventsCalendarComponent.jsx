@@ -314,7 +314,9 @@ const EntityEventsCalendarComponent = () => {
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center" justifyContent="left"
                     >
-                        <FormLabel htmlFor="selectselectedyear" sx={{ color: "black", minWidth: 50,
+                        <FormLabel
+                            id="select-label-selectedyear"
+                            sx={{ color: "black", minWidth: 50,
                                 fontSize: {
                                     xs: '10px',   // móviles
                                     sm: '14px',  // tablets
@@ -324,7 +326,8 @@ const EntityEventsCalendarComponent = () => {
                         >
                             {t("mainheader.text1")}:
                         </FormLabel>
-                        <Select 
+                        <Select
+                            aria-labelledby="select-label-selectedyear"
                             fullWidth
                             labelId="select-label-selectedyear"
                             id="selectselectedyear"

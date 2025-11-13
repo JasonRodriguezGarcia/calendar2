@@ -45,8 +45,10 @@ app.use(cors({
     }
   },
   credentials: true
-})); // para tener acceso desde React, ya que React y Express no están en el mismo directorio
-app.use(cookieParser()); // Para el uso de cookies
+})) // para tener acceso desde React, ya que React y Express no están en el mismo directorio
+
+app.use(cookieParser()) // Para el uso de cookies
+
 // Habilita el parsing de JSON en los requests.
 // Es decir, cuando un cliente (como React) envía datos en formato JSON (por ejemplo, en un POST o PUT), Express puede leerlos
 //  desde req.body.
@@ -56,9 +58,17 @@ app.use(express.json());
 app.use('/api/v1/erroak', apiLimiter)
 
 // 🔹 Endpoint para obtener el token CSRF
+// csrfProtection crea y valida el secreto CSRF en la cookie.
+// req.csrfToken() genera un token válido que el frontend puede usar en los fetch que requieren protección (POST, PUT, etc.).
 app.get('/api/v1/erroak/csrf-token', csrfProtection, (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
+
+// ✅ Endpoint de salud básico (para Render / UptimeRobot-pending)
+// Usaremos este Endpoint para que el backend en Render que es gratuíto no entre en stand-by
+app.get("/health", (req, res) => {
+  res.status(200).send("OK")
+})
 
 // app.use(logger); // adding middleware to show some logs
 // Esto registra routers separados para manejar distintas partes del backend:
@@ -66,7 +76,7 @@ app.use('/api/v1/erroak', usuariosRouter)
 app.use('/api/v1/erroak', vacacionesRouter)
 app.use('/api/v1/erroak', eventosRouter)
 
-// Cuándo tiene sentido especificar HOST
+// Cuándo tiene sentido especificar HOSTNAME
 // Situación	                                            HOST recomendado	Razón
 // 🧪 Desarrollo local, sólo quieres usar el propio PC	    '127.0.0.1'	        Aisla el servidor, mejora seguridad local
 // 🌐 Producción (Render, Vercel, etc.)	                    No pongas HOST	    Render ya gestiona la red y necesita 0.0.0.0

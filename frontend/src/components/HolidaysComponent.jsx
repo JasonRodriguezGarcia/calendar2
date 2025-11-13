@@ -317,7 +317,8 @@ const HolidaysComponent = () => {
                     <FormControl>
                         <Stack direction="row" spacing={2} alignItems="center" justifyContent="left" mb={0}
                         >
-                            <FormLabel htmlFor="selectselectedyear" 
+                            <FormLabel
+                                id="select-label-selectedyear"
                                 sx={{ color: "black", minWidth: 50,
                                     fontSize: {
                                         xs: '10px',   // móviles
@@ -328,6 +329,7 @@ const HolidaysComponent = () => {
                             >
                                 {t("mainheader.text1")}:</FormLabel>
                             <Select 
+                                aria-labelledby="select-label-selectedyear"
                                 fullWidth
                                 labelId="select-label-selectedyear"
                                 id="selectselectedyear"

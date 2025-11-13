@@ -96,7 +96,7 @@ IMPORTANTE EN FRONTENT LA LLAMADA A LOGIN SERÁ ALGO PARECIDO A ESTO
             const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/login`,
                 {
                     method: 'POST',
-IMPORTANTE---->>>   credentials: 'include', // IMPORTANTE: esto permite guardar la cookie
+IMPORTANTE---->>>   credentials: 'include', // IMPORTANTE: esto permite usar cookies
                     headers: {'Content-type': 'application/json; charset=UTF-8'},
                     body: JSON.stringify(user)
                 }

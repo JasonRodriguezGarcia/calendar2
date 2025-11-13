@@ -1,3 +1,26 @@
+Aqui se habla de
+    limiters
+    csrf    
+
+Cuando trabajas con cookies HTTP-only y protección CSRF, las cookies no se “acumulan” en el backend.
+Las cookies viven en el navegador del usuario, no en el servidor.
+El backend (tu app Express) solo envía instrucciones al navegador mediante los encabezados Set-Cookie.
+El navegador decide:
+
+    Cuánto dura la cookie (según Max-Age o Expires)
+    Cuándo enviarla de vuelta al servidor (según domain, path, secure, sameSite, etc.)
+    Cuándo borrarla (al cerrar el navegador, si es de sesión, o cuando caduca)
+
+Como no especificas maxAge ni expires, esta cookie es una cookie de sesión.
+Esto significa que:
+
+    Vive solo mientras el navegador está abierto.
+    Cuando el usuario cierra el navegador, el navegador la elimina automáticamente.
+    Al día siguiente, cuando vuelva a abrir el navegador, no existirá, y por tanto el backend generará una nueva cookie CSRF en la siguiente petición a /csrf-token.
+
+✅ No se acumulan ni en el backend ni en el cliente.
+Se destruyen solas.
+
 ***************************************
 Limitar Intentos de Inicio de Sesión Login (login limiting)
 ***************************************

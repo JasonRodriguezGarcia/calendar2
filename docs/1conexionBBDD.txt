@@ -3,7 +3,7 @@ Datos conexion a la base de datos postgres de supabase
 DATABASE_USER: postgres.slipxykygueybdeveqtx
 DATABASE-HOST: aws-0-eu-west-3.pooler.supabase.com
 DATABASE_DATABASE: postgres
-DATABASE_PASSWORD: 1Jason2Rosita4
+DATABASE_PASSWORD: MIRAR .ENV
 DATABASE_PORT: 5432
 
 datos para abrir pgadmin

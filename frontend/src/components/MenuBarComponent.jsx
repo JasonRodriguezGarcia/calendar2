@@ -249,7 +249,7 @@ const MenuBarComponent = () => {
                         <IconButton
                             size="large"
                             aria-label="account of current user"
-                            aria-controls="menu-appbar"
+                            aria-controls="menu-appbar-icon"
                             aria-haspopup="true"
                             onClick={handleOpenNavMenu}
                             color="inherit"
@@ -257,7 +257,7 @@ const MenuBarComponent = () => {
                             <MenuIcon />
                         </IconButton>
                         <Menu
-                            id="menu-appbar"
+                            id="menu-appbar-mobile"
                             anchorEl={anchorElNav}
                             anchorOrigin={{
                                 vertical: 'bottom',

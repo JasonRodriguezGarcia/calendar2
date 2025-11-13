@@ -20,7 +20,10 @@ router.post('/usuarios', authenticateToken, csrfProtection, async(req, res) => {
 
 // /api/v1/erroak/login
 // Datos para hacer un login
-router.post('/login', loginLimiter, csrfProtection, async(req, res) => {
+// No poner csrfProtection. Si dejas csrfProtection en /login:
+    // Render pone el backend en standby → primera solicitud despierta el servidor → token CSRF antiguo o inexistente → falla invalid csrf token.
+    // El usuario no puede iniciar sesión hasta refrescar el token.
+router.post('/login', loginLimiter, async(req, res) => {
     const loginDetails = req.body
     const login = await postLogin(loginDetails)
     if (login.success) {
@@ -114,7 +117,7 @@ router.put('/usuario', authenticateToken, updateUserLimiter, csrfProtection, asy
     res.json (resultUsuario)
 })
 
-// /api/v1/erroak/usuarios
+// /api/v1/erroak/winterafternoons
 // Conseguir los usuarios que hay en la bbdd
 router.get('/winterafternoons', authenticateToken, async(req, res) => {
     const winterAfternoons = await getWinterAfternoons()

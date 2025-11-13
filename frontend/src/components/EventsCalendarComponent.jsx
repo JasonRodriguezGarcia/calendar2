@@ -762,7 +762,8 @@ const EventsCalendarComponent = () => {
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center" justifyContent="left"
                     >
-                        <FormLabel htmlFor="selectselectedyear" 
+                        <FormLabel 
+                            id="select-label-selectedyear"
                             sx={{ color: "black", minWidth: 50,
                                 fontSize: {
                                     xs: '10px',   // móviles
@@ -771,7 +772,8 @@ const EventsCalendarComponent = () => {
                                 }
                             }}
                         >{t("mainheader.text1")}:</FormLabel>
-                        <Select 
+                        <Select
+                            aria-labelledby="select-label-selectedyear"
                             fullWidth
                             labelId="select-label-selectedyear"
                             id="selectselectedyear"

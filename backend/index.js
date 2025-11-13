@@ -66,7 +66,7 @@ app.get('/api/v1/erroak/csrf-token', csrfProtection, (req, res) => {
 
 // ✅ Endpoint de salud básico (para Render / UptimeRobot-pending)
 // Usaremos este Endpoint para que el backend en Render que es gratuíto no entre en stand-by
-app.get("/health", (req, res) => {
+app.get("/api/v1/erroak/health", (req, res) => {
   res.status(200).send("OK")
 })
 

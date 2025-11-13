@@ -80,29 +80,25 @@ const LoginComponent = () => {
             )
             const data = await response.json()
             if (response.status === 429) {
-                // const data = await response.json();
                 setErrorMessage(data.message || 'Demasiados intentos. Intente de nuevo más tarde.')
                 return
             }
-            console.log("Respuesta backend: ", data)
+            // console.log("Respuesta backend: ", data)
             if (data.result === "No encontrado") {
                 setErrorMessage(t("error.message4"))
                 return
             } else {
-                // Crear localStorage
                 const resultado = data.result
                 const usuario = {
                     id: resultado.usuario_id,
-                    // password: resultado.password,
                     nombre_apellidos: resultado.nombre_apellidos,
                     emailUsuario: resultado.email
                 }
-                // localStorage.setItem("token", data.token)
-                console.log("token hadleLogin: :", data.token)
+                // console.log("token hadleLogin: :", data.token)
+                console.log("Sesión abierta")
                 setUser(usuario)
                 setLogged(true)
                 setToken(data.token)
-                // const lenguajeUsuario = data.result.lenguaje_id === 0 ? "es" : "eu"
                 const lenguajeUsuario = languagesSelect[data.result.lenguaje_id].lang
                 setSelectedLanguage(lenguajeUsuario)
                 i18n.changeLanguage(lenguajeUsuario)      

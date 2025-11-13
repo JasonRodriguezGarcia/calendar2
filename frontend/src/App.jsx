@@ -55,7 +55,7 @@ const App = () => {
                 }
             )
             const data = await response.json()
-            console.log("Data: ", data)
+            // console.log("Data: ", data)
             if (data.message) {
                 console.log("NO HAY TOKEN")
                 setLogged(false)
@@ -66,12 +66,11 @@ const App = () => {
             if (usuarioToken) {
                 try {
                     const decoded = jwtDecode(usuarioToken);
-                    console.log("decoded JWT: ", decoded)
+                    // console.log("decoded JWT: ", decoded)
                     const { usuarioID, emailUsuario, nombreapellidos } = decoded
                     console.log("Decodificado usuarioToken: ", decoded)
                         const usuario = {
                             id: usuarioID,
-                            // password: resultado.password, // igual sobra ¿?¿?
                             nombre_apellidos: nombreapellidos,
                             emailUsuario: emailUsuario
                         }
@@ -106,7 +105,7 @@ const App = () => {
                     credentials: "include", // 🔑 importante para enviar/recibir cookies
                 })
                 const data = await res.json()
-                console.log("csrfToken de data: ", data.csrfToken)
+                // console.log("csrfToken de data: ", data.csrfToken)
                 setCsrfToken(data.csrfToken)
             } catch (error) {
                 console.error("Error al obtener CSRF token:", error);

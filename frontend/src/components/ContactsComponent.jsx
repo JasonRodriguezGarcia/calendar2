@@ -57,9 +57,9 @@ const ContactsComponent = () => {
 
     }, [user])
 
-    useEffect(() => {
-        console.log("usuarios: ", usuarios)
-    }, [usuarios])
+    // useEffect(() => {
+    //     console.log("usuarios: ", usuarios)
+    // }, [usuarios])
 
     return (
     <>

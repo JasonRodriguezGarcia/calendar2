@@ -94,7 +94,7 @@ const EntityEventsCalendarComponent = () => {
                     }
                 )
                 const data = await response.json()
-                console.log("Respuesta backend: ", data)
+                // console.log("Respuesta backend: ", data)
                 if (data.result === "Error. No hay datos en Usuarios") {
                     setErrorMessage("Faltan Datos en usuarios")
                     return

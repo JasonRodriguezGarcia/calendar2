@@ -73,10 +73,6 @@ const UsersCRUDComponent = ( { action }) => {
                 )
                 const data = await response.json()
                 console.log("Respuesta backend: ", data)
-                // if (data.result === "Error. No hay datos en Turnos") {
-                //     setErrorMessage("Faltan Datos en Turnos")
-                //     return
-                // } else
                 if (data.result === "Error. No hay datos en Centros") {
                     setErrorMessage("Faltan Datos en centros")
                     return
@@ -91,7 +87,6 @@ const UsersCRUDComponent = ( { action }) => {
                 // setLoading(false); // Set loading to false once data is fetched or error occurs
             }
             if (action === "read" || action === "update")  {
-                // const endPoint= `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario/${user.id}`
                 const endPoint= `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario`
                 try {
                     // fetch for getting usuario data
@@ -108,7 +103,7 @@ const UsersCRUDComponent = ( { action }) => {
                     )
                     const dataResponseUser = await responseUser.json()
                     const dataUser = dataResponseUser
-                    console.log("Respuesta backend: ", dataUser)
+                    // console.log("Respuesta backend: ", dataUser)
     // si ponemos dataUser?.result y no dataUser.menu, en caso de que programa no exista, obtenemos un crash con error en ejecución
     // Pero si ponemos dataUser?.name y no existe obtenemos un undefined y el programa sigue su curso
                     if (dataUser?.result === "No encontrado") {
@@ -204,7 +199,7 @@ const UsersCRUDComponent = ( { action }) => {
         }
     }, [errorMessage])
 
-    console.log("imprimo csrfToken desde usersCRUDComponent: ", csrfToken)
+    // console.log("imprimo csrfToken desde usersCRUDComponent: ", csrfToken)
 
     const handleChangeColor = (e) => {
         setFormUserData(prev => ({
@@ -307,7 +302,7 @@ const UsersCRUDComponent = ( { action }) => {
                 tarde_invierno: formUserData.userTarde_Invierno,
                 observaciones: formUserData.userObservaciones
             }
-            console.log("user: ", userTmp)
+            // console.log("user: ", userTmp)
             const endPoint = `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario`
             const method = action === "create" ? "POST" : "PUT"
 
@@ -325,7 +320,7 @@ const UsersCRUDComponent = ( { action }) => {
                 }
             )
             const data = await response.json()
-            console.log("Respuesta backend: ", data)
+            // console.log("Respuesta backend: ", data)
             const resultado = data.result
             if (resultado === "Email ya existente") {
                 setErrorMessage(t("error.message8"))

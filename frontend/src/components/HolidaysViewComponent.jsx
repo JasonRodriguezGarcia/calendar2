@@ -82,7 +82,7 @@ const HolidaysViewComponent = () => {
                 }
             )
             const data = await response.json();
-            console.log("Usuarios: ", data)
+            // console.log("Usuarios: ", data)
             setUsuarios(data)
         } catch (error) {
             console.error("Error cargando vacaciones:", error)

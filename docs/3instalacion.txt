@@ -112,6 +112,29 @@ Luego añadimos la dirección de correo origen del email
             Una vez añadidos, vuelve a SendGrid y haz clic en "Verify".
             ✅ Importante: Este paso puede tardar un poco en propagarse (hasta 24h), pero normalmente es rápido.
 
+            Otros pasos: (Parece lo mismo)
+Si ya hiciste el Single Sender Verification y aún ves “NO VERIFICADO”, esto es lo que está pasando:
+Por qué sigue apareciendo “NO VERIFICADO”
+Single Sender vs Dominio autenticado
+La verificación de remitente único solo confirma que SendGrid puede enviar correos desde esa dirección específica, pero no 
+cambia cómo los clientes de correo validan el dominio.
+Gmail, Outlook y Apple Mail verifican el dominio, no solo la dirección de correo.
+Como el dominio no está autenticado con DKIM/SPF, los correos aparecen “via SendGrid” o “NO VERIFICADO”.
+Cliente de correo estricto
+Algunos clientes, como Gmail, muestran “NO VERIFICADO” incluso si el remitente está verificado en SendGrid, mientras no haya registros DKIM y SPF correctos.
+Cómo eliminar el “NO VERIFICADO”
+Para que desaparezca por completo, necesitas autenticar tu dominio (no solo un remitente único):
+Ve a Settings → Sender Authentication → Authenticate Your Domain en SendGrid.
+Introduce tu dominio propio (ej. midominio.com) y tu proveedor de DNS.
+Añade los registros CNAME que SendGrid te da a tu DNS.
+Espera la propagación DNS (puede tardar minutos u horas).
+Envía un correo desde cualquier dirección de tu dominio autenticado, y Gmail/Outlook ya mostrarán tu dominio como verificado.
+
+💡 Resumen:
+    Single Sender Verification = envíos permitidos desde esa dirección, útil para pruebas.
+    Domain Authentication = hace que tu dominio se vea verificado en todos los clientes de correo.
+    Solo con domain authentication desaparece “NO VERIFICADO” de Gmail, Outlook, etc.
+
 *********************
 PENDING MIRAR !!! 
 En express

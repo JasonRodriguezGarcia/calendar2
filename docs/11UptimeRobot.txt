@@ -1,0 +1,35 @@
+Render, en su plan gratuito o de bajo costo, “duerme” los servicios web que están inactivos durante un tiempo (sin 
+recibir peticiones).
+    Cuando llega una nueva solicitud (por ejemplo, un POST /login o GET /eventos), Render:
+    Reactiva el contenedor → vuelve a ejecutar tu comando de inicio (node index.js).
+    Reconstruye el entorno de ejecución (variables de entorno, dependencias ya cacheadas).
+Muestra de nuevo esos logs típicos:
+    ==> Running 'node index.js'
+    🔧 Trust proxy configurado en: 2
+    Server running on http://localhost:10000
+
+Después de eso, tu backend está “vivo” otra vez y responde normalmente.
+
+Consecuencias del “wake-up”
+    El primer request después de dormirse puede tardar varios segundos (el “cold start”).
+    Todo lo que esté en memoria (por ejemplo, sesiones o caché no persistente) se pierde.
+    Si usas JWT, no hay problema: mientras el token siga siendo válido, el usuario puede continuar sin tener que volver 
+    a loguearse.
+
+Cómo evitar el stand-by
+Si no quieres que tu backend entre en suspensión:
+    Pásate al plan pago de Render (los servicios “Always On” nunca se duermen).
+    O configura un cron job externo o un “ping” (por ejemplo, con UptimeRobot) que haga un request GET / cada pocos minutos.
+
+USANDO DE  UptimeRobot
+Solo necesitas hacer ping a tu backend cada 10 minutos.
+Al entrar en UptimeRobot, en la parte superior izquierda está:
+    +New
+        Monitor type
+            HTTP
+        URL to monitor
+            https://calendar2-backend.onrender.com/api/v1/erroak/health
+        Friendly name cambiar si se quiere
+        Monitor Interval para configurar cada cuánto tiempo hacer el ping
+        CREATE Monitor
+    

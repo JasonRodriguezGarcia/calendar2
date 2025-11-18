@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { useContext } from 'react';
 import AppContext from '../context/AppContext';
 import Box from '@mui/material/Box';
+
 // MUI
+import { CircularProgress } from '@mui/joy';
 import {
   Typography,
   Button,
@@ -26,6 +28,7 @@ const LoginComponent = () => {
     const [showPassword, setShowPassword] = useState(false)
     const [passwordLength, setPasswordLength] = useState(10) // Longitud contraseña
     const [isDisabled, setIsDisabled] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
     const navigate = useNavigate();
 
@@ -61,7 +64,7 @@ const LoginComponent = () => {
             return
         }
         setIsDisabled(true)
-        
+        setIsLoading(true)
         try {
             const user = {
                 id: userName,
@@ -82,6 +85,7 @@ const LoginComponent = () => {
             )
             const data = await response.json()
             setIsDisabled(false)
+            setIsLoading(false)
             if (response.status === 429) {
                 setErrorMessage(data.message || 'Demasiados intentos. Intente de nuevo más tarde')
                 return
@@ -118,6 +122,15 @@ const LoginComponent = () => {
 
     return (
         <>
+    <Box sx={{ display: 'flex', position: "absolute", top: "30%", left: "50%", transform: "translate(-50%, -50%)",
+        gap: 2, alignItems: 'center', flexWrap: 'wrap', opacity: 0.5 }}>
+        {isLoading && 
+            <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
+                <CircularProgress size="lg" />
+                <b>Loading ... </b>
+            </Box>
+        }
+    </Box>  
         <Box
             sx={{
                 minHeight: 'calc(100vh - 64px)',  // resta la altura del menu

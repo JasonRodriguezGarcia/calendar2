@@ -2,8 +2,8 @@ import { Router} from 'express';
 import { csrfProtection } from "../middleware/csrf.js";
 import { authenticateToken, checkToken } from '../middleware/token.js';
 import { loginLimiter, registerLimiter, updateUserLimiter } from '../middleware/limiter.js';
-import { getUsuarios, postLogin, postRecoveryPassword, postNewPassword, postUsuario, getSignUpFormData, getUsuario,
-    putUsuario, getWinterAfternoons, postMe } from '../models/usuariosModel.js';
+import { getUsuarios, postLogin, postRecoveryPassword, postNewPassword, postChangePassword, postUsuario, getSignUpFormData,
+    getUsuario, putUsuario, getWinterAfternoons, postMe } from '../models/usuariosModel.js';
 
 // TODO
 //  - QUE SE PUEDAN USAR SOLO LOS USUARIOS ACTIVOS
@@ -84,6 +84,14 @@ router.post('/newpassword', async(req, res) => {
     const newPasswordDetails = req.body
     const newPassword = await postNewPassword(newPasswordDetails)
     res.json (newPassword)
+})
+
+// /api/v1/erroak/changepassword
+// Datos para guardar contraseña modificada
+router.post('/changepassword', async(req, res) => {
+    const changePasswordDetails = req.body
+    const changePassword = await postChangePassword(changePasswordDetails)
+    res.json (changePassword)
 })
 
 // /api/v1/erroak/getsignupformdata

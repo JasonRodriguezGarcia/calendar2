@@ -25,7 +25,7 @@ import {
 } from '@mui/material';
 import { colorOptions } from "../utils/EventColors";
 
-const UsersCRUDComponent = ( { action }) => {
+const UsersCRUDComponent = ({ action }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("userscrud")
     const { csrfToken, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect } = useContext(AppContext)
@@ -55,6 +55,7 @@ const UsersCRUDComponent = ( { action }) => {
     const [showPassword,setShowPassword] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
     const [dialogNewUserOpen, setDialogNewUserOpen] = useState(false)
+    const [isDisabled, setIsDisabled] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -113,7 +114,7 @@ const UsersCRUDComponent = ( { action }) => {
                         setFormUserData(prevForm => ({
                             ...prevForm,
                                 userEmail: dataUser.email,
-                                userPassword: dataUser.password,
+                                // userPassword: dataUser.password,
                                 userNombre_Apellidos: dataUser.nombre_apellidos,
                                 userMovil: dataUser.movil,
                                 userExtension: dataUser.extension,
@@ -276,7 +277,7 @@ const UsersCRUDComponent = ( { action }) => {
             setErrorMessage(t("error.message5"))
             return
         }
-        if (formUserData.userPassword.length < formUserData.minPasswordLength) {
+        if (action === "create" && formUserData.userPassword.length < formUserData.minPasswordLength) {
             setErrorMessage(t("error.message6"))
             return
         }
@@ -284,12 +285,13 @@ const UsersCRUDComponent = ( { action }) => {
             setErrorMessage(t("error.message7"))
             return
         }
+        setIsDisabled(true)
 
         try {
             const userTmp = {
                 // id: user.id,
                 email: formUserData.userEmail,
-                password: formUserData.userPassword,
+                 ...(action === "create" && { password: formUserData.userPassword }), // añadimos el campo contraseña o no
                 nombre_apellidos: formUserData.userNombre_Apellidos,
                 movil: formUserData.userMovil.replace('-', ''),
                 extension: formUserData.userExtension,
@@ -322,11 +324,11 @@ const UsersCRUDComponent = ( { action }) => {
             const data = await response.json()
             // console.log("Respuesta backend: ", data)
             const resultado = data.result
+            setIsDisabled(true)
             if (resultado === "Email ya existente") {
                 setErrorMessage(t("error.message8"))
                 return
             }
-
             if (action !== "create") { // Si no estamos creando, actualizamos datos usuario en frontend
                 const usuario = {
                     id: resultado.usuario_id,
@@ -407,25 +409,27 @@ const UsersCRUDComponent = ( { action }) => {
                         />
                     </Stack>
                 </FormControl>
-                <FormControl>
-                    <Stack direction="row" spacing={2} justifyContent="left" alignItems="center">
-                        <FormLabel htmlFor="userpassword" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol2.formlabel")}:</FormLabel>
-                        <Input
-                            id="userpassword"
-                            name="userpassword"
-                            type={showPassword ? 'text' : 'password'}
-                            onMouseEnter={() => setShowPassword(true)}
-                            onMouseLeave={() => setShowPassword(false)}
-                            autoComplete="password"
-                            placeholder={`(${t("box.formcontrol2.placeholder.text1")}. ${minPasswordLength} - ${t("box.formcontrol2.placeholder.text2")}.)`}
-                            required
-                            fullWidth
-                            value={formUserData.userPassword}
-                            disabled={formReadOnly}
-                            onChange={(e)=> handleUserPassword(e)}
-                        />
-                    </Stack>
-                </FormControl>
+                { action === "create" &&
+                    <FormControl>
+                        <Stack direction="row" spacing={2} justifyContent="left" alignItems="center">
+                            <FormLabel htmlFor="userpassword" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol2.formlabel")}:</FormLabel>
+                            <Input
+                                id="userpassword"
+                                name="userpassword"
+                                type={showPassword ? 'text' : 'password'}
+                                onMouseEnter={() => setShowPassword(true)}
+                                onMouseLeave={() => setShowPassword(false)}
+                                autoComplete="password"
+                                placeholder={`(${t("box.formcontrol2.placeholder.text1")}. ${minPasswordLength} - ${t("box.formcontrol2.placeholder.text2")}.)`}
+                                required
+                                fullWidth
+                                value={formUserData.userPassword}
+                                disabled={formReadOnly}
+                                onChange={(e)=> handleUserPassword(e)}
+                            />
+                        </Stack>
+                    </FormControl>
+                }
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <FormLabel htmlFor="usernombre_apellidos" sx={{ color: "black", minWidth: 100 }}>{t("box.formcontrol3.formlabel")}:</FormLabel>
@@ -662,7 +666,9 @@ const UsersCRUDComponent = ( { action }) => {
                     multiline
                     rows={3}
                 />
-                <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 }}>
+                <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 }}
+                    disabled={isDisabled}
+                >
                     {/* Crear usuario */}
                     {action === "create" 
                         ? t("box.button.text1")

@@ -70,18 +70,58 @@ fichero de mern_4 0leemeDia26Junio.txt con información de nginx
 
 directorio de mern_4 my-express-app con indicaciones para montar contenedor con express
 ***************
+***************
+
 Para que al dar F5 estando en cualquier ruta como pueda ser https://calendar2-6wyj.onrender.com/holidays el navegador
 no nos devuelva NOT FOUND
 
 En Render tenemos que configurar en frontend el apartado Redirect/Rewrite con los siguiente parámetros
-    - Usando react
-        Source:	/
-        Destination: /index.html
-        Action:	Rewrite
     - Usando Vite
         Source:	/*
         Destination: /index.html
         Action:	Rewrite
+
+Diferencia entre Redirect y Rewrite
+🔁 1. Redirect (Redirección)
+
+Cambia la URL del navegador.
+Le dice al navegador: "Ve a otra dirección"
+El navegador recarga la página con la nueva URL.
+Ejemplo:
+
+Si alguien entra a tusitio.com/login
+Lo rediriges a tusitio.com/iniciar-sesion
+👉 La URL cambia visiblemente
+👉 Útil para redirecciones permanentes, migración de rutas, etc.
+
+📝 2. Rewrite (Reescritura)
+NO cambia la URL del navegador.
+El servidor responde con otro archivo internamente, pero la URL se mantiene.
+
+Ejemplo típico en SPAs (React, Vite, Vue):
+Usuario entra a tusitio.com/dashboard
+Render no encuentra un archivo /dashboard
+
+Pero con la regla:
+/* → /index.html (Rewrite)
+Render devuelve index.html, y React Router se encarga de mostrar la vista correcta.
+👉 Reglas de Rewrite son esenciales para Single Page Applications.
+Las Redirect and Rewrite Rules (Reglas de redirección y reescritura) son configuraciones que te permiten controlar 
+cómo un servidor maneja las URLs que le llegan.
+Render (y otros servicios como Netlify o Vercel) las usan para saber qué hacer con cada ruta que visita el usuario.
+Como Vite/React Router manejan las rutas del lado del cliente, el servidor debe siempre devolver index.html para 
+cualquier ruta que NO sea un archivo real.
+
+Por eso configuras:
+Source	Destination	Action
+/*	/index.html	Rewrite
+✔️ ¿Para qué sirve esto en la práctica?
+
+Para que al recargar una página como /profile, no salga un 404.
+Para que las rutas del frontend funcionen correctamente.
+Para servir tu SPA desde un solo archivo inicial.
+
+
 
 ***************
 PARA ENVÍO DE CORREO ELECTRONICO DESDE BACKEND
@@ -123,17 +163,171 @@ Como el dominio no está autenticado con DKIM/SPF, los correos aparecen “via S
 Cliente de correo estricto
 Algunos clientes, como Gmail, muestran “NO VERIFICADO” incluso si el remitente está verificado en SendGrid, mientras no haya registros DKIM y SPF correctos.
 Cómo eliminar el “NO VERIFICADO”
-Para que desaparezca por completo, necesitas autenticar tu dominio (no solo un remitente único):
+A) Para que desaparezca por completo, necesitas autenticar tu dominio (no solo un remitente único):
 Ve a Settings → Sender Authentication → Authenticate Your Domain en SendGrid.
 Introduce tu dominio propio (ej. midominio.com) y tu proveedor de DNS.
 Añade los registros CNAME que SendGrid te da a tu DNS.
 Espera la propagación DNS (puede tardar minutos u horas).
 Envía un correo desde cualquier dirección de tu dominio autenticado, y Gmail/Outlook ya mostrarán tu dominio como verificado.
 
+
+B) Otra forma es poner:
+    abrir https://dnschecker.org/ns-lookup.php
+    en Enter Domain to Check NS Records: poner sartu.org y ENTER
+    más abajo aparecen resultados en Results for: SARTU.org
+        Type    Domain Name     TTL     Address 
+        NS      sartu.org       21600   ns4.cdmondns-01.org. ( 52.58.66.183  Check IP Blacklist )
+                                        Owner: A100 ROW GmbH Germany  WHOIS  AS16509
+
+        Type    Domain Name     TTL     Address 
+        NS      sartu.org       21600   ns5.cdmondns-01.com. ( 52.59.146.62  Check IP Blacklist )
+                                        Owner: A100 ROW GmbH Germany  WHOIS  AS16509
+        Type    Domain Name     TTL     Address 
+        NS      sartu.org       21600   ns1.cdmon.net. ( 35.189.106.232  Check IP Blacklist )
+                                        Owner: Google LLC United Kingdom of Great Britain and Northern Ireland  WHOIS  AS396982
+        Type    Domain Name     TTL     Address 
+        NS      sartu.org       21600   ns2.cdmon.net. ( 35.195.57.29  Check IP Blacklist )
+                                        Owner: Google LLC Belgium  WHOIS  AS396982
+        Type    Domain Name     TTL     Address 
+        NS      sartu.org       21600   ns3.cdmon.net. ( 35.157.47.125  Check IP Blacklist )
+                                        Owner: A100 ROW GmbH Germany  WHOIS  AS16509
+    Lo cual indica que Tu dominio sartu.org usa los nameservers de CDmon.
+    El dominio sartu.org tiene los DNS gestionados en CDmon.
+
+    Esto quiere decir:
+
+    ➡️ Todo lo relacionado con SPF, DKIM, CNAME, MX… debes configurarlo en el panel de CDmon.
+    ➡️ SendGrid SOLO funcionará si añades los registros en CDmon → Zona DNS.
+
+    ¿Qué debes hacer ahora?
+        1️⃣ Entra en CDmon
+            Panel:
+            👉 https://cdmon.com/es (aparece un número telefónico en la web)
+
+            Accede con la cuenta que administra el dominio sartu.org.
+        2️⃣ Busca la sección:
+                “DNS”
+                “Editor DNS”
+                “Gestión de zona DNS”
+                “Registros DNS”
+                En CDmon normalmente se llama:
+                “Administrador de DNS” → “Zona DNS”
+            ó algo así como:
+                Dominios → Mis Dominios
+                Seleccionas sartu.org
+                Entras a DNS & Dominios
+                Luego a Administrador de DNS o Gestión de zona DNS
+                Busca algo como:
+                    ✔ “Área DNS”
+                    ✔ “Registros DNS”
+                    ✔ “Zona DNS”
+                Ahí es donde podrás añadir LOS RESULTADOS CNAME DE ABAJO EN ESTE FORMATO
+
+        3️⃣ Añade los CNAME que SendGrid te dará
+            Después de poner en SendGrid:
+                DNS Host: Other
+                Which DNS Host: CDmon
+                Branding links: YES
+                Domain: erroak.sartu.org
+            CNAME RESULTADOS
+                Type	Host                        Value
+                CNAME	url9354.erroak.sartu.org	sendgrid.net	
+
+                Type	Host                        Value
+                CNAME	56270334.erroak.sartu.org	sendgrid.net	
+
+                Type	Host                        Value
+                CNAME	em1037.erroak.sartu.org	    u56270334.wl085.sendgrid.net	
+
+                Type	Host                            Value
+                CNAME	s1._domainkey.erroak.sartu.org	s1.domainkey.u56270334.wl085.sendgrid.net	
+
+                Type	Host                            Value
+                CNAME	s2._domainkey.erroak.sartu.org	s2.domainkey.u56270334.wl085.sendgrid.net	
+
+                Type	Host                        Value
+                TXT	    _dmarc.erroak.sartu.org	    v=DMARC1; p=none;	
+
+                En CDmon:
+                👉 En "Nombre / Host / Alias"
+                Debes poner solo lo que va antes del dominio:
+                Datos a introducir Y ASÍ CON TODOS:
+                Lista exacta de registros para CDmon
+                    Aquí tienes todo exactamente como debe quedar:
+                    🔵 CNAME 1 — Link branding
+                        Host	url9354
+                        Tipo	        CNAME
+                        Destino	        sendgrid.net
+                    🔵 CNAME 2 — Link branding secundario
+                    Host:               56270334
+                    Tipo:               CNAME
+                    Destino (Value):    sendgrid.net
+
+                    🔵 CNAME 3 — Domain authentication (SendGrid root)
+                    Host:               em1037
+                    Tipo:               CNAME
+                    Destino (Value):    u56270334.wl085.sendgrid.net
+
+                    🔵 CNAME 4 — DKIM 1
+                    Host:               s1._domainkey
+                    Tipo:               CNAME
+                    Destino (Value):    s1.domainkey.u56270334.wl085.sendgrid.net
+
+                    🔵 CNAME 5 — DKIM 2
+                    Host:               s2._domainkey
+                    Tipo:               CNAME
+                    Destino (Value):    s2.domainkey.u56270334.wl085.sendgrid.net
+
+                    🔵 TXT — DMARC
+                    Host:               _dmarc
+                    Tipo:               TXT
+                    Valor:              v=DMARC1; p=none;
+                                        (Es opcional, pero SendGrid lo recomienda. Puedes cambiar luego p=none por 
+                                        quarantine o reject si quieres endurecer seguridad.)
+***
+EJEMPLO
+            SendGrid te dará algo así (ejemplo):
+                Tipo	Host	        Valor
+                CNAME	em1234	        u123456.wl.sendgrid.net
+                CNAME	s1._domainkey	s1.domainkey.u123456.wl.sendgrid.net
+                CNAME	s2._domainkey	s2.domainkey.u123456.wl.sendgrid.net
+            📌 Los valores exactos los da SendGrid en tu cuenta. NO uses estos.
+
+            ⚠️ Muy importante al añadirlos en CDmon
+            En CDmon:
+            👉 En "Nombre / Host / Alias"
+            Debes poner solo lo que va antes del dominio:
+            Ejemplo real de cómo se introduce:
+                Campo           Lo que pones
+                Nombre / Host	em1234
+                Tipo	        CNAME
+                Destino	        u123456.wl.sendgrid.net
+***
+
+        4️⃣ Validar en SendGrid
+            Después de guardar los registros en CDmon:
+            Espera entre 5 y 20 minutos
+            Vuelve a SendGrid → Authenticate Domain → "Verify"
+            Si todo está correcto:
+                ✔ Authenticated
+                ✔ Los emails dejan de mostrar “NO VERIFICADO”
+                ✔ SPF + DKIM funcionando
+                ✔ Mejor entrega en destinatarios
+        Resultado esperado
+        Cuando todo esté bien verás:
+        DKIM → VALID ✔
+        SPF → VALID ✔ (SendGrid añade su SPF automáticamente)
+        Domain Authentication → VALID ✔
+        Link Branding → VALID ✔
+        Y tus correos dejarán de aparecer como NO VERIFICADO.
+
 💡 Resumen:
     Single Sender Verification = envíos permitidos desde esa dirección, útil para pruebas.
     Domain Authentication = hace que tu dominio se vea verificado en todos los clientes de correo.
     Solo con domain authentication desaparece “NO VERIFICADO” de Gmail, Outlook, etc.
+
+
+
 
 *********************
 PENDING MIRAR !!! 

@@ -1,0 +1,51 @@
+USO DE HASH PARA LA CONTRASEÑA DEL USUARIO
+
+Los datos de un usuario al crearlo se guardardan en texto plano en la base de datos (BBDD).
+Pero la contraseña del usuario no se guarda en texto, sería una brecha de seguridad.
+Lo que se hace es 
+    POST    Se guardan todos los datos del usuario, con especial antención a la contraseña que es HASHEADA OJO !!! NO
+            CONFUNDIR CON ENCRIPTADA.
+    GET     Se recuperan todos los datos menos la contraseña para consultar/modificar
+    PUT     Se modifican todos los datos a excepción de la contraseña
+
+Para modificar la contraseña tenemos 2 opciones
+    1- Recuperar contraseña mediante por ejemplo el email en la pantalla de login (NO SE ESTÁ LOGEADO) en un 
+    apartado RECUPERAR CONTRASEÑA
+        a- se envía un email con un token temporal
+        b- se abre el link del email recibido que nos manda a una pantalla de recuperación de contraseña
+        c- metemos la nueva contraseña (2 veces) y se recibe en backend y actualiza en BBDD ya HASHEADA
+    2- Una vez logeado en el perfil del usuario
+        a- ir a modificar contraseña
+        b- en el formulario de modificar contraseña introducir:
+            contraseña actual
+            nueva contraseña
+            repetir nueva contraseña (comprobar)
+        c- se envían estos datos a backend
+            se compara la contraseña actual con la almacenada en la base de datos
+            si es correcta se modifica la contraseña del usuario ya HASHEADA
+
+Concepto	Traducción / definición en español
+Hashing	    Hashing / Resumen criptográfico / Función hash – Transformar datos en un resumen único y fijo; no se puede 
+            revertir para obtener los datos originales. SOLO SE PUEDE COMPARAR. Se usa para proteger contraseñas o verificar 
+            integridad.
+Encryption	Encriptación / Cifrado – Transformar datos para que solo puedan ser leídos por quien tenga la clave de 
+            desencriptado; sí es reversible con la clave correcta.
+Encoding	Codificación – Transformar datos a otro formato para almacenarlos o transmitirlos; se puede decodificar 
+            fácilmente. Ej: Base64, UTF-8.
+
+
+En backend
+    npm install bcryptjs
+
+
+import bcrypt from "bcryptjs";
+
+    // Hashear la contraseña
+    // Como es el caso de la creación de un usuario guardando todos los datos incluída la contraseña HASHEADA
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(userPassword, saltRounds);
+
+
+    // Comparamos la contraseña del formulario con el hash de la BD
+    // Como es el caso de un Login que en backend comparamos la contraseña introducida con la de la BBDD
+    const passwordCorrecta = await bcrypt.compare(userPassword, user.password);

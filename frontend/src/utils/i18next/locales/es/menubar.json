@@ -15,6 +15,7 @@
     "settings": {
         "verperfil": "Ver perfil",
         "modificarperfil": "Modificar perfil",
+        "modificarcontrasena": "Modificar contraseña",
         "cerrarsesion": "Cerrar sesión"
     },
     "loggedusertitletext": "Usuario/a",

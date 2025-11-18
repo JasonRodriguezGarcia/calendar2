@@ -2,6 +2,7 @@ import pool from '../db-pg.js';
 import sgMail from "@sendgrid/mail";
 import dotenv from "dotenv";
 import jwt from 'jsonwebtoken'
+import bcrypt from "bcryptjs";
 
 dotenv.config(); // Permite usar variables de entorno
 const JWT_SECRET_KEY = process.env.JWT_SECRET
@@ -16,7 +17,7 @@ export async function getUsuarios() {
         return result.rows;
 
     } catch (err) {
-        console.error('Error:', err.message);
+        console.error('Error en getUsuarios:', err.message);
         throw err;
     }
 }
@@ -24,9 +25,15 @@ export async function getUsuarios() {
 export async function postLogin(loginDetails) {
     try {
         const { useremail , password } = loginDetails
-        const result = await pool.query("SELECT * FROM erroak.usuarios WHERE email = $1 AND password = $2;", [useremail, password]);
+        const result = await pool.query("SELECT * FROM erroak.usuarios WHERE email = $1", [useremail])
         const userData = result.rows[0]
         if (result.rows.length > 0) {
+        // Comparamos la contraseña del formulario con el hash de la BD
+            const passwordCorrecta = await bcrypt.compare(password, userData.password)
+            if (!passwordCorrecta) {
+                return ({result: "Email o contraseña incorrecta"})
+            }
+
             const usuarioID = userData.usuario_id
             const nombreapellidos = userData.nombre_apellidos
             const emailUsuario = userData.email
@@ -42,7 +49,7 @@ export async function postLogin(loginDetails) {
             
         } 
         else
-            return ({result: "No encontrado"})
+            return ({result: "Email o contraseña incorrecta"})
 
     } catch (err) {
         console.error('Error en postLogin:', err.message);
@@ -53,7 +60,7 @@ export async function postLogin(loginDetails) {
 export async function postMe(loginMeDetails) {
     try {
         const { usuarioID , emailUsuario } = loginMeDetails
-        const result = await pool.query("SELECT * FROM erroak.usuarios WHERE usuario_id = $1 AND email = $2;", [usuarioID, emailUsuario]);
+        const result = await pool.query("SELECT * FROM erroak.usuarios WHERE usuario_id = $1 AND email = $2;", [usuarioID, emailUsuario])
         const userData = result.rows[0]
         if (result.rows.length > 0) {
             const nombreapellidos = userData.nombre_apellidos
@@ -72,7 +79,7 @@ export async function postMe(loginMeDetails) {
             return ({result: "No encontrado"})
 
     } catch (err) {
-        console.error('Error en postLogin:', err.message);
+        console.error('Error en postMe:', err.message);
         throw err;
     }
 }
@@ -81,13 +88,16 @@ export async function postRecoveryPassword(recoveryPasswordDetails) {
     try {
         const { useremail, emailmsg } = recoveryPasswordDetails
         const result = await pool.query("SELECT usuario_id, password, nombre_apellidos FROM erroak.usuarios WHERE email = $1",
-            [useremail]);
+            [useremail])
         if (result.rows.length > 0) {
             const recoveryData = result.rows[0]
-            const {usuario_id, nombre_apellidos} = recoveryData
+            const {usuario_id, nombre_apellidos, email} = recoveryData
             // Generar token que caduque a la hora
+            const usuarioID = usuario_id
+            const nombreapellidos = nombre_apellidos
+            const emailUsuario = email
             const tokenRecovery = jwt.sign(
-                { usuario_id, nombre_apellidos },
+                { usuarioID, nombreapellidos, emailUsuario },
                 JWT_SECRET_KEY,
                 { expiresIn: '1h', algorithm: 'HS256' },
             )
@@ -142,9 +152,11 @@ export async function postNewPassword(newPasswordDetails) {
                 throw err
         }
 
-        const userid = decoded.usuario_id
+        const userid = decoded.usuarioID
+        const saltRounds = 14
+        const hashedPassword = await bcrypt.hash(newpassword, saltRounds)
         const result = await pool.query(`UPDATE erroak.usuarios SET password = $1 WHERE usuario_id = $2 RETURNING *;`,
-            [newpassword, userid]);
+            [hashedPassword, userid])
         if (result.rows.length > 0) {
             console.log("POST - newPassword")
             return ({success: true, message: "Contraseña actualizada correctamente"})
@@ -153,7 +165,54 @@ export async function postNewPassword(newPasswordDetails) {
             return ({result: "No encontrado"})
 
     } catch (err) {
-        console.error('Error en postRecoveryPassword:', err.message)
+        console.error('Error en postNewPassword:', err.message)
+            throw err
+    }
+}
+
+export async function postChangePassword(newPasswordDetails) {
+    try {
+        const { token, newpassword, currentpassword } = newPasswordDetails
+        // verificar y decodificar el token
+        let decoded
+        try {
+            decoded = jwt.verify(token, JWT_SECRET_KEY)
+        } catch (err) {
+            if (err.name === "TokenExpiredError")
+                return { error: "El enlace ha expirado, solicite uno nuevo" }
+            else if (err.name === "JsonWebTokenError" || err instanceof SyntaxError)
+                return { error: "Token inválido, solicite nueva contraseña" }
+            else
+                throw err
+        }
+
+        const userid = decoded.usuarioID
+        // Comprobar que el password de userid sea igual que el currentpassword
+        const existID = await pool.query("SELECT * FROM erroak.usuarios WHERE usuario_id = $1", [userid])
+        const userData = existID.rows[0]
+        if (existID.rows.length < 1) {
+            console.log("Error en postChangePassword")
+            return ({result: "Error. Usuario ID no existe"})
+        }
+        // Comparamos la contraseña del formulario con el hash de la BD
+        const passwordCorrecta = await bcrypt.compare(currentpassword, userData.password)
+        if (!passwordCorrecta) {
+            return ({result: "Contraseña actual incorrecta"})
+        }
+
+        const saltRounds = 14
+        const hashedPassword = await bcrypt.hash(newpassword, saltRounds)
+        const result = await pool.query(`UPDATE erroak.usuarios SET password = $1 WHERE usuario_id = $2 RETURNING *;`,
+            [hashedPassword, userid])
+        if (result.rows.length > 0) {
+            console.log("POST - newPassword")
+            return ({success: true, message: "Contraseña actualizada correctamente"})
+        }
+        else
+            return ({result: "No encontrado"})
+
+    } catch (err) {
+        console.error('Error en postChangePassword:', err.message)
             throw err
     }
 }
@@ -170,6 +229,10 @@ export async function postUsuario(usuario) {
         const existsNombre_Apellidos = await pool.query(`SELECT EXISTS (SELECT 1 FROM erroak.usuarios WHERE nombre_apellidos = $1);`, [nombre_apellidos])
         if (existsNombre_Apellidos.rows[0].exists)
             return {result: "Nombre y apellidos ya existente"}
+        // Hashear la contraseña
+        // Como es el caso de la creación de un usuario guardando todos los datos incluída la contraseña HASHEADA
+        const saltRounds = 14
+        const hashedPassword = await bcrypt.hash(password, saltRounds)
 
         const result = await pool.query(`INSERT INTO erroak.usuarios
             (email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno, 
@@ -177,7 +240,7 @@ export async function postUsuario(usuario) {
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
             RETURNING *;`, 
             // RETURNING usuario_id;`, 
-            [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno,
+            [email, hashedPassword, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno,
                  observaciones, lenguaje_id
             ])
         const userData = result.rows[0]
@@ -192,10 +255,11 @@ export async function postUsuario(usuario) {
         )
         console.log("POST - usuario")
         console.log("JWT CREADO EN postUsuario")
+        delete result.rows[0].password
         return ({ result: result.rows[0], token: tokenPost })
 
     } catch (err) {
-        console.error('Error:', err.message);
+        console.error('Error en postUsuario:', err.message);
         throw err;
     }
 }
@@ -217,16 +281,17 @@ export async function getSignUpFormData() {
         return {centros: centros.rows, turnos: turnos.rows}
 
     } catch (err) {
-        console.error('Error:', err.message);
+        console.error('Error en getSignUpData:', err.message);
         throw err;
     }
 }
 
 export async function getUsuario(id) {
     try {
-        const result = await pool.query("SELECT * FROM erroak.usuarios WHERE usuario_id = $1", [id]);
+        const result = await pool.query("SELECT * FROM erroak.usuarios WHERE usuario_id = $1", [id])
         if (result.rows.length > 0) {
             console.log("GET - usuario")
+            delete result.rows[0].userPassword
             return result.rows[0]
         }
         else
@@ -241,7 +306,7 @@ export async function getUsuario(id) {
 export async function putUsuario(id, updatedUser) {
     try {
         const {
-            email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno,
+            email, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno,
             observaciones, lenguaje_id
         } = updatedUser
 
@@ -253,11 +318,11 @@ export async function putUsuario(id, updatedUser) {
 
         const result = await pool.query(
             `UPDATE erroak.usuarios SET
-                email = $1, password = $2, nombre_apellidos = $3, movil = $4, extension = $5, centro_id = $6,
-                llave = $7, alarma = $8, turno_id = $9, color = $10, tarde_invierno = $11, observaciones = $12, lenguaje_id = $13
-            WHERE usuario_id = $14
+                email = $1, nombre_apellidos = $2, movil = $3, extension = $4, centro_id = $5,
+                llave = $6, alarma = $7, turno_id = $8, color = $9, tarde_invierno = $10, observaciones = $11, lenguaje_id = $12
+            WHERE usuario_id = $13
             RETURNING *`,
-            [email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno, 
+            [email, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno, 
                 observaciones, lenguaje_id, parseInt(id)
             ]
         )
@@ -291,11 +356,11 @@ export async function getWinterAfternoons() {
             `SELECT u.tarde_invierno, u.nombre_apellidos, u.centro_id, c.centro AS nombre_centro, u.llave, u.alarma FROM erroak.usuarios u
                 JOIN erroak.centros c ON u.centro_id = c.centro_id
                 WHERE u.tarde_invierno > 0 
-                ORDER BY u.tarde_invierno, u.nombre_apellidos;`);
+                ORDER BY u.tarde_invierno, u.nombre_apellidos;`)
         console.log("GET - winterafternoons")
         return result.rows;
     } catch (err) {
-        console.error('Error:', err.message);
+        console.error('Error en getWinterArternoons:', err.message);
         throw err;
     }
 }

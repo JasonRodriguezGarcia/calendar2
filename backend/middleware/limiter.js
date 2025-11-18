@@ -26,8 +26,8 @@ export const apiLimiter = rateLimit({
 
 // Límite específico para registro .post('/usuario', ...)
 export const registerLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hora
-  max: 5, // máximo 5 registros por IP en una hora
+  windowMs: 10 * 60 * 1000, // 10 minutos
+  max: 10, // máximo 10 registros por IP en 10 minutos
   message: {
     success: false,
     message: {message: "Demasiadas solicitudes de registro. Intente más tarde."},

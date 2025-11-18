@@ -80,30 +80,29 @@ const LoginComponent = () => {
             )
             const data = await response.json()
             if (response.status === 429) {
-                setErrorMessage(data.message || 'Demasiados intentos. Intente de nuevo más tarde.')
+                setErrorMessage(data.message || 'Demasiados intentos. Intente de nuevo más tarde')
                 return
             }
             // console.log("Respuesta backend: ", data)
-            if (data.result === "No encontrado") {
+            if (data.result === "Email o contraseña incorrecta") {
                 setErrorMessage(t("error.message4"))
                 return
-            } else {
-                const resultado = data.result
-                const usuario = {
-                    id: resultado.usuario_id,
-                    nombre_apellidos: resultado.nombre_apellidos,
-                    emailUsuario: resultado.email
-                }
-                // console.log("token hadleLogin: :", data.token)
-                console.log("Sesión abierta")
-                setUser(usuario)
-                setLogged(true)
-                setToken(data.token)
-                const lenguajeUsuario = languagesSelect[data.result.lenguaje_id].lang
-                setSelectedLanguage(lenguajeUsuario)
-                i18n.changeLanguage(lenguajeUsuario)      
-                navigate('/', { replace: true }) // no deja retroceder en el navegador
             }
+            const resultado = data.result
+            const usuario = {
+                id: resultado.usuario_id,
+                nombre_apellidos: resultado.nombre_apellidos,
+                emailUsuario: resultado.email
+            }
+            // console.log("token hadleLogin: :", data.token)
+            console.log("Sesión abierta")
+            setUser(usuario)
+            setLogged(true)
+            setToken(data.token)
+            const lenguajeUsuario = languagesSelect[data.result.lenguaje_id].lang
+            setSelectedLanguage(lenguajeUsuario)
+            i18n.changeLanguage(lenguajeUsuario)      
+            navigate('/', { replace: true }) // no deja retroceder en el navegador
 
         } catch (error) {
             // setError(error.message); // Handle errors

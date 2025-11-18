@@ -13,6 +13,7 @@ import userscrudEs from './locales/es/userscrud.json';
 import loginEs from './locales/es/login.json';
 import passwordrecoveryEs from './locales/es/passwordrecovery.json';
 import newpassworEs from './locales/es/newpassword.json';
+import changepassworEs from './locales/es/changepassword.json';
 
 import menubarEu from './locales/eu/menubar.json';
 import holidaysEu from './locales/eu/holidays.json'
@@ -25,6 +26,7 @@ import userscrudEu from './locales/eu/userscrud.json';
 import loginEu from './locales/eu/login.json';
 import passwordrecoveryEu from './locales/eu/passwordrecovery.json';
 import newpassworEu from './locales/eu/newpassword.json';
+import changepassworEu from './locales/eu/changepassword.json';
 
 i18n
   .use(initReactI18next)
@@ -42,6 +44,7 @@ i18n
         login: loginEs,
         passwordrecovery: passwordrecoveryEs,
         newpassword: newpassworEs,
+        changepassword: changepassworEs,
       },
       eu: {
         menubar: menubarEu,
@@ -55,13 +58,14 @@ i18n
         login: loginEu,
         passwordrecovery: passwordrecoveryEu,
         newpassword: newpassworEu,
+        changepassword: changepassworEu,
       },
     },
     lng: 'es', // idioma por defecto
     fallbackLng: 'es',
     ns: ['menubar', 'holidays', 'events', 'entityevents', 'holidaysview', 
         'winterafternoons', 'contacts', 'userscrud', 'login', 'passwordrecovery',
-        'newpassword'
+        'newpassword', 'changepassword'
     ], // namespaces
     defaultNS: 'menubar',
     interpolation: {

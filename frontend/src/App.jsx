@@ -17,6 +17,7 @@ import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
+import ChangePasswordPage from './pages/ChangePasswordPage';
 import HolidaysViewPage from './pages/HolidaysViewPage';
 import WinterAfternoonsPage from './pages/WinterAfternoonsPage';
 import ContactsPage from './pages/ContactsPage';
@@ -24,6 +25,7 @@ import PasswordRecoveryPage from './pages/PasswordRecoveryPage';
 import NewPasswordPage from './pages/NewPasswordPage';
 import EntityEventsCalendarPage from './pages/EntityEventsCalendarPage';
 import UnderConstructionPage from './pages/UnderContructionPage';
+import TextHashPage from './pages/TextHashPage';
 import PaisVasco from "./assets/images/flags/paisvasco.png"
 import Espana from "./assets/images/flags/espana.png"
 import Francia from "./assets/images/flags/francia.png"
@@ -142,6 +144,7 @@ const App = () => {
                 <Route path="/signup" element={<SignUpPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/editprofile" element={<EditProfilePage />} />
+                <Route path="/changepassword" element={<ChangePasswordPage />} />
                 <Route path="/entityevents" element={<EntityEventsCalendarPage />} />
                 <Route path="/staffholidays" element={<HolidaysViewPage />} />
                 <Route path="/winterafternoons" element={<WinterAfternoonsPage />} />
@@ -149,6 +152,7 @@ const App = () => {
                 <Route path="/passwordrecovery" element={<PasswordRecoveryPage />} />
                 <Route path="/newpassword/:token" element={<NewPasswordPage />} />
                 <Route path="/about" element={<UnderConstructionPage />} />
+                <Route path="/hash" element={<TextHashPage />} />
             </Routes>
         </BrowserRouter>  
     </AppContext.Provider>

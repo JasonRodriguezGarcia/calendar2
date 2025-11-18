@@ -44,7 +44,7 @@ const MenuBarComponent = () => {
     const { t, i18n } = useTranslation("menubar")
     const pages = [t("pages.eventos"), t("pages.vacaciones"), t("pages.listados"), t("pages.about")]
     const lists = [t("lists.eventosentidad"), t("lists.vacacionesentidad"), t("lists.tardesinvierno"), t("lists.contactos")]
-    const settings = [t("settings.verperfil"), t("settings.modificarperfil"), t("settings.cerrarsesion")];
+    const settings = [t("settings.verperfil"), t("settings.modificarperfil"),  t("settings.modificarcontrasena"), t("settings.cerrarsesion")];
 
     // console.log("18next mainmenu: ", t("eventos"))
     
@@ -66,6 +66,9 @@ const MenuBarComponent = () => {
                 break
             case t("settings.modificarperfil"):
                 navigate("/editprofile")
+                break
+            case t("settings.modificarcontrasena"):
+                navigate("/changepassword")
                 break
             case t("settings.cerrarsesion"):
                 // localStorage.removeItem("token")

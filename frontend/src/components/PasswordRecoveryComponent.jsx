@@ -26,6 +26,7 @@ const PasswordRecoveryComponent = () => {
     const [userEmail, setUserEmail] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
     const [dialogRecovery, setDialogRecovery]= useState(false)
+    const [isDisabled, setIsDisabled] = useState(false)
     const navigate = useNavigate();
 
     useEffect(()=> {
@@ -49,6 +50,7 @@ const PasswordRecoveryComponent = () => {
             setErrorMessage(t("error.message1"))
             return
         }
+        setIsDisabled(true)
 
         try {
             const userPasswordDetails = {
@@ -75,6 +77,7 @@ const PasswordRecoveryComponent = () => {
             console.log("Respuesta backend: ", data)
             if (data.result === "No encontrado") {
                 setErrorMessage(t("error.message2"))
+                setIsDisabled(true)
                 return
             } else {
                 setDialogRecovery(true)
@@ -142,7 +145,11 @@ const PasswordRecoveryComponent = () => {
                         />
                     </Stack>
                 </FormControl>
-                <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 }}>{t("boxbutton")}</Button>
+                <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 }}
+                    disabled={isDisabled}
+                >
+                    {t("boxbutton")}
+                </Button>
 
                 {errorMessage &&                 
                     <Typography level="body-sm" color="danger" fontWeight="bold" fontSize="1em">{errorMessage}</Typography>

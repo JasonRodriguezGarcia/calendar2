@@ -32,4 +32,10 @@ Al entrar en UptimeRobot, en la parte superior izquierda está:
         Friendly name cambiar si se quiere
         Monitor Interval para configurar cada cuánto tiempo hacer el ping
         CREATE Monitor
-    
+
+En el backend, en la parte superior antes de routes y antes de middlewares csrf
+    app.get("/api/v1/erroak/health", (req, res) => {
+        console.log("Llamando a Health para no entrar en stand-by...")
+        res.status(200).send("OK")
+    })
+

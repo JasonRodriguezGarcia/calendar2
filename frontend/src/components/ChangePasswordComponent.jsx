@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useContext } from 'react';
+import AppContext from '../context/AppContext';
 import Box from '@mui/material/Box';
 // MUI
 import {
@@ -16,12 +18,15 @@ import {
     Stack, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
 } from '@mui/material';
 
-const NewPasswordComponent = () => {
+const ChangePasswordComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
-    const { t, i18n } = useTranslation("newpassword")
-
+    const { t, i18n } = useTranslation("changepassword")
+    const { csrfToken, user } = useContext(AppContext)
     const navigate = useNavigate();
-    const {token} = useParams()
+    // const {token} = useParams()
+    console.log("csrfToken: ", csrfToken)
+    console.log("user: ", user)
+    const [currentPassword, setCurrentPassword] = useState("")
     const [newPassword, setNewPassword] = useState("")
     const [newPassword2, setNewPassword2] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
@@ -41,6 +46,10 @@ const NewPasswordComponent = () => {
 
     const handleNewPasswordSubmit = async (e) => {
         e.preventDefault()
+        if (currentPassword === newPassword) {
+            setErrorMessage(t("error.message5"))
+            return
+        }
         if (newPassword.length < minPasswordLength) {
             setErrorMessage(t("error.message1"))
             return
@@ -55,28 +64,58 @@ const NewPasswordComponent = () => {
         }
         setIsDisabled(true)
 
+            // llamamos a /me para recibir el token de la cookie con el usuario
+            const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/me`,
+                {
+                    method: 'GET',
+                    credentials: 'include', // IMPORTANTE: esto permite usar la cookie
+                    headers: {'Content-type': 'application/json; charset=UTF-8'},
+                }
+            )
+            const data = await response.json()
+            // console.log("Data: ", data)
+            if (data.message) {
+                // no debería de pasar por aquí
+                setIsDisabled(false)
+                console.log("NO HAY TOKEN")
+                navigate("/")
+            }
+            const usuarioToken = data.token
+            console.log("usuarioToken: ", usuarioToken)
+
             try {
                 const user = {
-                    // token: token,
-                    token,
+                    token: usuarioToken,
                     newpassword: newPassword,
+                    currentpassword: currentPassword
                 }
                 // fetch validate
-                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/newpassword`,
+                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/changepassword`,
                     {
                         method: 'POST',
-                        headers: {'Content-type': 'application/json; charset=UTF-8'},
+                        headers: {
+                            'Content-type': 'application/json; charset=UTF-8',
+                            'X-CSRF-Token': csrfToken,
+                        },
                         body: JSON.stringify(user)
                     }
                 )
                 const data = await response.json()
                 console.log("Respuesta backend: ", data)
-                setIsDisabled(true)
+                setIsDisabled(false)
+                if (data.result === "Error. Usuario ID no existe") {
+                    setErrorMessage("Error. Usuario ID no existe")
+                    return
+                }
                 if (data.result === "No encontrado") {
+                    setErrorMessage("No encontrado")
+                    return
+                }
+                if (data.result === "Contraseña actual incorrecta") {
                     setErrorMessage(t("error.message4"))
                     return
                 }
-                debugger
+
                 if (data.error) {
                     if (data.error === "El enlace ha expirado, solicite uno nuevo") {
                         setErrorMessage("El enlace ha expirado, solicite uno nuevo")
@@ -86,7 +125,6 @@ const NewPasswordComponent = () => {
                     return
                 }
                 setDialogNewPasswordOpen(true)
-                // navigate("/", { replace: true })
 
             } catch (error) {
                 // setError(error.message); // Handle errors
@@ -117,7 +155,7 @@ const NewPasswordComponent = () => {
                 onSubmit={(e)=> handleNewPasswordSubmit(e)}
                 sx={{
                     heigth: "100vh",
-                    width: { xs: '90%', sm: "30%" },
+                    width: { xs: '90%', sm: "50%", md: "30%" },
                     mx: 'auto', // margin left & right
                     my: 4, // margin top & bottom
                     py: 3, // padding top & bottom
@@ -136,6 +174,23 @@ const NewPasswordComponent = () => {
                 <Typography variant="h4" component="h3" sx={{ color: "black"}}>
                     <b>{t("boxform.typography")}</b>
                 </Typography>
+                <FormControl>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <FormLabel htmlFor="currentpassword" sx={{ color: "black", minWidth: 100 }}>{t("boxform.formcontrol0.formlabel")}</FormLabel>
+                        <Input
+                            id="currentpassword"
+                            name="currentpassword"
+                            type={showPassword ? 'text' : 'password'}
+                            onMouseEnter={() => setShowPassword(true)}
+                            onMouseLeave={() => setShowPassword(false)}
+                            placeholder={`(${t("boxform.formcontrol0.placeholder.text1")}. ${minPasswordLength} - ${t("boxform.formcontrol0.placeholder.text2")})`}
+                            required
+                            fullWidth
+                            value={currentPassword}
+                            onChange={(e)=> setCurrentPassword(e.target.value)}
+                        />
+                    </Stack>
+                </FormControl>
                 <FormControl>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <FormLabel htmlFor="newpassword" sx={{ color: "black", minWidth: 100 }}>{t("boxform.formcontrol1.formlabel")}</FormLabel>
@@ -192,7 +247,10 @@ const NewPasswordComponent = () => {
                             {t("dialog.content.content")}
                         </DialogContent>
                         <DialogActions>
-                            <Button onClick={handleNewPassword} variant="contained">{t("dialog.content.actions")}</Button>
+                            <Button onClick={handleNewPassword} variant="contained"
+                            >
+                                {t("dialog.content.actions")}
+                            </Button>
                         </DialogActions>
                     </DialogContent>
                 </Dialog>
@@ -202,4 +260,4 @@ const NewPasswordComponent = () => {
     )
 }
 
-export default NewPasswordComponent
+export default ChangePasswordComponent

@@ -15,6 +15,7 @@
     "settings": {
         "verperfil": "Profila ikusi",
         "modificarperfil": "Profila aldatu",
+        "modificarcontrasena": "Pasahitza aldatu",
         "cerrarsesion": "Saioa itxi"
     },
     "loggedusertitletext": "Erabiltzailea",

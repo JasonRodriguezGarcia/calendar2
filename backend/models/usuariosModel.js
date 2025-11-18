@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 dotenv.config(); // Permite usar variables de entorno
 const JWT_SECRET_KEY = process.env.JWT_SECRET
 const FRONTEND_URL_RENDER = process.env.FRONTEND_URL_RENDER;
+const saltRounds = 10
 
 sgMail.setApiKey(process.env.SENDGRID_APIKEY);
 
@@ -153,7 +154,7 @@ export async function postNewPassword(newPasswordDetails) {
         }
 
         const userid = decoded.usuarioID
-        const saltRounds = 14
+        // const saltRounds = 14
         const hashedPassword = await bcrypt.hash(newpassword, saltRounds)
         const result = await pool.query(`UPDATE erroak.usuarios SET password = $1 WHERE usuario_id = $2 RETURNING *;`,
             [hashedPassword, userid])
@@ -200,7 +201,7 @@ export async function postChangePassword(newPasswordDetails) {
             return ({result: "Contraseña actual incorrecta"})
         }
 
-        const saltRounds = 14
+        // const saltRounds = 14
         const hashedPassword = await bcrypt.hash(newpassword, saltRounds)
         const result = await pool.query(`UPDATE erroak.usuarios SET password = $1 WHERE usuario_id = $2 RETURNING *;`,
             [hashedPassword, userid])
@@ -231,7 +232,7 @@ export async function postUsuario(usuario) {
             return {result: "Nombre y apellidos ya existente"}
         // Hashear la contraseña
         // Como es el caso de la creación de un usuario guardando todos los datos incluída la contraseña HASHEADA
-        const saltRounds = 14
+        // const saltRounds = 14
         const hashedPassword = await bcrypt.hash(password, saltRounds)
 
         const result = await pool.query(`INSERT INTO erroak.usuarios

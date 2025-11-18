@@ -25,6 +25,7 @@ const LoginComponent = () => {
     const [errorMessage, setErrorMessage] = useState("")
     const [showPassword, setShowPassword] = useState(false)
     const [passwordLength, setPasswordLength] = useState(10) // Longitud contraseña
+    const [isDisabled, setIsDisabled] = useState(false)
 
     const navigate = useNavigate();
 
@@ -59,6 +60,7 @@ const LoginComponent = () => {
             setErrorMessage(t("error.message3"))
             return
         }
+        setIsDisabled(true)
         
         try {
             const user = {
@@ -79,6 +81,7 @@ const LoginComponent = () => {
                 }
             )
             const data = await response.json()
+            setIsDisabled(false)
             if (response.status === 429) {
                 setErrorMessage(data.message || 'Demasiados intentos. Intente de nuevo más tarde')
                 return
@@ -177,7 +180,11 @@ const LoginComponent = () => {
                         />
                     </Stack>
                 </FormControl>
-                <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 /* margin top */ }}>{t("box.buttontext")}</Button>
+                <Button type="submit" variant="contained" id="boton1" name="login" sx={{ mt: 1 /* margin top */ }}
+                    disabled={isDisabled}
+                >
+                    {t("box.buttontext")}
+                </Button>
                 {errorMessage && 
                     <Typography level="body-sm" color="danger" fontWeight="bold" fontSize="1em">{errorMessage}</Typography>
                 }

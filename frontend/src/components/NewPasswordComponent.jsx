@@ -55,45 +55,44 @@ const NewPasswordComponent = () => {
         }
         setIsDisabled(true)
 
-            try {
-                const user = {
-                    // token: token,
-                    token,
-                    newpassword: newPassword,
-                }
-                // fetch validate
-                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/newpassword`,
-                    {
-                        method: 'POST',
-                        headers: {'Content-type': 'application/json; charset=UTF-8'},
-                        body: JSON.stringify(user)
-                    }
-                )
-                const data = await response.json()
-                console.log("Respuesta backend: ", data)
-                setIsDisabled(true)
-                if (data.result === "No encontrado") {
-                    setErrorMessage(t("error.message4"))
-                    return
-                }
-                debugger
-                if (data.error) {
-                    if (data.error === "El enlace ha expirado, solicite uno nuevo") {
-                        setErrorMessage("El enlace ha expirado, solicite uno nuevo")
-                    } else if (data.error === "Token inválido, solicite nueva contraseña") {
-                        setErrorMessage("Token inválido, solicite nueva contraseña")
-                    }
-                    return
-                }
-                setDialogNewPasswordOpen(true)
-                // navigate("/", { replace: true })
-
-            } catch (error) {
-                // setError(error.message); // Handle errors
-                console.log(error.message)
-            } finally {
-                // setLoading(false); // Set loading to false once data is fetched or error occurs
+        try {
+            const user = {
+                // token: token,
+                token,
+                newpassword: newPassword,
             }
+            // fetch validate
+            const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/newpassword`,
+                {
+                    method: 'POST',
+                    headers: {'Content-type': 'application/json; charset=UTF-8'},
+                    body: JSON.stringify(user)
+                }
+            )
+            const data = await response.json()
+            console.log("Respuesta backend: ", data)
+            if (data.result === "No encontrado") {
+                setErrorMessage(t("error.message4"))
+                return
+            }
+            debugger
+            if (data.error) {
+                if (data.error === "El enlace ha expirado, solicite uno nuevo") {
+                    setErrorMessage("El enlace ha expirado, solicite uno nuevo")
+                } else if (data.error === "Token inválido, solicite nueva contraseña") {
+                    setErrorMessage("Token inválido, solicite nueva contraseña")
+                }
+                return
+            }
+            setDialogNewPasswordOpen(true)
+            // navigate("/", { replace: true })
+
+        } catch (error) {
+            // setError(error.message); // Handle errors
+            console.log(error.message)
+        } finally {
+            // setLoading(false); // Set loading to false once data is fetched or error occurs
+        }
 
     }
 

@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useContext } from 'react';
+import useLoading from "../hooks/useLoading"
 import AppContext from '../context/AppContext';
 import Box from '@mui/material/Box';
 // MUI
@@ -22,10 +23,9 @@ const ChangePasswordComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("changepassword")
     const { csrfToken, user } = useContext(AppContext)
+    const { setIsLoading, WaitingMessage } = useLoading()
     const navigate = useNavigate();
-    // const {token} = useParams()
-    console.log("csrfToken: ", csrfToken)
-    console.log("user: ", user)
+
     const [currentPassword, setCurrentPassword] = useState("")
     const [newPassword, setNewPassword] = useState("")
     const [newPassword2, setNewPassword2] = useState("")
@@ -63,6 +63,7 @@ const ChangePasswordComponent = () => {
             return
         }
         setIsDisabled(true)
+        setIsLoading(true)
 
             // llamamos a /me para recibir el token de la cookie con el usuario
             const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/me`,
@@ -130,7 +131,7 @@ const ChangePasswordComponent = () => {
                 // setError(error.message); // Handle errors
                 console.log(error.message)
             } finally {
-                // setLoading(false); // Set loading to false once data is fetched or error occurs
+                setIsLoading(false) // Set loading to false once data is fetched or error occurs
             }
 
     }
@@ -151,6 +152,7 @@ const ChangePasswordComponent = () => {
                 px: 2,
             }}
         >
+            <WaitingMessage />
             <Box component="form"
                 onSubmit={(e)=> handleNewPasswordSubmit(e)}
                 sx={{

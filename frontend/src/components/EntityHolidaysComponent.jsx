@@ -23,7 +23,7 @@ import {
   endOfMonth,
 } from 'date-fns';
 
-const HolidaysViewComponent = () => {
+const EntityHolidaysComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("holidaysview")
     const { csrfToken, user, selectedLanguage } = useContext(AppContext)
@@ -94,7 +94,7 @@ const HolidaysViewComponent = () => {
         fetchEventos()
         fetchUsuarios()
         // Obtener fecha actual
-        const year = date.getFullYear();
+        const year = date.getFullYear()
         const month = date.getMonth() // OJO: 0 = Enero, 11 = Diciembre
 
         // Obtener número de días del mes actual
@@ -265,4 +265,4 @@ const HolidaysViewComponent = () => {
   )
 }
 
-export default HolidaysViewComponent;
+export default EntityHolidaysComponent

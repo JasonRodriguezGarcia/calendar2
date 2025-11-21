@@ -2,11 +2,12 @@ import React, {useEffect, useState} from "react";
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useContext } from 'react';
+import useLoading from "../hooks/useLoading"
 import AppContext from '../context/AppContext';
 import Box from '@mui/material/Box';
 
 // MUI
-import { CircularProgress } from '@mui/joy';
+// import { CircularProgress } from '@mui/joy';
 import {
   Typography,
   Button,
@@ -20,6 +21,8 @@ const LoginComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("login")
     const { csrfToken, setLogged, setUser, setToken, setSelectedLanguage, languagesSelect } = useContext(AppContext)
+    const { setIsLoading, WaitingMessage } = useLoading()
+    const navigate = useNavigate();
 
     const [userName, setUserName] = useState("")
     const [userEmail, setUserEmail] = useState("")
@@ -28,9 +31,6 @@ const LoginComponent = () => {
     const [showPassword, setShowPassword] = useState(false)
     const [passwordLength, setPasswordLength] = useState(10) // Longitud contraseña
     const [isDisabled, setIsDisabled] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
-
-    const navigate = useNavigate();
 
     useEffect(()=> {
         if (errorMessage) {
@@ -65,6 +65,7 @@ const LoginComponent = () => {
         }
         setIsDisabled(true)
         setIsLoading(true)
+
         try {
             const user = {
                 id: userName,
@@ -122,15 +123,6 @@ const LoginComponent = () => {
 
     return (
         <>
-    <Box sx={{ display: 'flex', position: "absolute", top: "30%", left: "50%", transform: "translate(-50%, -50%)",
-        gap: 2, alignItems: 'center', flexWrap: 'wrap', opacity: 0.5 }}>
-        {isLoading && 
-            <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
-                <CircularProgress size="lg" />
-                <b>Loading ... </b>
-            </Box>
-        }
-    </Box>  
         <Box
             sx={{
                 minHeight: 'calc(100vh - 64px)',  // resta la altura del menu
@@ -140,6 +132,7 @@ const LoginComponent = () => {
                 px: 2,
             }}
         >
+            {WaitingMessage()}
             <Box component="form"
                 onSubmit={(e)=> handleLogin(e)}
                 sx={{

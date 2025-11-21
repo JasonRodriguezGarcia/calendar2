@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate , Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useContext } from 'react';
+import useLoading from "../hooks/useLoading"
 import AppContext from '../context/AppContext';
 import logo from "../assets/images/erroaksartu.jpg"
 import {
@@ -36,8 +37,9 @@ import HomeIcon from '@mui/icons-material/Home';
 const MenuBarComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { logged, setLogged, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect } = useContext(AppContext)
-
+    const { setIsLoading, WaitingMessage } = useLoading()
     const navigate = useNavigate()
+
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
     const [anchorElList, setAnchorElList] = useState(null);
@@ -45,8 +47,6 @@ const MenuBarComponent = () => {
     const pages = [t("pages.eventos"), t("pages.vacaciones"), t("pages.listados"), t("pages.about")]
     const lists = [t("lists.eventosentidad"), t("lists.vacacionesentidad"), t("lists.tardesinvierno"), t("lists.contactos")]
     const settings = [t("settings.verperfil"), t("settings.modificarperfil"),  t("settings.modificarcontrasena"), t("settings.cerrarsesion")];
-
-    // console.log("18next mainmenu: ", t("eventos"))
     
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -74,6 +74,7 @@ const MenuBarComponent = () => {
                 // localStorage.removeItem("token")
                 setLogged(false)
                 setUser({})
+                setIsLoading(true)
                 try {
                     const response = await fetch(
                         `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/logout`,
@@ -90,6 +91,8 @@ const MenuBarComponent = () => {
                     console.log("Resultado logout: ", data.message)
                 } catch (error) {
                     console.error("Error cerrando sesión:", error)
+                } finally {
+                    setIsLoading(false)
                 }
 
                 navigate("/", { replace: true })
@@ -138,6 +141,7 @@ const MenuBarComponent = () => {
 
     return (
         <AppBar position="fixed" sx={{ backgroundColor: '#0072AD' }}>
+            <WaitingMessage />
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                 {/* Select Lenguaje */}
@@ -293,7 +297,7 @@ const MenuBarComponent = () => {
                                                             navigate("/entityevents")
                                                             break
                                                         case t("lists.vacacionesentidad"):
-                                                            navigate("/staffholidays")
+                                                            navigate("/entityholidays")
                                                             break
                                                         case t("lists.tardesinvierno"):
                                                             navigate("/winterafternoons")
@@ -418,7 +422,7 @@ const MenuBarComponent = () => {
                                             navigate("/entityevents")
                                             break
                                         case t("lists.vacacionesentidad"):
-                                            navigate("/staffholidays")
+                                            navigate("/entityholidays")
                                             break
                                         case t("lists.tardesinvierno"):
                                             navigate("/winterafternoons")

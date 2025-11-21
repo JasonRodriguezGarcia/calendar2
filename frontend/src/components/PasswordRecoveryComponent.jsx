@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useContext } from 'react';
+import useLoading from "../hooks/useLoading"
 import AppContext from '../context/AppContext';
 import Box from '@mui/material/Box';
 // MUI
@@ -22,12 +23,13 @@ const PasswordRecoveryComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("passwordrecovery")
     const { logged } = useContext(AppContext)
+    const { setIsLoading, WaitingMessage } = useLoading()
+    const navigate = useNavigate()
 
     const [userEmail, setUserEmail] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
     const [dialogRecovery, setDialogRecovery]= useState(false)
     const [isDisabled, setIsDisabled] = useState(false)
-    const navigate = useNavigate();
 
     useEffect(()=> {
         if (errorMessage) {
@@ -51,6 +53,7 @@ const PasswordRecoveryComponent = () => {
             return
         }
         setIsDisabled(true)
+        setIsLoading(true)
 
         try {
             const userPasswordDetails = {
@@ -87,7 +90,7 @@ const PasswordRecoveryComponent = () => {
             // setError(error.message); // Handle errors
             console.log(error.message)
         } finally {
-            // setLoading(false); // Set loading to false once data is fetched or error occurs
+            setIsLoading(false); // Set loading to false once data is fetched or error occurs
         }
 
     }
@@ -108,6 +111,7 @@ const PasswordRecoveryComponent = () => {
                 px: 2,
             }}
         >
+            <WaitingMessage />
             <Box component="form"
                 onSubmit={(e)=> handlePasswordRecovery(e)}
                 sx={{

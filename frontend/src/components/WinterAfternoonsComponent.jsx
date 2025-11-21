@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useContext } from 'react';
 import AppContext from '../context/AppContext';
+import useLoading from "../hooks/useLoading";
 import {
     Box,
     Stack,
@@ -24,6 +25,7 @@ const WinterAfternoonsComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER;
     const { t, i18n } = useTranslation("winterafternoons")
     const { user, selectedLanguage } = useContext(AppContext)
+    const { setIsLoading, WaitingMessage } = useLoading()
 
     const theme = useTheme();
     const [events, setEvents] = useState([])
@@ -31,6 +33,7 @@ const WinterAfternoonsComponent = () => {
     const [headTableDays, setHeadTableDays] = useState([])
 
     const fetchUsuarios = async () => {
+        setIsLoading(true)
         try {
             const response = await fetch(
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/winterafternoons`,
@@ -45,33 +48,35 @@ const WinterAfternoonsComponent = () => {
 
             )
             const data = await response.json()
-        // Paso 1: Inicializar 5 columnas vacías (lunes a viernes)
-        const columnasPorDia = Array.from({ length: 5 }, () => [])
+            // Paso 1: Inicializar 5 columnas vacías (lunes a viernes)
+            const columnasPorDia = Array.from({ length: 5 }, () => [])
 
-        // Paso 2: Distribuir usuarios según su tarde_invierno
-        data.forEach(usuario => {
-            const dia = usuario.tarde_invierno; // 1 = lunes, 5 = viernes
-            if (dia >= 1 && dia <= 5) {
-                columnasPorDia[dia - 1].push(usuario)
+            // Paso 2: Distribuir usuarios según su tarde_invierno
+            data.forEach(usuario => {
+                const dia = usuario.tarde_invierno; // 1 = lunes, 5 = viernes
+                if (dia >= 1 && dia <= 5) {
+                    columnasPorDia[dia - 1].push(usuario)
+                }
+            })
+
+            // Paso 3: Calcular el máximo número de usuarios en un día
+            const maxUsuarios = Math.max(...columnasPorDia.map(col => col.length))
+
+            // Paso 4: Transponer la matriz para que cada fila tenga 5 columnas
+            const filas = []
+            for (let i = 0; i < maxUsuarios; i++) {
+                const fila = []
+                for (let j = 0; j < 5; j++) {
+                    fila.push(columnasPorDia[j][i] || null); // rellena con null si no hay usuario
+                }
+                filas.push(fila)
             }
-        })
-
-        // Paso 3: Calcular el máximo número de usuarios en un día
-        const maxUsuarios = Math.max(...columnasPorDia.map(col => col.length))
-
-        // Paso 4: Transponer la matriz para que cada fila tenga 5 columnas
-        const filas = []
-        for (let i = 0; i < maxUsuarios; i++) {
-            const fila = []
-            for (let j = 0; j < 5; j++) {
-                fila.push(columnasPorDia[j][i] || null); // rellena con null si no hay usuario
-            }
-            filas.push(fila)
-        }
-            console.log("imprimo filas: ", filas)
-            setUsuarios(filas)
+                console.log("imprimo filas: ", filas)
+                setUsuarios(filas)
         } catch (error) {
             console.error("Error cargando listingsafternoons:", error)
+        } finally {
+            setIsLoading(false); // Set loading to false once data is fetched or error occurs
         }
     }
 
@@ -80,9 +85,9 @@ const WinterAfternoonsComponent = () => {
         fetchUsuarios();
     }, [user])
 
-    useEffect(() => {
-        console.log("usuarios: ", events, usuarios)
-    }, [usuarios])
+    // useEffect(() => {
+    //     console.log("usuarios: ", events, usuarios)
+    // }, [usuarios])
 
     useEffect(() => {
         const dias = [
@@ -97,8 +102,8 @@ const WinterAfternoonsComponent = () => {
 
     return (
     <>
+        <WaitingMessage />
         <Toolbar />
-
         <Stack direction="row" justifyContent="center" alignItems="center" mb={1}>
             <Typography variant="h6">
                 {/* TARDES DE INVIERNO */}

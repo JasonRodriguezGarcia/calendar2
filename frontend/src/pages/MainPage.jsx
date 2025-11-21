@@ -13,7 +13,6 @@ const MainPage = () => {
             minHeight: "100vh",
             // minWidth: "100%",
             backgroundPosition: "top center",
-
         }}>
             <Toolbar />
             <Toolbar />

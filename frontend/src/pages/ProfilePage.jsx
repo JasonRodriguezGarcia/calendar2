@@ -4,7 +4,6 @@ import AppContext from '../context/AppContext';
 import MenuBarComponent from '../components/MenuBarComponent';
 import UsersCRUDComponent from '../components/UsersCRUDComponent';
 import { Box, Toolbar } from '@mui/material';
-// import imagenFondo from "../assets/images/erroak-page.jpeg";
 import imagenFondo from "../assets/images/cuerda.jpg";
 
 const ProfilePage = () =>{

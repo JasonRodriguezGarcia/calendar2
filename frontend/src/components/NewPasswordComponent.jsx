@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import useLoading from "../hooks/useLoading";
 import Box from '@mui/material/Box';
 // MUI
 import {
@@ -19,8 +20,9 @@ import {
 const NewPasswordComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("newpassword")
+    const { setIsLoading, WaitingMessage } = useLoading()
+    const navigate = useNavigate()
 
-    const navigate = useNavigate();
     const {token} = useParams()
     const [newPassword, setNewPassword] = useState("")
     const [newPassword2, setNewPassword2] = useState("")
@@ -29,7 +31,7 @@ const NewPasswordComponent = () => {
     const [minPasswordLength, setMinPasswordLength] = useState(10) // Longitud contraseña
     const [dialogNewPasswordOpen, setDialogNewPasswordOpen] = useState(false)
     const [isDisabled, setIsDisabled] = useState(false)
-    
+
     useEffect(()=> {
         if (errorMessage) {
             const intervalo = setTimeout(() => {
@@ -54,6 +56,7 @@ const NewPasswordComponent = () => {
             return
         }
         setIsDisabled(true)
+        setIsLoading(true)
 
         try {
             const user = {
@@ -71,11 +74,11 @@ const NewPasswordComponent = () => {
             )
             const data = await response.json()
             console.log("Respuesta backend: ", data)
+            setIsLoading(false)
             if (data.result === "No encontrado") {
                 setErrorMessage(t("error.message4"))
                 return
             }
-            debugger
             if (data.error) {
                 if (data.error === "El enlace ha expirado, solicite uno nuevo") {
                     setErrorMessage("El enlace ha expirado, solicite uno nuevo")
@@ -112,6 +115,7 @@ const NewPasswordComponent = () => {
                 px: 2,
             }}
         >
+            <WaitingMessage />
             <Box component="form"
                 onSubmit={(e)=> handleNewPasswordSubmit(e)}
                 sx={{

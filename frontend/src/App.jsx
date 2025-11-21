@@ -9,7 +9,6 @@ import './utils/i18next/i18n';  // Path is relative to the current file in App.j
 // componente const { t, i18n } = useTranslation("passwordrecovery") se selecciona el lenguaje actual de App.jsx
 import { useTranslation } from 'react-i18next'; 
 import AppContext from './context/AppContext';
-import Cookies from 'js-cookie';
 import EventsCalendarPage from './pages/EventsCalendarPage';
 import HolidaysPage from './pages/HolidaysPage';
 import MainPage from './pages/MainPage';
@@ -18,19 +17,18 @@ import SignUpPage from './pages/SignUpPage';
 import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
-import HolidaysViewPage from './pages/HolidaysViewPage';
+import EntityHolidaysPage from './pages/EntityHolidaysPage';
 import WinterAfternoonsPage from './pages/WinterAfternoonsPage';
 import ContactsPage from './pages/ContactsPage';
 import PasswordRecoveryPage from './pages/PasswordRecoveryPage';
 import NewPasswordPage from './pages/NewPasswordPage';
 import EntityEventsCalendarPage from './pages/EntityEventsCalendarPage';
-import UnderConstructionPage from './pages/UnderContructionPage';
+import AboutPage from './pages/AboutPage';
 import TextHashPage from './pages/TextHashPage';
 import PaisVasco from "./assets/images/flags/paisvasco.png"
 import Espana from "./assets/images/flags/espana.png"
 import Francia from "./assets/images/flags/francia.png"
 import ReinoUnido from "./assets/images/flags/reinounido.png"
-
 
 const App = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
@@ -46,6 +44,7 @@ const App = () => {
     ];
     const [selectedLanguage, setSelectedLanguage] = useState("")
     const { t, i18n } = useTranslation("menubar")
+    
 
     useEffect(()=> {
         const checkLogeado = async () => {
@@ -133,7 +132,7 @@ const App = () => {
         csrfToken, setCsrfToken,
         token, setToken,
         selectedLanguage, setSelectedLanguage, languagesSelect,
-        logged, setLogged, user, setUser
+        logged, setLogged, user, setUser,
     }} >  
         <BrowserRouter>
             <Routes>
@@ -146,12 +145,12 @@ const App = () => {
                 <Route path="/editprofile" element={<EditProfilePage />} />
                 <Route path="/changepassword" element={<ChangePasswordPage />} />
                 <Route path="/entityevents" element={<EntityEventsCalendarPage />} />
-                <Route path="/staffholidays" element={<HolidaysViewPage />} />
+                <Route path="/entityholidays" element={<EntityHolidaysPage />} />
                 <Route path="/winterafternoons" element={<WinterAfternoonsPage />} />
                 <Route path="/contacts" element={<ContactsPage />} />
                 <Route path="/passwordrecovery" element={<PasswordRecoveryPage />} />
                 <Route path="/newpassword/:token" element={<NewPasswordPage />} />
-                <Route path="/about" element={<UnderConstructionPage />} />
+                <Route path="/about" element={<AboutPage />} />
                 <Route path="/hash" element={<TextHashPage />} />
             </Routes>
         </BrowserRouter>  

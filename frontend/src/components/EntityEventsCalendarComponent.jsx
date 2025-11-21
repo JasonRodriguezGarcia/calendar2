@@ -5,6 +5,7 @@ import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { useTranslation } from 'react-i18next';
 import { useContext } from 'react';
+import useLoading from "../hooks/useLoading"
 import AppContext from '../context/AppContext';
 import { es, eu } from 'date-fns/locale';
 import format from 'date-fns/format';
@@ -62,6 +63,7 @@ const EntityEventsCalendarComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("entityevents")
     const { csrfToken, user, selectedLanguage } = useContext(AppContext)
+    const { setIsLoading, WaitingMessage } = useLoading()
     
     const [events, setEvents] = useState([])
     const [allEvents, setAllEvents] = useState([])
@@ -78,6 +80,7 @@ const EntityEventsCalendarComponent = () => {
 
     useEffect(() => {
         const getNewEventFormData = async () => {
+            setIsLoading(true)
             try {
                 // fetch for getting horarios & turnos data
                 const response = await fetch(
@@ -107,7 +110,7 @@ const EntityEventsCalendarComponent = () => {
             } catch (error) {
                 console.log(error.message)
             } finally {
-                // setLoading(false); // Set loading to false once data is fetched or error occurs
+                setIsLoading(false); // Set loading to false once data is fetched or error occurs
             }
         }
 
@@ -156,6 +159,7 @@ const EntityEventsCalendarComponent = () => {
 //      aparece en julio).
             const { start, end } = getVisibleRange(date);
             // Llamando a backend para presentar los datos
+            setIsLoading(true)
             try {
                 const response = await fetch(
                     `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventos/${start.toISOString()}/${end.toISOString()}`,
@@ -181,6 +185,8 @@ const EntityEventsCalendarComponent = () => {
 
             } catch (error) {
                 console.error("Error cargando eventos:", error)
+            } finally {
+                setIsLoading(false); // Set loading to false once data is fetched or error occurs
             }
         }
 
@@ -281,6 +287,7 @@ const EntityEventsCalendarComponent = () => {
 
     return (
     <>
+        <WaitingMessage />
         <Toolbar />
         {/* <h2>{t("mainheader.text1")}: {date.getFullYear()}</h2> */}
         <Stack justifyContent="space-between" alignItems="center" mb={0}

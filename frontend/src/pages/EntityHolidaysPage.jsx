@@ -1,10 +1,10 @@
 import { Navigate } from 'react-router-dom';
 import { useContext } from 'react';
 import AppContext from '../context/AppContext';
-import HolidaysViewComponent from '../components/HolidaysViewComponent';
+import EntityHolidaysComponent from '../components/EntityHolidaysComponent'
 import MenuBarComponent from '../components/MenuBarComponent';
 
-const HolidaysViewPage = () =>{
+const EntityHolidaysPage = () =>{
     const { logged } = useContext(AppContext)
 
     // Si no está logeado se sale del componente
@@ -16,9 +16,9 @@ const HolidaysViewPage = () =>{
     return (
         <>
             <MenuBarComponent />
-            <HolidaysViewComponent />
+            <EntityHolidaysComponent />
         </>
     )
 }
 
-export default HolidaysViewPage
+export default EntityHolidaysPage

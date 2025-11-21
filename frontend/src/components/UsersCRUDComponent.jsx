@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useContext } from 'react';
+import useLoading from "../hooks/useLoading"
 import AppContext from '../context/AppContext';
 import {
     Box, 
@@ -29,6 +30,8 @@ const UsersCRUDComponent = ({ action }) => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("userscrud")
     const { csrfToken, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect } = useContext(AppContext)
+    const { setIsLoading, WaitingMessage } = useLoading()
+    const navigate = useNavigate()
 
     const [formUserData, setFormUserData] = useState({
         userEmail: "",
@@ -56,10 +59,10 @@ const UsersCRUDComponent = ({ action }) => {
     const [errorMessage, setErrorMessage] = useState("")
     const [dialogNewUserOpen, setDialogNewUserOpen] = useState(false)
     const [isDisabled, setIsDisabled] = useState(false)
-    const navigate = useNavigate()
 
     useEffect(() => {
         const getData = async () => {
+            setIsLoading(true)
             try {
                 // fetch for getting horarios & turnos data
                 const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getsignupformdata`,
@@ -85,7 +88,7 @@ const UsersCRUDComponent = ({ action }) => {
             } catch (error) {
                 console.log(error.message)
             } finally {
-                // setLoading(false); // Set loading to false once data is fetched or error occurs
+                // setIsLoading(false) // Set loading to false once data is fetched or error occurs
             }
             if (action === "read" || action === "update")  {
                 const endPoint= `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario`
@@ -135,7 +138,7 @@ const UsersCRUDComponent = ({ action }) => {
                 } catch (error) {
                     console.log(error.message)
                 } finally {
-                    // setLoading(false); // Set loading to false once data is fetched or error occurs
+                    setIsLoading(false); // Set loading to false once data is fetched or error occurs
                 }
             } else {
                 setFormTitle(t("formtitle"))
@@ -286,7 +289,7 @@ const UsersCRUDComponent = ({ action }) => {
             return
         }
         setIsDisabled(true)
-
+        setIsLoading(true)
         try {
             const userTmp = {
                 // id: user.id,
@@ -347,7 +350,7 @@ const UsersCRUDComponent = ({ action }) => {
         } catch (error) {
             console.log(error.message)
         } finally {
-            // setLoading(false); // Set loading to false once data is fetched or error occurs
+            setIsLoading(false); // Set loading to false once data is fetched or error occurs
         }
     }
 
@@ -367,6 +370,7 @@ const UsersCRUDComponent = ({ action }) => {
                 px: 2,
             }}
         >
+            <WaitingMessage />
             <Box component="form"
                 onSubmit={(e)=> handleFormSubmit(e)}
                 sx={{

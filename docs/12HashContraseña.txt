@@ -25,7 +25,8 @@ Para modificar la contraseña tenemos 2 opciones
             si es correcta se modifica la contraseña del usuario ya HASHEADA
 
 Concepto	Traducción / definición en español
-Hashing	    Hashing / Resumen criptográfico / Función hash – Transformar datos en un resumen único y fijo; no se puede 
+Hashing	    Hashing / Resumen criptográfico / Función hash (especie de encriptado irreversible, que no se puede
+            desencriptar) – Transformar datos en un resumen único y fijo; no se puede 
             revertir para obtener los datos originales. SOLO SE PUEDE COMPARAR. Se usa para proteger contraseñas o verificar 
             integridad.
 Encryption	Encriptación / Cifrado – Transformar datos para que solo puedan ser leídos por quien tenga la clave de 

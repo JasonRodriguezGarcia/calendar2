@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useContext } from 'react';
 import AppContext from '../context/AppContext';
 import { useTranslation } from 'react-i18next';
+import useLoading from "../hooks/useLoading"
 import {
     Box,
     Stack,
@@ -19,6 +20,7 @@ import {
 const ContactsComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER;
     const { t, i18n } = useTranslation("contacts")
+    const { setIsLoading, WaitingMessage } = useLoading()
     const { csrfToken, user } = useContext(AppContext)
 
     const theme = useTheme();
@@ -26,6 +28,7 @@ const ContactsComponent = () => {
     const [turnos, setTurnos] = useState([])
 
     const fetchUsuarios = async () => {
+        setIsLoading(true)
         try {
             const response = await fetch(
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuarios`,
@@ -44,6 +47,8 @@ const ContactsComponent = () => {
             setUsuarios(data)
         } catch (error) {
             console.error("Error cargando listingsafternoons:", error)
+        } finally {
+            setIsLoading(false) // Set loading to false once data is fetched or error occurs
         }
     }
 
@@ -63,8 +68,8 @@ const ContactsComponent = () => {
 
     return (
     <>
+        <WaitingMessage />
         <Toolbar />
-
         <Stack direction="row" justifyContent="center" alignItems="center" mb={3}>
             <Typography variant="h6">
                 {t("stacktypography")}

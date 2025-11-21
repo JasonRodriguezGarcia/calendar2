@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useContext } from 'react';
 import AppContext from '../context/AppContext';
+import useLoading from "../hooks/useLoading"
 import {
   Box,
   Stack,
@@ -27,6 +28,7 @@ const EntityHolidaysComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("holidaysview")
     const { csrfToken, user, selectedLanguage } = useContext(AppContext)
+    const { setIsLoading, WaitingMessage } = useLoading()
     const theme = useTheme()
 
     const [events, setEvents] = useState([])
@@ -36,10 +38,10 @@ const EntityHolidaysComponent = () => {
     const [actualMonthDays, setActualMonthDays] = useState([])
 
     const fetchEventos = async () => {
-        console.log("Date: ", date)
         const start = startOfMonth(date);
         const end = endOfMonth(date);
-        console.log("user.id: ", user.id)
+        setIsLoading(true)
+
         try {
             const response = await fetch(
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${start.toISOString()}/${end.toISOString()}/all`,
@@ -63,10 +65,14 @@ const EntityHolidaysComponent = () => {
             setEvents(formatted)
         } catch (error) {
             console.error("Error cargando vacaciones:", error)
+        } finally {
+            setIsLoading(false) // Set loading to false once data is fetched or error occurs
         }
+
     }
 
     const fetchUsuarios = async () => {
+        setIsLoading(true)
         try {
             const response = await fetch(
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuarios`,
@@ -86,7 +92,10 @@ const EntityHolidaysComponent = () => {
             setUsuarios(data)
         } catch (error) {
             console.error("Error cargando vacaciones:", error)
+        } finally {
+            setIsLoading(false) // Set loading to false once data is fetched or error occurs
         }
+
     }
 
     useEffect(() => {
@@ -127,6 +136,7 @@ const EntityHolidaysComponent = () => {
 
     return (
     <>
+        <WaitingMessage />
         <Toolbar />
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}
             sx={{position: "fixed",  top: 60,

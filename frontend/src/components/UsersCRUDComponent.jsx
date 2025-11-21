@@ -62,7 +62,7 @@ const UsersCRUDComponent = ({ action }) => {
 
     useEffect(() => {
         const getData = async () => {
-            setIsLoading(true)
+            if (action !== "create") setIsLoading(true)
             try {
                 // fetch for getting horarios & turnos data
                 const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getsignupformdata`,

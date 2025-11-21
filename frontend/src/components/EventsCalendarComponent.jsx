@@ -5,6 +5,7 @@ import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { useTranslation } from 'react-i18next';
 import { useContext } from 'react';
 import AppContext from '../context/AppContext';
+import useLoading from "../hooks/useLoading"
 import { es, eu } from 'date-fns/locale';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
@@ -69,6 +70,7 @@ const EventsCalendarComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("events")
     const { csrfToken, user, selectedLanguage } = useContext(AppContext)
+    const { setIsLoading, WaitingMessage } = useLoading()
 
     const [events, setEvents] = useState([])                // todos los eventos del rango actual
     const [dialogOpen, setDialogOpen] = useState(false)
@@ -103,6 +105,7 @@ const EventsCalendarComponent = () => {
 
     useEffect(() => {
         const getNewEventFormData = async () => {
+            setIsLoading(true)
             try {
                 // fetch for getting Select data
                 const response = await fetch(
@@ -132,7 +135,7 @@ const EventsCalendarComponent = () => {
             } catch (error) {
                 console.log(error.message)
             } finally {
-                // setLoading(false); // Set loading to false once data is fetched or error occurs
+                setIsLoading(false); // Set loading to false once data is fetched or error occurs
             }
         }
 
@@ -181,6 +184,7 @@ const EventsCalendarComponent = () => {
 //      aparece en julio).
             const { start, end } = getVisibleRange(date);
             // Llamando a backend para presentar los datos
+            setIsLoading(true)
             try {
                 const response = await fetch(
                   `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/eventosuser/${start.toISOString()}/${end.toISOString()}`,
@@ -208,6 +212,8 @@ const EventsCalendarComponent = () => {
                 setEvents(eventosData)
             } catch (error) {
                 console.error("Error cargando eventos:", error)
+            } finally {
+                setIsLoading(false) // Set loading to false once data is fetched or error occurs
             }
         }
 
@@ -359,6 +365,7 @@ const EventsCalendarComponent = () => {
                 // se responde a backend con el resultado para que se añada a o no a newEvents
                 try {
                     // fetch eventos para repeticiones
+                    setIsLoading(true)
                     const responseRepeated = await fetch(
                         `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/`,
                         {
@@ -388,7 +395,7 @@ const EventsCalendarComponent = () => {
                     // setError(error.message); // Handle errors
                     // console.log(error.message)
                 } finally {
-                    // setLoading(false); // Set loading to false once data is fetched or error occurs
+                    setIsLoading(false); // Set loading to false once data is fetched or error occurs
                 }
             }   
             currentDate.setDate(currentDate.getDate() + 1)  // Sumo un día
@@ -461,6 +468,7 @@ const EventsCalendarComponent = () => {
             // Añadir aqui la llamada a backend para modificar un evento nuevo - selectedEvent.event_id
             try {
                 // fetch eventos para modificar
+                setIsLoading(true)
                 const responseEdit = await fetch(
                     `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${selectedEvent.event_id}`,
                     {
@@ -495,11 +503,12 @@ const EventsCalendarComponent = () => {
                 // setError(error.message); // Handle errors
                 console.log(error.message)
             } finally {
-                // setLoading(false); // Set loading to false once data is fetched or error occurs
+                setIsLoading(false); // Set loading to false once data is fetched or error occurs
             }
 
         } else {
             // Añadir aqui la llamada a backend para guardar un evento nuevo - eventData
+            setIsLoading(true)
             try {
                 // fetch eventos para crear
                 const response = await fetch(
@@ -534,7 +543,7 @@ const EventsCalendarComponent = () => {
                 // setError(error.message); // Handle errors
                 console.log(error.message)
             } finally {
-                // setLoading(false); // Set loading to false once data is fetched or error occurs
+                setIsLoading(false); // Set loading to false once data is fetched or error occurs
             }
 
         }
@@ -564,6 +573,7 @@ const EventsCalendarComponent = () => {
         // CARGARSE LOS DATOS LOS ATUALIZA A UTC+2
         try {
             // fetch eventos para modificar/guardar con nueva fecha/hora de un evento movido
+            setIsLoading(true)
             const responseEdit = await fetch(
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${event.event_id}`,
                 {
@@ -597,7 +607,7 @@ const EventsCalendarComponent = () => {
             // setError(error.message); // Handle errors
             console.log(error.message)
         } finally {
-            // setLoading(false); // Set loading to false once data is fetched or error occurs
+            setIsLoading(false); // Set loading to false once data is fetched or error occurs
         }
 
     }
@@ -617,6 +627,7 @@ const EventsCalendarComponent = () => {
         try {
             // fetch eventos parar borrar
             console.log("Evento a borrar: ", selectedEvent.event_id)
+            setIsLoading(true)
             const response = await fetch(
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/evento/${selectedEvent.event_id}`,
                 {
@@ -640,7 +651,7 @@ const EventsCalendarComponent = () => {
             // setError(error.message); // Handle errors
             console.log(error.message)
         } finally {
-            // setLoading(false); // Set loading to false once data is fetched or error occurs
+            setIsLoading(false); // Set loading to false once data is fetched or error occurs
         }
 
     }
@@ -730,6 +741,7 @@ const EventsCalendarComponent = () => {
 
     return (
     <>
+        <WaitingMessage />
         <Toolbar />
         <Stack justifyContent="space-between" alignItems="center" mb={0}
             sx={{

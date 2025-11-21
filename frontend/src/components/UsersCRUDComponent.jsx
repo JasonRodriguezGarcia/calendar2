@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useContext } from 'react';
 import useLoading from "../hooks/useLoading"
+import useDataResult from  "../hooks/useDataResult"
 import AppContext from '../context/AppContext';
 import {
     Box, 
@@ -31,6 +32,7 @@ const UsersCRUDComponent = ({ action }) => {
     const { t, i18n } = useTranslation("userscrud")
     const { csrfToken, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect } = useContext(AppContext)
     const { setIsLoading, WaitingMessage } = useLoading()
+    const { setSnackAction, setIsOpen, SnackMessage } = useDataResult()
     const navigate = useNavigate()
 
     const [formUserData, setFormUserData] = useState({
@@ -84,7 +86,6 @@ const UsersCRUDComponent = ({ action }) => {
                     setCentros(data.centros)
                     // setTurnos(data.turnos)
                 }
-
             } catch (error) {
                 console.log(error.message)
             } finally {
@@ -280,7 +281,7 @@ const UsersCRUDComponent = ({ action }) => {
             setErrorMessage(t("error.message5"))
             return
         }
-        if (action === "create" && formUserData.userPassword.length < formUserData.minPasswordLength) {
+        if (action === "create" && formUserData.userPassword.length < minPasswordLength) {
             setErrorMessage(t("error.message6"))
             return
         }
@@ -339,21 +340,30 @@ const UsersCRUDComponent = ({ action }) => {
                     emailUsuario: resultado.email
                 }
                 setUser(usuario)
-                navigate('/', { replace: true })
+                // Mostrar snackbar ANTES de navegar
+                setSnackAction(0)
+                setIsOpen(true)
+                // navigate('/', { replace: true })
+                setTimeout(() => navigate('/', { replace: true }), 3000)
             } else {
-                setDialogNewUserOpen(true)
+                setSnackAction(0)
+                setIsOpen(true)
+                setTimeout(() => {
+                    setDialogNewUserOpen(true)
+                    navigate('/', { replace: true })
+                }, 3000)
             }
             const lenguajeUsuario = languagesSelect[formUserData.userLenguaje].lang
             setSelectedLanguage(lenguajeUsuario)
             i18n.changeLanguage(lenguajeUsuario)      
-
+            
         } catch (error) {
             console.log(error.message)
         } finally {
             setIsLoading(false); // Set loading to false once data is fetched or error occurs
         }
     }
-
+    
     const handleNewUserClose = () => {
         setDialogNewUserOpen(false)
         navigate('/', { replace: true })
@@ -370,6 +380,7 @@ const UsersCRUDComponent = ({ action }) => {
                 px: 2,
             }}
         >
+            <SnackMessage />
             <WaitingMessage />
             <Box component="form"
                 onSubmit={(e)=> handleFormSubmit(e)}

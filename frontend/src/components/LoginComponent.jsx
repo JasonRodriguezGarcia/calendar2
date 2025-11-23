@@ -100,7 +100,8 @@ const LoginComponent = () => {
             const usuario = {
                 id: resultado.usuario_id,
                 nombre_apellidos: resultado.nombre_apellidos,
-                emailUsuario: resultado.email
+                emailUsuario: resultado.email,
+                role: resultado.role
             }
             // console.log("token hadleLogin: :", data.token)
             console.log("Sesión abierta")

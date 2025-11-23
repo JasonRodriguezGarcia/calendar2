@@ -38,8 +38,9 @@ export async function postLogin(loginDetails) {
             const usuarioID = userData.usuario_id
             const nombreapellidos = userData.nombre_apellidos
             const emailUsuario = userData.email
+            const role = userData.role
             const token = jwt.sign(
-                { usuarioID, nombreapellidos, emailUsuario },
+                { usuarioID, nombreapellidos, emailUsuario, role },
                 JWT_SECRET_KEY,
                 // { expiresIn: '1h', algorithm: 'HS256' },
                 { algorithm: 'HS256' },
@@ -65,8 +66,9 @@ export async function postMe(loginMeDetails) {
         const userData = result.rows[0]
         if (result.rows.length > 0) {
             const nombreapellidos = userData.nombre_apellidos
+            const role = userData.role
             const token = jwt.sign(
-                { usuarioID, nombreapellidos, emailUsuario },
+                { usuarioID, nombreapellidos, emailUsuario, role },
                 JWT_SECRET_KEY,
                 // { expiresIn: '1h', algorithm: 'HS256' },
                 { algorithm: 'HS256' },
@@ -97,8 +99,9 @@ export async function postRecoveryPassword(recoveryPasswordDetails) {
             const usuarioID = usuario_id
             const nombreapellidos = nombre_apellidos
             const emailUsuario = email
+            const role = role
             const tokenRecovery = jwt.sign(
-                { usuarioID, nombreapellidos, emailUsuario },
+                { usuarioID, nombreapellidos, emailUsuario, role },
                 JWT_SECRET_KEY,
                 { expiresIn: '1h', algorithm: 'HS256' },
             )
@@ -237,19 +240,20 @@ export async function postUsuario(usuario) {
 
         const result = await pool.query(`INSERT INTO erroak.usuarios
             (email, password, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno, 
-            observaciones, lenguaje_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+            observaciones, lenguaje_id, role)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
             RETURNING *;`, 
             // RETURNING usuario_id;`, 
             [email, hashedPassword, nombre_apellidos, movil, extension, centro_id, llave, alarma, turno_id, color, tarde_invierno,
-                 observaciones, lenguaje_id
+                observaciones, lenguaje_id, 'user'
             ])
         const userData = result.rows[0]
         const usuarioID = userData.usuario_id
         const nombreapellidos = userData.nombre_apellidos
         const emailUsuario = userData.email
+        const role = userData.role
         const tokenPost = jwt.sign(
-            { usuarioID, nombreapellidos, emailUsuario },
+            { usuarioID, nombreapellidos, emailUsuario, role },
             JWT_SECRET_KEY,
             // { expiresIn: '1h', algorithm: 'HS256' },
             { algorithm: 'HS256' },
@@ -332,14 +336,16 @@ export async function putUsuario(id, updatedUser) {
             const usuarioID = userData.usuario_id
             const nombreapellidos = userData.nombre_apellidos
             const emailUsuario = userData.email
+            const role = userData.role
             const token = jwt.sign(
-                { usuarioID, nombreapellidos, emailUsuario },
+                { usuarioID, nombreapellidos, emailUsuario, role },
                 JWT_SECRET_KEY,
                 // { expiresIn: '1h', algorithm: 'HS256' },
                 { algorithm: 'HS256' },
             )
             console.log("PUT - usuario")
             console.log("JWT CREADO EN putUsuario")
+            delete result.rows[0].password
             return ({ result: result.rows[0], token: token })
         }
         else
@@ -361,7 +367,7 @@ export async function getWinterAfternoons() {
         console.log("GET - winterafternoons")
         return result.rows;
     } catch (err) {
-        console.error('Error en getWinterArternoons:', err.message);
+        console.error('Error en getWinterAfternoons:', err.message);
         throw err;
     }
 }

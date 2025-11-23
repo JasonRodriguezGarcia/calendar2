@@ -40,13 +40,14 @@ const MenuBarComponent = () => {
     const { setIsLoading, WaitingMessage } = useLoading()
     const navigate = useNavigate()
 
-    const [anchorElNav, setAnchorElNav] = useState(null);
-    const [anchorElUser, setAnchorElUser] = useState(null);
-    const [anchorElList, setAnchorElList] = useState(null);
+    const [anchorElNav, setAnchorElNav] = useState(null)
+    const [anchorElUser, setAnchorElUser] = useState(null)
+    const [anchorElList, setAnchorElList] = useState(null)
     const { t, i18n } = useTranslation("menubar")
-    const pages = [t("pages.eventos"), t("pages.vacaciones"), t("pages.listados"), t("pages.about")]
+    const pages = [t("pages.eventos"), t("pages.vacaciones"), t("pages.listados"), t("pages.about"), "Admin Menu"]
     const lists = [t("lists.eventosentidad"), t("lists.vacacionesentidad"), t("lists.tardesinvierno"), t("lists.contactos")]
     const settings = [t("settings.verperfil"), t("settings.modificarperfil"),  t("settings.modificarcontrasena"), t("settings.cerrarsesion")];
+    const maxLengthText = 15
     
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -119,6 +120,9 @@ const MenuBarComponent = () => {
             case t("pages.about"):
                 navigate("/about")
                 break
+            case "Admin Menu":
+                navigate("/admin")
+                break
             default:
                 break
         }
@@ -130,6 +134,7 @@ const MenuBarComponent = () => {
         if (page === t("pages.eventos")) return logged
         else if (page === t("pages.vacaciones")) return logged       
         else if (page === t("pages.listados")) return logged       
+        else if (page === "Admin Menu") return logged && user.role === "admin"       
         return true
     })
 
@@ -137,6 +142,15 @@ const MenuBarComponent = () => {
         const selection = e.target.value
         setSelectedLanguage(selection)
         i18n.changeLanguage(selection)      
+    }
+
+    const truncateText = (texto) => {
+        if (!texto) return
+
+        return (
+            texto.length > maxLengthText ? texto.slice(0, maxLengthText) + "..." : texto
+        )
+        
     }
 
     return (
@@ -456,7 +470,10 @@ const MenuBarComponent = () => {
                                             color: 'white', fontWeight: 'bold', backgroundColor: '#0072AD', px: 1.5, py: 0.5, borderRadius: 1 
                                     })}
                                 >
-                                    {t("loggedusertitletext")}: {user.nombre_apellidos}
+                                    {/* {t("loggedusertitletext")}: {user.nombre_apellidos} */}
+                                    <Tooltip title={user.nombre_apellidos}>
+                                        {t("loggedusertitletext")}: {truncateText(user.nombre_apellidos)}
+                                    </Tooltip>
                                 </Typography>
                             </Box>
                             <Tooltip title={t("tooltipstext.text3")}>

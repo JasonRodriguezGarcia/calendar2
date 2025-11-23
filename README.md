@@ -12,9 +12,9 @@ Web para el uso de calendario minimalista adaptado a los requerimientos requerid
 - Manejo desde backend de la seguridad con
     cookies en apis con JWT permitiendo o no acceso 
     protección básica ante ataques CSRF
-- Recuperación de contraseña con envío vía email de un link que al usarlo, se chequea que no esté caducado o sea inválido
-- Limitación de intentos de login de usuario por fuerza bruta
 - Limitación de llamadas API al backend (anti DoS)
+- Limitación de intentos de login de usuario por fuerza bruta
+- Recuperación de contraseña con envío vía email de un link que al usarlo, se chequea que no esté caducado o sea inválido
 - Uso de Context para un mejor manejo de los props
 
 

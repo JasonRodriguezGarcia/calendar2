@@ -24,6 +24,7 @@ import PasswordRecoveryPage from './pages/PasswordRecoveryPage';
 import NewPasswordPage from './pages/NewPasswordPage';
 import EntityEventsCalendarPage from './pages/EntityEventsCalendarPage';
 import AboutPage from './pages/AboutPage';
+import AdminPage from './pages/AdminPage';
 import TextHashPage from './pages/TextHashPage';
 import PaisVasco from "./assets/images/flags/paisvasco.png"
 import Espana from "./assets/images/flags/espana.png"
@@ -68,12 +69,13 @@ const App = () => {
                 try {
                     const decoded = jwtDecode(usuarioToken);
                     // console.log("decoded JWT: ", decoded)
-                    const { usuarioID, emailUsuario, nombreapellidos } = decoded
+                    const { usuarioID, emailUsuario, nombreapellidos, role } = decoded
                     console.log("Decodificado usuarioToken: ", decoded)
                         const usuario = {
                             id: usuarioID,
                             nombre_apellidos: nombreapellidos,
-                            emailUsuario: emailUsuario
+                            emailUsuario: emailUsuario,
+                            role: role
                         }
                         setUser(usuario)
                         setLogged(true)
@@ -151,6 +153,7 @@ const App = () => {
                 <Route path="/passwordrecovery" element={<PasswordRecoveryPage />} />
                 <Route path="/newpassword/:token" element={<NewPasswordPage />} />
                 <Route path="/about" element={<AboutPage />} />
+                <Route path="/admin" element={<AdminPage />} />
                 <Route path="/hash" element={<TextHashPage />} />
             </Routes>
         </BrowserRouter>  

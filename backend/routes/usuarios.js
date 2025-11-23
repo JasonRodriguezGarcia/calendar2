@@ -33,7 +33,6 @@ router.post('/login', loginLimiter, async(req, res) => {
             // DESCOMENTAR EN PRODUCCIÓN
             secure: true,      // SOLO si usas HTTPS
             sameSite: 'none', // 'Lax' o 'Strict' dependiendo del flujo, strict si están frontend y backend en distinto dominio
-            // sameSite: 'Strict', // 'Lax' o 'None' dependiendo del flujo
             // maxAge: 60 * 60 * 1000 // 1 hora
         })
     }

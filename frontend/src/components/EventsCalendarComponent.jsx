@@ -657,7 +657,7 @@ const EventsCalendarComponent = () => {
     }
 
     const cancelDelete = () => {
-        setConfirmDeleteOpen(false);
+        setConfirmDeleteOpen(false)
     }
 
     const handleCloseDialog = () => {

@@ -13,7 +13,7 @@ sgMail.setApiKey(process.env.SENDGRID_APIKEY);
 
 export async function getUsuarios() {
     try {
-        const result = await pool.query("SELECT * FROM erroak.usuarios ORDER BY nombre_apellidos;");
+        const result = await pool.query("SELECT * FROM erroak.usuarios WHERE activo = true ORDER BY nombre_apellidos;");
         console.log("GET - usuarios")
         return result.rows;
 
@@ -33,6 +33,9 @@ export async function postLogin(loginDetails) {
             const passwordCorrecta = await bcrypt.compare(password, userData.password)
             if (!passwordCorrecta) {
                 return ({result: "Email o contraseña incorrecta"})
+            }
+            if (!userData.activo) {
+                return ({result: "Usuario desactivado"})
             }
 
             const usuarioID = userData.usuario_id

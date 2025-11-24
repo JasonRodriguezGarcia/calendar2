@@ -25,7 +25,7 @@ const AboutComponent = () => {
     return (
         <>    
             {/* CONTENEDOR INTERNO PARA EL CONTENIDO DE ACERCA DE */}
-            <Box sx={{ p: 3, maxWidth: "50%", mx: "auto",
+            <Box sx={{ p: 3, maxWidth: {xs: "50%", sm: "60%", md: "70%"} , mx: "auto",
             }}>
 
                 {/* Título */}
@@ -124,7 +124,8 @@ const AboutComponent = () => {
                         <Tooltip key={index} title={tecnologia.tipo}>
                                     <CardContent sx={{ 
                                             minWidth: "30%",
-                                            backgroundColor: "lightblue",
+                                            // backgroundColor: "lightblue",
+                                            backgroundColor: "#37baeeff",
                                             borderRadius: "10px",
                                             my: "20px", 
                                             display: "flex",

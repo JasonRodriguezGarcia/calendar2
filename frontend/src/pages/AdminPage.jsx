@@ -50,14 +50,6 @@ function createData(usuario_id, nombre_apellidos, activo = false) {
   return { usuario_id, nombre_apellidos, activo }
 }
 
-// const initialRows = [
-//   createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-//   createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-//   createData('Eclair', 262, 16.0, 24, 6.0),
-//   createData('Cupcake', 305, 3.7, 67, 4.3),
-//   createData('Gingerbread', 356, 16.0, 49, 3.9),
-// ];
-
 const AdminPage = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { csrfToken, user, selectedLanguage, logged } = useContext(AppContext)
@@ -102,9 +94,7 @@ const AdminPage = () => {
     }, [user])
 
     useEffect(() => {
-        console.log("usuarios: ", usuarios)
         if (usuarios.length === 0) return
-        console.log("usuarios[0]: ", usuarios[0].usuario_id)
         const initial = usuarios.map((u) =>
             createData(
                 u.usuario_id ?? "Sin nombre",
@@ -136,8 +126,6 @@ const AdminPage = () => {
     const cancelChange = () => {
         setConfirmChangeOpen(false)
     }
-
-
 
     // Si no está logeado se sale del componente
     if (!logged || user.role !== "admin")    // con esta opción ni siquiera se muestra brevemente el componente
@@ -179,7 +167,6 @@ const AdminPage = () => {
             </Typography>
 
             <TableContainer component={Paper}>
-                {/* <Table sx={{ minWidth: 700 }} aria-label="customized table"> */}
                 <Table aria-label="customized table">
                 <TableHead>
                     <TableRow>

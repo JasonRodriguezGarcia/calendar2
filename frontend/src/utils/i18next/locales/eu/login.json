@@ -3,8 +3,9 @@
     "message1": "Pasahitza laburregia da",
     "message2": "Emaila sartu",
     "message3": "Pasahitza sartu",
-    "message4": "Erabiltzailea edo pasahitza baliogabea da"
-  },
+    "message4": "Erabiltzailea edo pasahitza baliogabea da",
+    "message5": "Erabiltzailea desgaituta. Jarri harremanetan admin.-arekin."
+},
   "box": {
     "typography": "Saio-hasiera",
     "formcontrol1": {

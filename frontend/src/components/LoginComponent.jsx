@@ -96,6 +96,10 @@ const LoginComponent = () => {
                 setErrorMessage(t("error.message4"))
                 return
             }
+            if (data.result === "Usuario desactivado") {
+                setErrorMessage(t("error.message5"))
+                return
+            }
             const resultado = data.result
             const usuario = {
                 id: resultado.usuario_id,

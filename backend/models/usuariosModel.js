@@ -11,15 +11,23 @@ const saltRounds = 10
 
 sgMail.setApiKey(process.env.SENDGRID_APIKEY);
 
-export async function getUsuarios() {
+export async function getUsuarios(action) {
+    const { option } = action
+    let query = "SELECT * FROM erroak.usuarios "
+    if (option !== "all")
+        query += "WHERE activo = true "
+    query += "ORDER BY nombre_apellidos;"
     try {
-        const result = await pool.query("SELECT * FROM erroak.usuarios WHERE activo = true ORDER BY nombre_apellidos;");
-        console.log("GET - usuarios")
-        return result.rows;
+        const result = await pool.query(
+            // `SELECT * FROM erroak.usuarios ${option === "all" ? `WHERE activo = true` : ""} ORDER BY nombre_apellidos;`
+            query
+        )
+        console.log("GET - usuarios ", option === "all" ? "all" : "")
+        return result.rows
 
     } catch (err) {
-        console.error('Error en getUsuarios:', err.message);
-        throw err;
+        console.error('Error en getUsuarios:', err.message)
+        throw err
     }
 }
 
@@ -57,8 +65,8 @@ export async function postLogin(loginDetails) {
             return ({result: "Email o contraseña incorrecta"})
 
     } catch (err) {
-        console.error('Error en postLogin:', err.message);
-        throw err;
+        console.error('Error en postLogin:', err.message)
+        throw err
     }
 }
 
@@ -85,8 +93,8 @@ export async function postMe(loginMeDetails) {
             return ({result: "No encontrado"})
 
     } catch (err) {
-        console.error('Error en postMe:', err.message);
-        throw err;
+        console.error('Error en postMe:', err.message)
+        throw err
     }
 }
 
@@ -267,8 +275,8 @@ export async function postUsuario(usuario) {
         return ({ result: result.rows[0], token: tokenPost })
 
     } catch (err) {
-        console.error('Error en postUsuario:', err.message);
-        throw err;
+        console.error('Error en postUsuario:', err.message)
+        throw err
     }
 }
 
@@ -289,8 +297,8 @@ export async function getSignUpFormData() {
         return {centros: centros.rows, turnos: turnos.rows}
 
     } catch (err) {
-        console.error('Error en getSignUpData:', err.message);
-        throw err;
+        console.error('Error en getSignUpData:', err.message)
+        throw err
     }
 }
 
@@ -306,8 +314,8 @@ export async function getUsuario(id) {
             return ({result: "No encontrado"})
 
     } catch (err) {
-        console.error('Error en getUsuario:', err.message);
-        throw err;
+        console.error('Error en getUsuario:', err.message)
+        throw err
     }
 }
 
@@ -355,8 +363,31 @@ export async function putUsuario(id, updatedUser) {
             return ({result: "No encontrado"})
 
     } catch (err) {
-        console.error('Error en putUsuario:', err.message);
-        throw err;
+        console.error('Error en putUsuario:', err.message)
+        throw err
+    }
+}
+
+export async function putUsuarioStatus(activateUser) {
+    try {
+        const {userid, activate } = activateUser
+
+        const result = await pool.query(
+            `UPDATE erroak.usuarios SET
+                activo = $1  WHERE usuario_id = $2
+            RETURNING *`,
+            [activate, userid]
+        )
+        const userData = result.rows[0]
+        if (result.rows.length > 0) {
+            return ({ result: "Actualizado" })
+        }
+        else
+            return ({result: "No encontrado"})
+
+    } catch (err) {
+        console.error('Error en putUsuario:', err.message)
+        throw err
     }
 }
 
@@ -370,7 +401,7 @@ export async function getWinterAfternoons() {
         console.log("GET - winterafternoons")
         return result.rows;
     } catch (err) {
-        console.error('Error en getWinterAfternoons:', err.message);
-        throw err;
+        console.error('Error en getWinterAfternoons:', err.message)
+        throw err
     }
 }

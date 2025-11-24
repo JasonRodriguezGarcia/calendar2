@@ -13,6 +13,7 @@ export function authenticateToken (req, res, next) {
         return res.status(401).json({message: "Missing token"}) // Unauthorized. Token faltante o inválido
     }
 
+    // Lee el token, verifica la firma y te devuelve ese mismo payload del token con el nombre user
     jwt.verify(token, JWT_SECRET_KEY, (err, user) => {
         if (err) {
             console.log("Invalid token")
@@ -26,18 +27,15 @@ export function authenticateToken (req, res, next) {
 }
 
 export function checkToken (req, res, next) {
-    // const authHeader = req.headers["authorization"]
     // lee el token desde la cookie
     const token = req.cookies.token;
-    // Se comprueba is authHeader o cookie existe, si no, devuelve undefined
-    // Si existe se divide el authHeader o cookie en 2 [<Bearer>, "<token>"] y se coge la posición 1 - <token>
-    // const token = authHeader && authHeader.split(" ")[1]
 
     if (!token) {
         console.log("Missing token in checkToken")
         return res.status(401).json({message: "Missing token"}) // Unauthorized. Token faltante o inválido
     }
 
+    // Lee el token, verifica la firma y te devuelve ese mismo payload del token con el nombre user
     jwt.verify(token, JWT_SECRET_KEY, (err, user) => {
         if (err) {
             console.log("Invalid token")

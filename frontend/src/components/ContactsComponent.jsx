@@ -46,7 +46,7 @@ const ContactsComponent = () => {
             const data = await response.json()
             setUsuarios(data)
         } catch (error) {
-            console.error("Error cargando listingsafternoons:", error)
+            console.error("Error cargando contacts", error)
         } finally {
             setIsLoading(false) // Set loading to false once data is fetched or error occurs
         }
@@ -290,7 +290,7 @@ const ContactsComponent = () => {
             </TableContainer>
         </Box>
     </>
-  );
-};
+  )
+}
 
 export default ContactsComponent;

@@ -65,7 +65,8 @@ const UsersCRUDComponent = ({ action }) => {
             if (action !== "create") setIsLoading(true)
             try {
                 // fetch for getting horarios & turnos data
-                const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getsignupformdata`,
+                const response = await fetch(
+                    `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/getsignupformdata`,
                     {
                         method: 'GET',
                         credentials: 'include', // IMPORTANTE: esto permite usar la cookie
@@ -94,7 +95,8 @@ const UsersCRUDComponent = ({ action }) => {
                 const endPoint= `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuario`
                 try {
                     // fetch for getting usuario data
-                    const responseUser = await fetch(endPoint,
+                    const responseUser = await fetch(
+                        endPoint,
                         {
                             method: "GET",
                             credentials: 'include',
@@ -312,7 +314,8 @@ const UsersCRUDComponent = ({ action }) => {
             const method = action === "create" ? "POST" : "PUT"
 
             // fetch validate
-            const response = await fetch(endPoint,
+            const response = await fetch(
+                endPoint,
                 {
                     method: method,
                     credentials: 'include', // IMPORTANTE: esto permite usar la cookie

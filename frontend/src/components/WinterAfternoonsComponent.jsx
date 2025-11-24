@@ -71,7 +71,7 @@ const WinterAfternoonsComponent = () => {
                 }
                 filas.push(fila)
             }
-                console.log("imprimo filas: ", filas)
+                // console.log("imprimo filas: ", filas)
                 setUsuarios(filas)
         } catch (error) {
             console.error("Error cargando listingsafternoons:", error)

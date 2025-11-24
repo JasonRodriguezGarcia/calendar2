@@ -23,7 +23,7 @@ const AboutComponent = () => {
         {tipo: "Supabase", ruta: Supabase},
     ]
     return (
-        <>    
+        <>
             {/* CONTENEDOR INTERNO PARA EL CONTENIDO DE ACERCA DE */}
             <Box sx={{ p: 3, maxWidth: {xs: "50%", sm: "60%", md: "70%"} , mx: "auto",
             }}>

@@ -68,7 +68,6 @@ const App = () => {
             if (usuarioToken) {
                 try {
                     const decoded = jwtDecode(usuarioToken);
-                    // console.log("decoded JWT: ", decoded)
                     const { usuarioID, emailUsuario, nombreapellidos, role } = decoded
                     console.log("Decodificado usuarioToken: ", decoded)
                         const usuario = {
@@ -80,7 +79,7 @@ const App = () => {
                         setUser(usuario)
                         setLogged(true)
                 } catch (e) {
-                    // logout();
+                    // logout()
                 }
 
             } else {

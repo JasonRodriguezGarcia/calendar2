@@ -1,9 +1,10 @@
 import { Router} from 'express';
 import { csrfProtection } from "../middleware/csrf.js";
 import { authenticateToken, checkToken } from '../middleware/token.js';
+import { authorizeRole } from "../middleware/authorization.js";
 import { loginLimiter, registerLimiter, updateUserLimiter } from '../middleware/limiter.js';
-import { getUsuarios, postLogin, postRecoveryPassword, postNewPassword, postChangePassword, postUsuario, getSignUpFormData,
-    getUsuario, putUsuario, getWinterAfternoons, postMe } from '../models/usuariosModel.js';
+import { getUsuarios, postLogin, postRecoveryPassword, postNewPassword, postChangePassword, postUsuario, 
+    getSignUpFormData, getUsuario, putUsuario, putUsuarioStatus, getWinterAfternoons, postMe } from '../models/usuariosModel.js';
 
 // TODO
 //  - QUE SE PUEDAN USAR SOLO LOS USUARIOS ACTIVOS
@@ -14,7 +15,8 @@ const router = Router()
 // Conseguir los usuarios que hay en la bbdd
 // CAMBIADO A POST EN LUGAR DE GET PARA PODER EJECUTAR csrfProtection PARA MAYOR SEGURIDAD
 router.post('/usuarios', authenticateToken, csrfProtection, async(req, res) => {
-    const usuarios = await getUsuarios()
+    const option = req.body
+    const usuarios = await getUsuarios(option)
     res.json (usuarios)
 })
 
@@ -121,6 +123,15 @@ router.put('/usuario', authenticateToken, updateUserLimiter, csrfProtection, asy
     const id = req.user.usuarioID  // <- Datos conseguidos desde JWT en cookie httpOnly via authenticateToken
     const updatedUser = req.body
     const resultUsuario = await putUsuario(id, updatedUser)
+    res.json (resultUsuario)
+})
+
+router.put('/usuariostatus', authenticateToken, authorizeRole("admin"), updateUserLimiter, csrfProtection, async(req, res) => {
+    // const id = req.user.usuarioID  // <- Datos conseguidos desde JWT en cookie httpOnly via authenticateToken
+    // const role = req.user.role // <- Datos conseguidos desde JWT en cookie httpOnly via authenticateToken
+    const activateUser = req.body
+    console.log("activateUser: ", activateUser)
+    const resultUsuario = await putUsuarioStatus(activateUser)
     res.json (resultUsuario)
 })
 

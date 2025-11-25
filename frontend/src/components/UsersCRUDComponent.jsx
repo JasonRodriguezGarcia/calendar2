@@ -297,7 +297,7 @@ const UsersCRUDComponent = ({ action }) => {
                 // id: user.id,
                 email: formUserData.userEmail,
                  ...(action === "create" && { password: formUserData.userPassword }), // añadimos el campo contraseña o no
-                nombre_apellidos: formUserData.userNombre_Apellidos,
+                nombre_apellidos: formUserData.userNombre_Apellidos.toUpperCase(),
                 movil: formUserData.userMovil.replace('-', ''),
                 extension: formUserData.userExtension,
                 centro_id: formUserData.userCentro,
@@ -338,7 +338,7 @@ const UsersCRUDComponent = ({ action }) => {
             if (action !== "create") { // Si no estamos creando, actualizamos datos usuario en frontend
                 const usuario = {
                     id: resultado.usuario_id,
-                    nombre_apellidos: formUserData.userNombre_Apellidos,
+                    nombre_apellidos: formUserData.userNombre_Apellidos.toUpperCase(),
                     emailUsuario: resultado.email
                 }
                 setUser(usuario)

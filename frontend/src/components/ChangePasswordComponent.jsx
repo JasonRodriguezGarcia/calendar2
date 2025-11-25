@@ -87,7 +87,7 @@ const ChangePasswordComponent = () => {
             try {
                 const user = {
                     token: usuarioToken,
-                    newpassword: newPassword,
+                    newpassword: newPassword.trim(),
                     currentpassword: currentPassword
                 }
                 // fetch validate

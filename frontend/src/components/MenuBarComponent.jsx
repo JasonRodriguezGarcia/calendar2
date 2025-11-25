@@ -478,7 +478,7 @@ const MenuBarComponent = () => {
                             </Box>
                             <Tooltip title={t("tooltipstext.text3")}>
                                 <IconButton onClick={handleOpenUserMenu}
-                                sx={{ p: 0 }}
+                                    sx={{ p: 0 }}
                                 >
                                     {/* <Avatar alt={user.nombre_apellidos} src="/assets/images/avatar/1.jpg" /> */}
                                     <Avatar alt={user.nombre_apellidos} src="" />

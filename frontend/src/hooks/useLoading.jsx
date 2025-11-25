@@ -5,7 +5,7 @@ const useLoading = () => {
 
     const [isLoading, setIsLoading] = useState(false)
 
-    const WaitingMessage= () => {
+    const WaitingMessage = () => {
         return (
             <Backdrop
                 sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}

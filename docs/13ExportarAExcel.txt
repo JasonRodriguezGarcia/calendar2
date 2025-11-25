@@ -1,0 +1,83 @@
+🟩 Ejemplo completo usando XLSX (SheetJS)
+1️⃣ Instalar la librería
+
+Si usas React:
+    npm install xlsx file-saver
+
+Código para generar un Excel en el frontend
+
+Asumiendo que vacacionesData es ese array que recibes del backend:
+
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+
+function exportVacacionesToExcel(vacacionesData) {
+    // 1. Convertimos JSON → Hoja Excel
+    const worksheet = XLSX.utils.json_to_sheet(vacacionesData);
+
+    // 2. Creamos el libro de Excel
+    const workbook = {
+        Sheets: { "Vacaciones": worksheet },
+        SheetNames: ["Vacaciones"]
+    };
+
+    // 3. Lo convertimos a un buffer
+    const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+    });
+
+    // 4. Lo descargamos
+    const blob = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    saveAs(blob, "vacaciones.xlsx");
+}
+
+🟦 Uso en un botón
+<Button onClick={() => exportVacacionesToExcel(vacacionesData)}>
+    Exportar a Excel
+</Button>
+
+📌 Resultado
+
+Tu Excel tendrá columnas como:
+
+event_id
+
+start
+
+end
+
+cell_color
+
+usuario_id
+
+cellColor
+
+Y una fila por cada registro.
+
+🟢 Bonus: Formatear la fecha antes de exportar
+
+Si quieres convertir "2025-08-01T10:00:00.000Z" a "01/08/2025":
+
+const formattedData = vacacionesData.map(v => ({
+    ...v,
+    start: new Date(v.start).toLocaleDateString(),
+    end: new Date(v.end).toLocaleDateString()
+}));
+
+
+Y exportas:
+
+exportVacacionesToExcel(formattedData);
+
+🟣 Bonus: Renombrar columnas
+const formatted = vacacionesData.map(v => ({
+    "ID Evento": v.event_id,
+    "Inicio": v.start,
+    "Fin": v.end,
+    "Color": v.cell_color,
+    "Usuario": v.usuario_id
+}));

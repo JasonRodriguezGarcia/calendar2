@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useContext } from 'react';
 import AppContext from '../context/AppContext';
 import useLoading from "../hooks/useLoading"
+import useExcelHolidays from "../hooks/useExcelHolidays";
 import {
   Box,
   Stack,
@@ -15,6 +16,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Tooltip,
   useTheme,
   Paper, 
 } from '@mui/material';
@@ -29,6 +31,7 @@ const EntityHolidaysComponent = () => {
     const { t, i18n } = useTranslation("holidaysview")
     const { csrfToken, user, selectedLanguage } = useContext(AppContext)
     const { setIsLoading, WaitingMessage } = useLoading()
+    const { exportVacacionesToExcel } = useExcelHolidays()
     const theme = useTheme()
 
     const [events, setEvents] = useState([])
@@ -159,17 +162,39 @@ const EntityHolidaysComponent = () => {
             <Typography variant="h6">
                 {t("stack.typography.text1")}: {date.getFullYear()} - 
                 &nbsp;{t("stack.typography.text2")}: {
-                            date.toLocaleString(selectedLanguage === "es"?'es-ES': "eu-EU", { month: 'long' }).toUpperCase()
+                    date.toLocaleString(selectedLanguage === "es"?'es-ES': "eu-EU", { month: 'long' }).toUpperCase()
                         }
             </Typography>
+                {/* <Box sx={{ flex: 1}}> */}
+                <Box>
+                    {/* <Box> </Box> */}
+                    {/* <Button variant="contained" onClick={() => exportVacacionesToExcel(rows)}> */}
+                    {/* <Button variant="contained" onClick={() => exportVacacionesToExcel(rows)}>
+                        <Tooltip title="Exportar a Excel">
+                            Exportar a Excel */}
+                            {/* <IconButton color="primary" aria-label="home">
+                                <HomeIcon
+                                    style={{ 
+                                        height: 50,
+                                        fontSize: "3rem",
+                                        marginRight: 8,
+                                        display: 'flex',
+                                        color: "#8BC000",
+                                        borderRadius: "10px",
+                                    }}
+                                />
+                            </IconButton> */}
+                        {/* </Tooltip> */}
+                    {/* </Button> */}
 
             <Button variant="outlined" onClick={() => {
                 const newDate = new Date(date)
-                    newDate.setMonth(date.getMonth() + 1)
-                    setDate(newDate)
-                }}>
+                newDate.setMonth(date.getMonth() + 1)
+                setDate(newDate)
+            }}>
                 {t("stack.button2text")}.
             </Button>
+                    </Box>
         </Stack>
         <Toolbar />
         <Box sx={{ width: "100%", overflowY: "auto"}}>

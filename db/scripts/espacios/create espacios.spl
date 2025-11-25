@@ -1,0 +1,18 @@
+-- Table: erroak.espacios
+
+-- DROP TABLE IF EXISTS erroak.espacios;
+
+CREATE TABLE IF NOT EXISTS erroak.espacios
+(
+    espacio_id integer NOT NULL,
+    descripcion character varying(30) COLLATE pg_catalog."default",
+    CONSTRAINT espacios_pkey PRIMARY KEY (espacio_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS erroak.espacios
+    OWNER to postgres;
+
+COMMENT ON TABLE erroak.espacios
+    IS 'espacio_id se pone a mano';

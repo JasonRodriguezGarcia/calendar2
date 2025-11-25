@@ -237,7 +237,8 @@ const AdminComponent = () => {
                 <DialogTitle>Cambio de estado</DialogTitle>
                 <DialogContent>
                     {/* ¿Estás seguro de que deseas eliminar el evento <strong>{selectedEvent?.title}</strong>? */}
-                    ¿Confirmar activar/desactivar usuario?
+                    {/* ¿Confirmar activar/desactivar usuario? */}
+                    ¿Confirmar {active && active ? "ACTIVAR" : "DESACTIVAR"} usuario?
                 </DialogContent>
                 <DialogActions>
                     {/* >Eliminar< */}

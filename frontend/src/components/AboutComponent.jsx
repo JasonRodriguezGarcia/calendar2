@@ -98,7 +98,10 @@ const AboutComponent = () => {
                             • Cambio de contraseña. <br />
                             • Uso de context, hooks, localStorage, ... <br />
                             • Mobile friendly. <br />
-                            • Patrón Arquitectura MVC.
+                            • Patrón Arquitectura MVC. <br />
+                            • Cambio de Idioma de forma fácil. <br />
+                            • Uso de roles
+
                         </Typography>
 
                         <Divider sx={{ my: 3 }} />

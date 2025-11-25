@@ -62,7 +62,7 @@ const NewPasswordComponent = () => {
             const user = {
                 // token: token,
                 token,
-                newpassword: newPassword,
+                newpassword: newPassword.trim(),
             }
             // fetch validate
             const response = await fetch(`${VITE_BACKEND_URL_RENDER}/api/v1/erroak/newpassword`,

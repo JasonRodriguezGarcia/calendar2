@@ -1,4 +1,9 @@
 {
+    "dialog": {
+        "title": "Exportar a Excel",
+        "content": "No hay datos para exportar",
+        "button": "Continuar"
+    },
     "stack": {
         "button1text": "Mes Ant",
         "button2text": "Mes Sig",

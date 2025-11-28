@@ -6,7 +6,7 @@ import menubarEs from './locales/es/menubar.json';
 import holidaysEs from './locales/es/holidays.json';
 import eventsEs from './locales/es/events.json';
 import entityeventsEs from './locales/es/entityevents.json';
-import holidaysviewEs from './locales/es/holidaysview.json';
+import entityholidaysEs from './locales/es/entityholidays.json';
 import winterafternoonsEs from './locales/es/winterafternoons.json';
 import contactsEs from './locales/es/contacts.json';
 import userscrudEs from './locales/es/userscrud.json';
@@ -19,7 +19,7 @@ import menubarEu from './locales/eu/menubar.json';
 import holidaysEu from './locales/eu/holidays.json'
 import eventsEu from './locales/eu/events.json';
 import entityeventsEu from './locales/eu/entityevents.json';
-import holidaysviewEu from './locales/eu/holidaysview.json';
+import entityholidaysEu from './locales/eu/entityholidays.json';
 import winterafternoonsEu from './locales/eu/winterafternoons.json';
 import contactsEu from './locales/eu/contacts.json';
 import userscrudEu from './locales/eu/userscrud.json';
@@ -37,7 +37,7 @@ i18n
         holidays: holidaysEs,
         events: eventsEs,
         entityevents: entityeventsEs,
-        holidaysview: holidaysviewEs,
+        entityholidays: entityholidaysEs,
         winterafternoons: winterafternoonsEs,
         contacts: contactsEs,
         userscrud: userscrudEs,
@@ -51,7 +51,7 @@ i18n
         holidays: holidaysEu,
         events: eventsEu,
         entityevents: entityeventsEu,
-        holidaysview: holidaysviewEu,
+        entityholidays: entityholidaysEu,
         winterafternoons: winterafternoonsEu,
         contacts: contactsEu,
         userscrud: userscrudEu,
@@ -63,7 +63,7 @@ i18n
     },
     lng: 'es', // idioma por defecto
     fallbackLng: 'es',
-    ns: ['menubar', 'holidays', 'events', 'entityevents', 'holidaysview', 
+    ns: ['menubar', 'holidays', 'events', 'entityevents', 'entityholidays', 
         'winterafternoons', 'contacts', 'userscrud', 'login', 'passwordrecovery',
         'newpassword', 'changepassword'
     ], // namespaces

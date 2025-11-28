@@ -1,5 +1,6 @@
 import pool from '../db-pg.js';
 import sgMail from "@sendgrid/mail";
+import Mailgun from 'mailgun-js';
 import dotenv from "dotenv";
 import jwt from 'jsonwebtoken'
 import bcrypt from "bcryptjs";
@@ -10,6 +11,12 @@ const FRONTEND_URL_RENDER = process.env.FRONTEND_URL_RENDER;
 const saltRounds = 10
 
 sgMail.setApiKey(process.env.SENDGRID_APIKEY);
+
+// Configuración Mailgun
+const mg = Mailgun({
+  apiKey: process.env.MAILGUN_APIKEY,
+  domain: process.env.MAILGUN_DOMAIN
+})
 
 export async function getUsuarios(action) {
     const { option } = action
@@ -105,40 +112,39 @@ export async function postRecoveryPassword(recoveryPasswordDetails) {
             [useremail])
         if (result.rows.length > 0) {
             const recoveryData = result.rows[0]
-            const {usuario_id, nombre_apellidos, email} = recoveryData
+            const {usuario_id, nombre_apellidos, email, role} = recoveryData
             // Generar token que caduque a la hora
             const usuarioID = usuario_id
             const nombreapellidos = nombre_apellidos
             const emailUsuario = email
-            const role = role
+            // const roleUsuario = role
             const tokenRecovery = jwt.sign(
                 { usuarioID, nombreapellidos, emailUsuario, role },
                 JWT_SECRET_KEY,
                 { expiresIn: '1h', algorithm: 'HS256' },
             )
-
             const resetLink = `${FRONTEND_URL_RENDER}/newpassword/${tokenRecovery}`
-            const msg = {
-                    to: useremail,
-                    // from: "jasonr@erroak.sartu.org", // debe ser verificado en SendGrid con una cuenta en sendGrid
-                    from: "no-reply@erroak.sartu.org",
-                    subject: emailmsg.subject,
-                    html: `
-                        <p>${emailmsg.html.line1} ${nombre_apellidos},</p>
-                        <p>${emailmsg.html.line2}:</p>
-                        <p>${emailmsg.html.line3}:</p>
-                        <a href="${resetLink}">${resetLink}</a>
-                        <p>${emailmsg.html.line4}.</p>
-                    `,
+
+            const data = {
+                from: "Mi App <no-reply@tu-dominio.com>",
+                to: useremail,
+                subject: emailmsg.subject,
+                text: "email enviado",
+                html: `
+                         <p>${emailmsg.html.line1} ${nombre_apellidos},</p>
+                         <p>${emailmsg.html.line2}:</p>
+                         <p>${emailmsg.html.line3}:</p>
+                         <a href="${resetLink}">${resetLink}</a>
+                         <p>${emailmsg.html.line4}.</p>
+                     `
             }
 
             try {
-                await sgMail.send(msg);
-                console.log("POST - recoveryPassword");
-                return result.rows
+                const result = await mg.messages().send(data)
+                console.log("Email enviado a MailGun:", result)
+                return { result: "OK" }
             } catch (error) {
                 console.error("Error al enviar correo:", error.response?.body || error)
-                throw error
             }
 
         }

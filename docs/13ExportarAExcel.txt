@@ -81,3 +81,12 @@ const formatted = vacacionesData.map(v => ({
     "Color": v.cell_color,
     "Usuario": v.usuario_id
 }));
+
+
+Para poder aplicar estilos en Excel hay que usar ExcelJS en lugar de xlsx, ya que xlsx es la version gratuíta y 
+no soporta estilos
+    npm install exceljs
+
+Luego hay que llamar en react
+    import ExcelJS from "exceljs";
+

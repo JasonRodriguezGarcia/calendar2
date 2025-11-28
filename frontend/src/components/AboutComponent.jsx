@@ -25,7 +25,7 @@ const AboutComponent = () => {
     return (
         <>
             {/* CONTENEDOR INTERNO PARA EL CONTENIDO DE ACERCA DE */}
-            <Box sx={{ p: 3, maxWidth: {xs: "50%", sm: "60%", md: "70%"} , mx: "auto",
+            <Box sx={{ p: 3, maxWidth: {xs: "90%", sm: "80%", md: "70%"} , mx: "auto",
             }}>
 
                 {/* Título */}
@@ -113,41 +113,43 @@ const AboutComponent = () => {
                         </Stack>
 
                         {/* <Typography variant="body2" sx={{ mb: 3 }}> */}
-                            <Card elevation={3} sx={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    flexWrap: "wrap",
-                                    gap: "1em",
-                                    justifyContent: "center",
-                                    // backgroundColor: "rgba(255, 255, 255, 0.9)", 
-                                    backgroundColor: "transparent",
-                                    borderRadius: "10px"
-                                }}>
+                        <Card elevation={3} sx={{
+                                display: "flex",
+                                flexDirection: "row",
+                                flexWrap: "wrap",
+                                gap: "1em",
+                                justifyContent: "center",
+                                // backgroundColor: "rgba(255, 255, 255, 0.9)", 
+                                backgroundColor: "transparent",
+                                borderRadius: "10px"
+                            }}>
                                 {tecnologias.map((tecnologia, index) => 
-                        <Tooltip key={index} title={tecnologia.tipo}>
-                                    <CardContent sx={{ 
-                                            minWidth: "30%",
-                                            // backgroundColor: "lightblue",
-                                            backgroundColor: "#37baeeff",
-                                            borderRadius: "10px",
-                                            my: "20px", 
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            maxWidth: "4em"
-                                        }}>
-                                            <img
-                                                src={tecnologia.ruta}
-                                                alt={tecnologia.tipo || "icono"}
-                                                style={{
-                                                    width: "60px",
-                                                    height: "60px",
-                                                    objectFit: "contain",
-                                                }}
-                                            />
-                                    </CardContent>
-                        </Tooltip>
+                                    <Tooltip key={index} title={tecnologia.tipo}>
+                                        <CardContent sx={{ 
+                                                minWidth: "20%",
+                                                // backgroundColor: "lightblue",
+                                                backgroundColor: "#37baeeff",
+                                                borderRadius: "10px",
+                                                my: "20px", 
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                maxWidth: "4em",
+                                                "&:hover": { transform: "scale(2)" }, 
+                                                transition: "transform 2s ease",
+                                            }}>
+                                                <img
+                                                    src={tecnologia.ruta}
+                                                    alt={tecnologia.tipo || "icono"}
+                                                    style={{
+                                                        width: "60px",
+                                                        height: "60px",
+                                                        objectFit: "contain",
+                                                    }}
+                                                />
+                                        </CardContent>
+                                    </Tooltip>
                                 )}
                             </Card>
 
@@ -162,7 +164,7 @@ const AboutComponent = () => {
                         </Stack>
 
                         <Typography variant="body2"
-                            sx={{ fontSize: "2em"}}
+                            sx={{ fontSize: "1em"}}
                         >
                             Jason R. G. <br />
                             <a href="mailto:jasonrodriguezempleo@gmail.com">

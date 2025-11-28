@@ -1,4 +1,9 @@
 {
+    "dialog": {
+        "title": "Excel-era esportatu",
+        "content": "Ez da esportatzeko daturik",
+        "button": "Jarraitu"
+    },
     "mainheader": {
         "text1": "Urte",
         "text2": "URTEKO OPORRAK",

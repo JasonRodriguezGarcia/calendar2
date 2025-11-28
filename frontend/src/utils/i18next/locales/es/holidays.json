@@ -1,4 +1,9 @@
 {
+    "dialog": {
+        "title": "Exportar a Excel",
+        "content": "No hay datos para exportar",
+        "button": "Continuar"
+    },
     "mainheader": {
         "text1": "Año",
         "text2": "VACACIONES AÑO",

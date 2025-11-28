@@ -1,0 +1,18 @@
+{
+    "dialog": {
+        "title": "Excel-era esportatu",
+        "content": "Ez da esportatzeko daturik",
+        "button": "Jarraitu"
+    },
+    "stack": {
+        "button1text": "Aurreko Hilab",
+        "button2text": "Hurrengo Hilab",
+        "typography": {
+        "text1": "ERAKUNDE OPORRAK",
+        "text2": "Hilabetea"
+        }
+    },
+    "tableheadtablerow": {
+        "cell1text": "ERABILTZAILEA"
+    }
+}

@@ -124,7 +124,8 @@ Para servir tu SPA desde un solo archivo inicial.
 
 
 ***************
-PARA ENVÍO DE CORREO ELECTRONICO DESDE BACKEND
+EJEMPLOS  PARA USAR ENVIO DE CORREO ELECTRONICO DESDE BACKEND GRATIS
+1- SENDGRID (OJO TIENE CADUCIDAD A DÍA 26/11/2025)
 EN BACKEND
     npm install @sendgrid/mail
 DARSE ALTA EN SENDGRID (es twilio product)
@@ -371,3 +372,123 @@ app.post('/registro', [
 app.listen(3000, () => console.log('Servidor en el puerto 3000'));
 En este ejemplo, se usa body() para validar campos en el cuerpo de la petición, se comprueba que el email sea válido y la password tenga al menos 5 caracteres. Si no, se devuelven los errores. 
 *********************
+OTRO PARA ENVIO DE CORREO ELECTRONICO DESDE BACKEND
+2- MAILGUN (MAXIMO 100 CORREOS AL DÍA, SIN PERIODO DE PRUEBA A DIA 26/11/2025)
+
+Crear cuenta gratuita en Mailgun
+Entra en mailgun.com
+
+Regístrate (elige el plan gratuito → incluye envíos de prueba).
+
+Verifica tu email.
+Te pedirá crear un dominio de envío:
+Puedes usar un dominio propio (“mg.tudominio.com”)
+O usar un dominio sandbox gratuito que Mailgun te proporciona.
+👉 Para pruebas con backend NO necesitas verificar un dominio, puedes usar el sandbox domain.
+✅ 2. Obtener las credenciales necesarias
+En tu dashboard de Mailgun:
+    Ve a Sending → Domains → tu dominio (o sandbox).
+        Add sending key
+Copia:
+    API Key (Private API Key)
+Domain name (ej: sandbox12345.mailgun.org)
+
+Instalación en Express
+    npm install mailgun-js
+
+Crea tu archivo de variables de entorno:
+.env
+    MAILGUN_API_KEY=tu_api_key
+    MAILGUN_DOMAIN=tu_dominio
+
+index.js
+import express from 'express';
+import Mailgun from 'mailgun-js';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const app = express();
+app.use(express.json());
+
+// Configuración Mailgun
+const mg = Mailgun({
+  apiKey: process.env.MAILGUN_API_KEY,
+  domain: process.env.MAILGUN_DOMAIN
+});
+
+app.post('/send-email', async (req, res) => {
+  const { to, subject, text, html } = req.body;
+
+  const data = {
+    from: "Mi App <no-reply@tu-dominio.com>",
+    to,
+    subject,
+    text,
+    html
+  };
+
+  try {
+    const result = await mg.messages().send(data);
+    console.log("Email enviado:", result);
+    res.json({ success: true, result });
+  } catch (error) {
+    console.error("Error al enviar:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.listen(3000, () => {
+  console.log("Servidor corriendo en http://localhost:3000");
+});
+✅ 5. Probar el envío de emails
+Puedes usar Postman, Insomnia o curl.
+
+Ejemplo:
+
+POST → http://localhost:3000/send-email
+Body → JSON:
+
+json
+Copiar código
+{
+  "to": "tu-email@ejemplo.com",
+  "subject": "Prueba de Mailgun",
+  "text": "Hola! Este es un correo de prueba.",
+  "html": "<h1>Hola!</h1><p>Este es un correo HTML.</p>"
+}
+🧪 6. ¡OJO! Email de pruebas (sandbox)
+Si usas un dominio sandbox, Mailgun solo permite enviar correos a direcciones verificadas.
+
+Para verificar una dirección:
+
+En Mailgun → Sending → Domains → tu sandbox.
+
+En "Authorized Recipients", añade tu correo.
+
+Luego podrás aceptar el correo de confirmación y comenzar a recibir emails.
+
+⭐ BONUS: cómo enviar un email simple desde una función backend
+js
+Copiar código
+export async function sendWelcomeEmail(email, name) {
+  const data = {
+    from: "Mi App <no-reply@tu-dominio.com>",
+    to: email,
+    subject: "Bienvenido a nuestra app",
+    html: `<h2>Hola ${name}!</h2><p>Gracias por registrarte.</p>`
+  };
+
+  return await mg.messages().send(data);
+}
+🎉 Ya puedes reemplazar SendGrid por Mailgun
+Si quieres, te puedo preparar:
+
+✅ Un middleware reusable de envío
+✅ Una versión con Nodemailer + SMTP gratuito
+✅ Una versión para usar con Brevo (Sendinblue)
+✅ Plantillas de emails listas para producción
+
+¿Quieres alguna de estas opciones?
+
+

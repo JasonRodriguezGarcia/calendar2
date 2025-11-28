@@ -4,21 +4,27 @@ import { useContext } from 'react';
 import AppContext from '../context/AppContext';
 import useLoading from "../hooks/useLoading"
 import useExcelHolidays from "../hooks/useExcelHolidays";
+import useDialogs from '../hooks/useDialogs';
+import ExcelIcon from "../assets/images/icons/excel.png";
 import {
-  Box,
-  Stack,
-  Button,
-  Typography,
-  Toolbar,
-  Table,
-  TableContainer,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Tooltip,
-  useTheme,
-  Paper, 
+    Box,
+    Stack,
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Typography,
+    Toolbar,
+    Table,
+    TableContainer,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    Tooltip,
+    useTheme,
+    Paper, 
 } from '@mui/material';
 
 import {
@@ -28,10 +34,11 @@ import {
 
 const EntityHolidaysComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
-    const { t, i18n } = useTranslation("holidaysview")
+    const { t, i18n } = useTranslation("entityholidays")
     const { csrfToken, user, selectedLanguage } = useContext(AppContext)
     const { setIsLoading, WaitingMessage } = useLoading()
-    const { exportVacacionesToExcel } = useExcelHolidays()
+    const { exportVacacionesToExcel, formatted, formattedAll } = useExcelHolidays()
+    const { openDialog, closeDialog, isOpen } = useDialogs()
     const theme = useTheme()
 
     const [events, setEvents] = useState([])
@@ -58,14 +65,14 @@ const EntityHolidaysComponent = () => {
                 }
             )
             const data = await response.json()
-            const formatted = data.map(vacacion => ({
+            const eventsFormatted = data.map(vacacion => ({
                 ...vacacion,
                 start: new Date(vacacion.start),
                 end: new Date(vacacion.end),
                 cellColor: vacacion.cell_color,
             }))
-            console.log("Eventos: ", formatted)
-            setEvents(formatted)
+            console.log("Eventos: ", eventsFormatted)
+            setEvents(eventsFormatted)
         } catch (error) {
             console.error("Error cargando vacaciones:", error)
         } finally {
@@ -137,8 +144,29 @@ const EntityHolidaysComponent = () => {
         setRows(tempRows)
     }, [usuarios, events])
 
+    const HandleExportVacacionesToExcelAll = (eventos, fecha) => {
+        if (eventos.length === 0) {
+            console.log("No hay Eventos")
+            openDialog('dialogHolidays')
+            return
+        }
+
+        exportVacacionesToExcel(formattedAll(eventos, fecha), fecha)
+    }
+
     return (
     <>
+        <Dialog open={isOpen('dialogHolidays')} onClose={() => closeDialog('dialogHolidays')}>
+            {/* >¿Eliminar evento?<*/}
+            <DialogTitle>{t("dialog.title")}</DialogTitle>
+            <DialogContent>
+                {t("dialog.content")}
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => closeDialog('dialogHolidays')} variant="contained">{t("dialog.button")}</Button>
+            </DialogActions>
+        </Dialog>
+
         <WaitingMessage />
         <Toolbar />
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}
@@ -165,36 +193,46 @@ const EntityHolidaysComponent = () => {
                     date.toLocaleString(selectedLanguage === "es"?'es-ES': "eu-EU", { month: 'long' }).toUpperCase()
                         }
             </Typography>
-                {/* <Box sx={{ flex: 1}}> */}
-                <Box>
-                    {/* <Box> </Box> */}
-                    {/* <Button variant="contained" onClick={() => exportVacacionesToExcel(rows)}> */}
-                    {/* <Button variant="contained" onClick={() => exportVacacionesToExcel(rows)}>
+            <Box display="flex">
+                <Box sx={{ flex: 1 }}>
+                    <Button sx={{ margin: 0, padding: 0}} onClick={() => HandleExportVacacionesToExcelAll(events, date)}>
                         <Tooltip title="Exportar a Excel">
-                            Exportar a Excel */}
-                            {/* <IconButton color="primary" aria-label="home">
-                                <HomeIcon
-                                    style={{ 
-                                        height: 50,
-                                        fontSize: "3rem",
-                                        marginRight: 8,
-                                        display: 'flex',
-                                        color: "#8BC000",
-                                        borderRadius: "10px",
+                            {/* Exportar a Excel */}
+                            <Box color="primary" aria-label="home"
+                                sx={{
+                                    padding: 0, 
+                                    width: { xs: 24, md: 32 },
+                                    height: { xs: 24, md: 32 },
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center"
+                                }}
+                            >
+                                <Box component= "img" // es una imagen no un componente React
+                                    src={ExcelIcon}
+                                    alt="excel"
+                                    sx={{ 
+                                        height: "100%",
+                                        // size: "contain",
+                                        // marginRight: 8,
+                                        // display: 'flex',
+                                        // borderRadius: "10px",
                                     }}
                                 />
-                            </IconButton> */}
-                        {/* </Tooltip> */}
-                    {/* </Button> */}
-
-            <Button variant="outlined" onClick={() => {
-                const newDate = new Date(date)
-                newDate.setMonth(date.getMonth() + 1)
-                setDate(newDate)
-            }}>
-                {t("stack.button2text")}.
-            </Button>
-                    </Box>
+                            </Box>
+                        </Tooltip>
+                    </Button>
+                </Box>
+                <Box>
+                    <Button variant="outlined" onClick={() => {
+                        const newDate = new Date(date)
+                        newDate.setMonth(date.getMonth() + 1)
+                        setDate(newDate)
+                    }}>
+                        {t("stack.button2text")}.
+                    </Button>
+                </Box>
+            </Box>
         </Stack>
         <Toolbar />
         <Box sx={{ width: "100%", overflowY: "auto"}}>

@@ -7,6 +7,7 @@ import { useContext } from 'react';
 import AppContext from '../context/AppContext';
 import useLoading from "../hooks/useLoading";
 import useExcelHolidays from "../hooks/useExcelHolidays";
+import useDialogs from '../hooks/useDialogs';
 import { es, eu } from 'date-fns/locale';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
@@ -23,7 +24,11 @@ import ExcelIcon from "../assets/images/icons/excel.png";
 import {
     Toolbar,
     Box, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
-    Button, 
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
     FormControl,
     FormLabel,
     IconButton,
@@ -51,8 +56,8 @@ const HolidaysComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { csrfToken, user, selectedLanguage } = useContext(AppContext)
     const { setIsLoading, WaitingMessage } = useLoading()
-    const { exportVacacionesToExcel } = useExcelHolidays()
-
+    const { exportVacacionesToExcel, formatted, formattedAll } = useExcelHolidays()
+    const { openDialog, closeDialog, isOpen } = useDialogs()
     const [events, setEvents] = useState([]);
     const [eventData, setEventData] = useState({});
     const [date, setDate] = useState(new Date());
@@ -297,53 +302,29 @@ const HolidaysComponent = () => {
         setDate(newSelectedYear)
     }
 
-    //  Renombrar columnas
-    const formatted = (usuario, eventos, fecha) => {
-        // Obtener fecha actual
-        const year = fecha.getFullYear()
-        const month = fecha.getMonth() // OJO: 0 = Enero, 11 = Diciembre
-
-        // Obtener número de días del mes actual
-        const daysMonth = new Date(year, month + 1, 0).getDate() 
-
-        // Crea array con los días del mes
-        const tempMonth = []
-        for (let index = 0; index < daysMonth; index++) {
-            tempMonth.push(index+1)
+    const HandleExportVacacionesToExcel = (usuario, eventos, fecha) => {
+        if (eventos.length === 0) {
+            console.log("No hay Eventos")
+            openDialog('dialogHolidays')
+            return
         }
-        // test dias: crea el objeto { 1: 1, 2: 2, 3: 3, ... }
-        // const dias = Object.fromEntries(tempMonth.map(x => [x, x]))
 
-        // { Usuario: 12, 1: "", 2: "V", 3: "", 4: "V", 5: "", ...}
-            // Usuario: user.id → añade el ID del usuario.
-            // ...Object.fromEntries(...) → añade una clave por cada día del mes:
-            // Recorre cada dia del 1 al daysMonth.
-            // Busca en events si existe algún evento cuyo start coincida con el día (getDate()).
-            // Si hay evento → "V", si no → "".
-        const hoja = {
-            "Usuario/a": usuario.nombre_apellidos,
-            ...Object.fromEntries(
-                tempMonth.map(dia => {
-                    const tieneEvento = eventos.some(evento => {
-                        const diaEvento = new Date(evento.start).getDate()
-                        return diaEvento === dia
-                    })
-                    // Que hace return
-                    //     Crea un array de dos elementos, ejemplo: [1, ""] ó [3, "V"]:
-                            // Primer elemento → clave (dia)
-                            // Segundo elemento → valor ("V" o "")
-                    // Ese array [clave, valor] es el formato que espera Object.fromEntries para formar un objeto
-                            //  {1: "V"}, {2: ""}, {3: "V"}
-                    return [dia, tieneEvento ? "V" : ""]
-            }))
-        }
-        console.log("Hoja: ", hoja)
-        // {1: "", 2: "", 3: "V", usuario: 93, ...} <- objeto de usuario y los días del mes
-        return [hoja] // lo devolvemos como array
+        exportVacacionesToExcel([formatted(usuario, eventos, fecha)], fecha)
     }
 
     return (
         <>
+            <Dialog open={isOpen('dialogHolidays')} onClose={() => closeDialog('dialogHolidays')}>
+                {/* >¿Eliminar evento?<*/}
+                <DialogTitle>{t("dialog.title")}</DialogTitle>
+                <DialogContent>
+                    {t("dialog.content")}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => closeDialog('dialogHolidays')} variant="contained">{t("dialog.button")}</Button>
+                </DialogActions>
+            </Dialog>
+
             <WaitingMessage />
             <Toolbar />
             {/* <h2>{t("mainheader.text1")}: {date.getFullYear()} ({t("mainheader.text2")}: {diasUsadosVacaciones})</h2>
@@ -431,16 +412,17 @@ const HolidaysComponent = () => {
                         {t("mainheader.text2")}: {date.getFullYear()} ({t("mainheader.text3")}: {diasUsadosVacaciones})
                 </Typography>
                 <Box sx={{ flex: 1 }}>
-                    {/* <Box> </Box> */}
-                    {/* <Button variant="contained" onClick={() => exportVacacionesToExcel(events)}> */}
-                    <Button sx={{ margin: 0, padding: 0}}onClick={() => exportVacacionesToExcel(formatted(user, events, date))}>
+                    <Button sx={{ margin: 0, padding: 0}} onClick={() => HandleExportVacacionesToExcel(user, events, date)}>
                         <Tooltip title="Exportar a Excel">
                             {/* Exportar a Excel */}
-                            <IconButton color="primary" aria-label="home"
+                            <Box color="primary" aria-label="home"
                                 sx={{
                                     padding: 0, 
                                     width: { xs: 24, md: 32 },
-                                    height: { xs: 24, md: 32 } 
+                                    height: { xs: 24, md: 32 },
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center"
                                 }}
                             >
                                 <Box component= "img" // es una imagen no un componente React
@@ -448,13 +430,13 @@ const HolidaysComponent = () => {
                                     alt="excel"
                                     sx={{ 
                                         height: "100%",
-                                        size: "contain",
+                                        // size: "contain",
                                         // marginRight: 8,
                                         // display: 'flex',
                                         // borderRadius: "10px",
                                     }}
                                 />
-                            </IconButton>
+                            </Box>
                         </Tooltip>
                     </Button>
                 </Box>

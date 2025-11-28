@@ -8,3 +8,10 @@
     margin: 0;
     padding: 0;
 }
+@media print { /* todos los elementos de tu app respeten los colores al imprimir. Esto funciona con MUI y cualquier otro elemento HTML.*/
+  * {
+    -webkit-print-color-adjust: exact !important; /* Chrome, Edge, Safari */
+    print-color-adjust: exact !important;         /* Estándar */
+    color-adjust: exact !important;               /* Firefox */
+  }
+}

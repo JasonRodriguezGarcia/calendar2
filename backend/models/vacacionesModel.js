@@ -55,10 +55,6 @@ export async function getVacaciones(user, startDate, endDate, all) {
             //     WHERE start >= $1
             //     AND start <= $2
             //     ORDER BY start ASC;`
-
-// SELECT v.event_id, v.start, v.end, v.cell_color, v.usuario_id, u.nombre_apellidos FROM erroak.vacaciones v
-// INNER JOIN erroak.usuarios u on v.usuario_id = u.usuario_id
-// WHERE v.usuario_id = 13
             query =`
                 SELECT v.event_id, v.start, v.end, v.cell_color, v.usuario_id, u.nombre_apellidos, u.activo FROM erroak.vacaciones v
                     INNER JOIN erroak.usuarios u on v.usuario_id = u.usuario_id

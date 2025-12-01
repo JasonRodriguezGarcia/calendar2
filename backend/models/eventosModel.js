@@ -2,7 +2,7 @@ import pool from '../db-pg.js';
 
 export async function getNewEventFormData() {
     try {
-        const usuarios = await pool.query(`SELECT * from erroak.usuarios ORDER BY nombre_apellidos`)
+        const usuarios = await pool.query(`SELECT * from erroak.usuarios WHERE activo = TRUE ORDER BY nombre_apellidos`)
         if (!usuarios.rows.length)
             return {result: "Error. No hay datos en Usuarios"}
 

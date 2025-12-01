@@ -50,19 +50,28 @@ export async function getVacaciones(user, startDate, endDate, all) {
         let query = ''
         let fields = []
         if (all === 'all') {
+            query =`
+                SELECT u.usuario_id, u.nombre_apellidos, u.centro_id, v.event_id, v.start, v.end, v.cell_color FROM erroak.usuarios u
+                    LEFT JOIN erroak.vacaciones v on v.usuario_id = u.usuario_id
+                    WHERE u.activo = TRUE 
+                        -- AND v.start >= $1
+                        -- AND v.start <= $2
+                    ORDER BY u.nombre_apellidos, v.start ASC;`
+            // OJO FIELDS NO RELLENAMOS PUESTO QUE NO HAY PLACEHOLDERS EN LA CONSULTA ($1, $2, ...)
+            
             // query =`
             //     SELECT * FROM erroak.vacaciones
             //     WHERE start >= $1
             //     AND start <= $2
             //     ORDER BY start ASC;`
-            query =`
-                SELECT v.event_id, v.start, v.end, v.cell_color, v.usuario_id, u.nombre_apellidos, u.activo FROM erroak.vacaciones v
-                    INNER JOIN erroak.usuarios u on v.usuario_id = u.usuario_id
-                    WHERE u.activo = TRUE 
-                        AND v.start >= $1
-                        AND v.start <= $2
-                    ORDER BY v.start ASC;`
-            fields.push(startDate, endDate)
+            // query =`
+            //     SELECT v.event_id, v.start, v.end, v.cell_color, v.usuario_id, u.nombre_apellidos, u.activo FROM erroak.vacaciones v
+            //         INNER JOIN erroak.usuarios u on v.usuario_id = u.usuario_id
+            //         WHERE u.activo = TRUE 
+            //             AND v.start >= $1
+            //             AND v.start <= $2
+            //         ORDER BY v.start ASC;`
+            // fields.push(startDate, endDate)
         } else {
             query =`
                 SELECT * FROM erroak.vacaciones
@@ -75,7 +84,7 @@ export async function getVacaciones(user, startDate, endDate, all) {
         const result = await pool.query(
             query,
             fields)
-        console.log("GET - vacaciones")
+        console.log("GET - vacaciones: ", all)
         return result.rows;
 
     } catch (err) {

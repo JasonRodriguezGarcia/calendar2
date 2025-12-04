@@ -187,7 +187,13 @@ const EntityHolidaysComponent = () => {
                 {t("stack.button1text")}.
             </Button>
 
-            <Typography variant="h6">
+            <Typography variant="h6"   sx={{
+                fontSize: {
+                xs: "0.7rem",   // móviles
+                sm: "1.1rem",   // tablets
+                md: "1.25rem",  // escritorio
+                },}}
+            >
                 {t("stack.typography.text1")}: {date.getFullYear()} - 
                 &nbsp;{t("stack.typography.text2")}: {
                     date.toLocaleString(selectedLanguage === "es"?'es-ES': "eu-EU", { month: 'long' }).toUpperCase()

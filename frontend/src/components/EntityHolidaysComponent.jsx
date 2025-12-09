@@ -51,7 +51,7 @@ const EntityHolidaysComponent = () => {
         const start = startOfMonth(date);
         const end = endOfMonth(date);
         setIsLoading(true)
-
+        console.log("start: ", start, " end: ", end)
         try {
             const response = await fetch(
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/vacaciones/${start.toISOString()}/${end.toISOString()}/all`,

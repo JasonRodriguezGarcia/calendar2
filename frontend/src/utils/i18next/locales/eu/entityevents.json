@@ -30,5 +30,27 @@
         "day": "Eguna",
         "agenda": "Agenda",
         "showmore": "+{{count}} gehiago"
+    },
+    "dialog": {
+        "title": "Gertaera ikusi",
+        "content": {
+            "formcontrol1": {
+                "inputlabel": "Erabiltzailea",
+                "selectlabel": "Erabiltzailea"
+            },
+            "formcontrol2": {
+                "inputlabel": "Espazioa",
+                "selectlabel": "Espazioa"
+            },
+            "formcontrol3": {
+                "inputlabel": "Programa",
+                "selectlabel": "Programa"
+            },
+            "stack": {
+                "datetimepickerlabel1": "Hasiera",
+                "datetimepickerlabel2": "Amaiera"
+            },
+            "textfield": "Oharrak"
+        }
     }
 }

@@ -20,12 +20,20 @@ import {
 import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { GlobalStyles } from '@mui/material'; // para cambiar el estilo del día y permita cambiar de color al pasar raton por encima
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { es as localeEs } from 'date-fns/locale';
 
 // MUI
 import {
     Box,
     Checkbox,
     Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
     MenuItem,
     FormControl, 
     Grid,
@@ -34,6 +42,7 @@ import {
     ListItemText,
     Select,
     Stack,
+    TextField,
     Toolbar, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
     Typography,
 } from '@mui/material';
@@ -67,6 +76,8 @@ const EntityEventsCalendarComponent = () => {
     
     const [events, setEvents] = useState([])
     const [allEvents, setAllEvents] = useState([])
+    const [eventData, setEventData] = useState({})          // evento actual
+    const [selectedEvent, setSelectedEvent] = useState(null)
     const [date, setDate] = useState(new Date())
     const [view, setView] = useState(Views.MONTH)     // POR DEFECTO VISTA MES
     const [usuarios, setUsuarios] = useState([])
@@ -77,6 +88,7 @@ const EntityEventsCalendarComponent = () => {
     const [selectedProgramas, setSelectedProgramas] = useState([])
     const [selectedEspacios, setSelectedEspacios] = useState([])
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+    const [dialogOpen, setDialogOpen] = useState(false)
 
     useEffect(() => {
         const getNewEventFormData = async () => {
@@ -283,6 +295,20 @@ const EntityEventsCalendarComponent = () => {
         const newSelectedYear = new Date(date)
         newSelectedYear.setFullYear(e.target.value)
         setDate(newSelectedYear)
+    }
+
+    // Editando/Seleccionando un evento que en este caso solo muestra datos
+    const handleSelectEvent = async (event) => {
+        if (view === "day") return
+        setEventData({ ...event })
+        // setIsEditing(true)
+        // setIsRepeatableSpace(repeatableSpaces.includes(event.espacio_id))
+        setSelectedEvent(event)
+        setDialogOpen(true)
+    }
+
+    const handleCloseDialog = () => {
+        setDialogOpen(false)
     }
 
     return (
@@ -516,6 +542,7 @@ const EntityEventsCalendarComponent = () => {
                     // culture='es'                                 // días mes, semana, día en español
                     culture={selectedLanguage}                      // días mes, semana, día en el idioma selecionado
                     events={events}                                 // Personalizando la visualizacion de eventos en el calendario usando el array events
+                    onSelectEvent={handleSelectEvent}               // Editar/Seleccionar evento existente
                     // selectable                                   // habilita la seleccion de celdas
                     views={['month', 'work_week', 'day']}           // sin agenda ya que filtra mal¿?
                     onView={handleViewChange}
@@ -583,6 +610,106 @@ const EntityEventsCalendarComponent = () => {
                 />
             </Grid>
         </Grid>
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeEs}>
+            <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth>
+                <DialogTitle>{t("dialog.title")}</DialogTitle>
+                {/* <DialogTitle>Ver evento</DialogTitle> */}
+                <DialogContent>
+                    <Stack spacing={1} mt={1}> 
+                        <FormControl fullWidth margin='dense'>
+                            {/*>Usuario *< */}
+                            <InputLabel id="select-label-usuario_id">{t("dialog.content.formcontrol1.inputlabel")} *</InputLabel>
+                            {/* <InputLabel id="select-label-usuario_id">Usuario</InputLabel> */}
+                            <Select
+                                labelId="select-label-usuario_id"
+                                id="select-usuario_id"
+                                label={`${t("dialog.content.formcontrol1.selectlabel")} *`}
+                                // label="Usuario"
+                                value={eventData.usuario_id}
+                                onChange={(e) => setEventData({ ...eventData, usuario_id: e.target.value})}
+                                disabled
+                            >
+                                {usuarios.map((usuario) => (
+                                    <MenuItem key={usuario.usuario_id} value={usuario.usuario_id}>{usuario.nombre_apellidos}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <FormControl fullWidth margin='dense'>
+                            {/* >Espacio *< */}
+                            <InputLabel id="select-label-espacio_id">{t("dialog.content.formcontrol2.inputlabel")} *</InputLabel>
+                            {/* <InputLabel id="select-label-espacio_id">Espacio</InputLabel> */}
+                            <Select
+                                labelId="select-label-espacio_id"
+                                id="select-espacio_id"
+                                label={`${t("dialog.content.formcontrol2.selectlabel")} *`}
+                                // label="Espacio"
+                                value={eventData.espacio_id}
+                                onChange={(e) => setEventData({ ...eventData, espacio_id: e.target.value, repetible: repeatableSpaces.includes(e.target.value)})}
+                                disabled
+                            >
+                                {espacios.map((espacio) => (
+                                    <MenuItem key={espacio.espacio_id} value={espacio.espacio_id}>{espacio.descripcion}</MenuItem>
+
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <FormControl fullWidth margin='dense'>
+                            {/* >Programa *<*/}
+                            <InputLabel id="select-label-programa_id">{t("dialog.content.formcontrol3.inputlabel")} *</InputLabel>
+                            {/* <InputLabel id="select-label-programa_id">Programa</InputLabel> */}
+                            <Select
+                                labelId="select-label-programa_id"
+                                id="select-programa_id"
+                                label={`${t("dialog.content.formcontrol3.selectlabel")} *`}
+                                // label="Programa"
+                                value={eventData.programa_id}
+                                onChange={(e) => setEventData({ ...eventData, programa_id: e.target.value})}
+                                disabled
+                            >
+                                {programas.map((programa) => (
+                                    <MenuItem key={programa.programa_id} value={programa.programa_id}>{programa.descripcion}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+
+                        <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+                            <DateTimePicker
+                                label={`${t("dialog.content.stack.datetimepickerlabel1")} *`}
+                                // label="Inicio"
+                                value={eventData.start}
+                                onChange={(newValue) => setEventData({ ...eventData, start: newValue })}
+                                slotProps={{ textField: { fullWidth: true, margin: 'dense' } }}
+                                disabled
+                            />
+                            <DateTimePicker
+                                label={`${t("dialog.content.stack.datetimepickerlabel2")} *`}
+                                // label="Fin"
+                                value={eventData.end}
+                                onChange={(newValue) => setEventData({ ...eventData, end: newValue })}
+                                slotProps={{ textField: { fullWidth: true, margin: 'dense' } }} // forma moderna y sin avisos en consola
+                                disabled
+                            />
+                        </Stack>
+
+                        <TextField
+                            fullWidth
+                            label={`${t("dialog.content.textfield")}`}
+                            // label="Observaciones"
+                            name="observaciones"
+                            value={eventData.observaciones}
+                            onChange={(e) => setEventData({ ...eventData, observaciones: e.target.value })}
+                            margin="dense"
+                            multiline
+                            rows={3}
+                            disabled
+                        />
+                    </Stack>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog} variant="contained">Continuar</Button>
+                </DialogActions>
+            </Dialog>
+        </LocalizationProvider>
     </Box>
     </>
     )

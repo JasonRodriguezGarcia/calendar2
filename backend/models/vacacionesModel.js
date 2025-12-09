@@ -50,15 +50,16 @@ export async function getVacaciones(user, startDate, endDate, all) {
         let query = ''
         let fields = []
         if (all === 'all') {
+            console.log("starDate: ", startDate, " endDate: ", endDate)
+            // OJO AND v.start >= $ y AND v.start <= $2 DEBEN ESTAR EN EL JOIN Y NO EN EL WHERE, 
+            // YA QUE SI NO SE ROMPE EL LEFT JOIN Y NO SE MUESTRAN TODOS LOS USUARIOS
             query =`
                 SELECT u.usuario_id, u.nombre_apellidos, u.centro_id, v.event_id, v.start, v.end, v.cell_color FROM erroak.usuarios u
                     LEFT JOIN erroak.vacaciones v on v.usuario_id = u.usuario_id
+                        AND v.start >= $1
+                        AND v.start <= $2
                     WHERE u.activo = TRUE 
-                        -- AND v.start >= $1
-                        -- AND v.start <= $2
                     ORDER BY u.nombre_apellidos, v.start ASC;`
-            // OJO FIELDS NO RELLENAMOS PUESTO QUE NO HAY PLACEHOLDERS EN LA CONSULTA ($1, $2, ...)
-            
             // query =`
             //     SELECT * FROM erroak.vacaciones
             //     WHERE start >= $1
@@ -71,7 +72,7 @@ export async function getVacaciones(user, startDate, endDate, all) {
             //             AND v.start >= $1
             //             AND v.start <= $2
             //         ORDER BY v.start ASC;`
-            // fields.push(startDate, endDate)
+            fields.push(startDate, endDate)
         } else {
             query =`
                 SELECT * FROM erroak.vacaciones

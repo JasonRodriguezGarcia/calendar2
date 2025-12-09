@@ -30,5 +30,27 @@
         "day": "Día",
         "agenda": "Agenda",
         "showmore": "+{{count}} mas"
+    },
+    "dialog": {
+        "title": "Ver evento",
+        "content": {
+            "formcontrol1": {
+                "inputlabel": "Usuario",
+                "selectlabel": "Usuario"
+            },
+            "formcontrol2": {
+                "inputlabel": "Espacio",
+                "selectlabel": "Espacio"
+            },
+            "formcontrol3": {
+                "inputlabel": "Programa",
+                "selectlabel": "Programa"
+            },
+            "stack": {
+                "datetimepickerlabel1": "Inicio",
+                "datetimepickerlabel2": "Fin"
+            },
+            "textfield": "Observaciones"
+        }
     }
 }

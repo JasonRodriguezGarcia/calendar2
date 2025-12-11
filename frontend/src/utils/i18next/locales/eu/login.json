@@ -4,7 +4,8 @@
     "message2": "Emaila sartu",
     "message3": "Pasahitza sartu",
     "message4": "Erabiltzailea edo pasahitza baliogabea da",
-    "message5": "Erabiltzailea desgaituta. Jarri harremanetan admin.-arekin."
+    "message5": "Erabiltzailea desgaituta. Jarri harremanetan Arandiarekin.",
+    "message55": "Erabiltzailea desgaituta. Jarri harremanetan admin.-arekin."
 },
   "box": {
     "typography": "Saio-hasiera",

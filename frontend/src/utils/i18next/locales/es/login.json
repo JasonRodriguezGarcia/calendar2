@@ -4,7 +4,8 @@
         "message2": "Introduzca email",
         "message3": "Introduzca contraseña",
         "message4": "Usuario o contraseña no válidos",
-        "message5": "Usuario desactivado. Contactar con Admin."
+        "message5": "Usuario desactivado. Contactar con Arandia",
+        "message55": "Usuario desactivado. Contactar con Admin."
     },
     "box": {
         "typography": "Inicio de sesión",

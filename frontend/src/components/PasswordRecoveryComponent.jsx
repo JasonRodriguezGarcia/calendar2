@@ -166,7 +166,8 @@ const PasswordRecoveryComponent = () => {
                     </DialogTitle>
                     <DialogContent>
                         <DialogContent>
-                            {t("boxdialog.content")} {userEmail}
+                     {/*       {t("boxdialog.content")} {userEmail} */}
+                            {t("boxdialog.content")}
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={handleRecovery} variant="contained">{t("boxdialog.button")}</Button>

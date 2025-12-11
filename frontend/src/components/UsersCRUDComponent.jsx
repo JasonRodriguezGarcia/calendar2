@@ -427,7 +427,7 @@ const UsersCRUDComponent = ({ action }) => {
                                 onMouseEnter={() => setShowPassword(true)}
                                 onMouseLeave={() => setShowPassword(false)}
                                 autoComplete="password"
-                                placeholder={`(${t("box.formcontrol2.placeholder.text1")}. ${minPasswordLength} - ${t("box.formcontrol2.placeholder.text2")}.)`}
+                                placeholder={`(${t("box.formcontrol2.placeholder.text1")}. ${minPasswordLength} - ${t("box.formcontrol2.placeholder.text2")})`}
                                 required
                                 fullWidth
                                 value={formUserData.userPassword}

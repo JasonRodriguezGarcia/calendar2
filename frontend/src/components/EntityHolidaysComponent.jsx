@@ -69,7 +69,7 @@ const EntityHolidaysComponent = () => {
                 ...vacacion,
                 start: new Date(vacacion.start),
                 end: new Date(vacacion.end),
-                cellColor: vacacion.cell_color,
+                // cellColor: vacacion.cell_color,
             }))
             console.log("Eventos: ", eventsFormatted)
             setEvents(eventsFormatted)

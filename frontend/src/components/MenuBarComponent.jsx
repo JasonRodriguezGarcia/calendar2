@@ -237,7 +237,7 @@ const MenuBarComponent = () => {
                     </Typography>
                 {/* Logo Sartu */}
                     <Typography
-                        variant="h"
+                        variant="h6"
                         noWrap
                         component = {Link} // Usar link en lugar de "a" y "href" para no rerenderizar
                         to="https://erroaksartu.org/"

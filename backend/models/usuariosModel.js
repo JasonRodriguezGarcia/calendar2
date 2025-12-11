@@ -21,9 +21,10 @@ const mg = Mailgun({
 export async function getUsuarios(action) {
     const { option } = action
     let query = "SELECT * FROM erroak.usuarios "
-    if (option !== "all")
-        query += "WHERE activo = true "
-    query += "ORDER BY nombre_apellidos;"
+    if (option !== "allidreverse")
+        query += "WHERE activo = true ORDER BY nombre_apellidos;"
+    else
+        query += "ORDER BY usuario_id DESC;"
     try {
         const result = await pool.query(
             // `SELECT * FROM erroak.usuarios ${option === "all" ? `WHERE activo = true` : ""} ORDER BY nombre_apellidos;`
@@ -127,7 +128,8 @@ export async function postRecoveryPassword(recoveryPasswordDetails) {
 
             const data = {
                 from: "Mi App <no-reply@tu-dominio.com>",
-                to: useremail,
+                // to: useremail,
+                to: "arandia@erroak.sartu.org",
                 subject: emailmsg.subject,
                 text: "email enviado",
                 html: `

@@ -66,7 +66,7 @@ const AdminComponent = () => {
         setIsLoading(true)
         try {
             const action = {
-                option: "all"
+                option: "allidreverse"
             }
             const response = await fetch(
                 `${VITE_BACKEND_URL_RENDER}/api/v1/erroak/usuarios`,

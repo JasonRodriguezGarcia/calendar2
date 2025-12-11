@@ -1,18 +1,17 @@
-import MenuBarComponent from '../components/MenuBarComponent';
-import { Box, Card, CardContent, Typography, Stack, Divider, Tooltip } from '@mui/material';
+import { Box, Card, CardContent, IconButton, Link, Typography, Stack, Divider, Tooltip } from '@mui/material';
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import CodeOutlinedIcon from "@mui/icons-material/CodeOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
-// import imagenFondo from "../assets/images/underconstruction.jpg";
-import imagenFondo from "../assets/images/cuerda.jpg";
-
 import Express from "../assets/images/icons/express.png"
 import Vite from "../assets/images/icons/vite.png"
 import Postgresql from "../assets/images/icons/postgresql.png"
 import Render from "../assets/images/icons/render.png"
 import Supabase from "../assets/images/icons/supabase.png"
+import InfoJobs from "./icons/InfoJobsconMui" // componente Infojobs con svg
+import LinkedIn from "../assets/images/icons/linkedin.png"
+
 const AboutComponent = () => {
 
     const tecnologias = [
@@ -167,13 +166,34 @@ const AboutComponent = () => {
                             sx={{ fontSize: "1em"}}
                         >
                             Jason R. G. <br />
-                            <a href="mailto:jasonrodriguezempleo@gmail.com">
+
+                            <Link href="mailto:jasonrodriguezempleo@gmail.com" underline="hover" color="blue">
                                 jasonrodriguezempleo@gmail.com
-                            </a>
+                            </Link>
                         </Typography>
+                        <Typography variant="body2"
+                            sx={{ fontSize: "1em", display: "flex", alignItems: "center", justifyContent: "center",
+                            }}
+                        >
+                            <Tooltip title="InfoJobs">
+                                <IconButton color="primary" aria-label="infojobs" href='http://www.linkedin.com/in/jason-rodriguez-garcia-41364043'>
+                                    <InfoJobs   // componente con SVG
+                                        sx={{ width: "2em", height: "2em"}}
+                                    />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="LinkedIn">
+                                <IconButton color="primary" aria-label="linkedin" href='https://www.linkedin.com/in/jason-rodriguez-garcia-41364043'>
+                                    <img    // Imagen
+                                        src={LinkedIn}
+                                        alt="LinkedIn"
+                                        style={{ width: "2em", height: "2em", padding: "0", borderRadius: "8px" }}
+                                    />
+                                </IconButton>
+                            </Tooltip>
+                        </Typography>                    
                     </CardContent>
                 </Card>
-
             </Box>
         </>
     )

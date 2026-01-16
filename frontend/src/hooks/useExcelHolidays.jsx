@@ -74,68 +74,6 @@ const useExcelHolidays = () => {
         const buffer = await workbook.xlsx.writeBuffer()
         saveAs(new Blob([buffer]), "vacaciones.xlsx")
 
-        // CODIGO VIEJO
-    //     // Tomar primera fila para ordenar encabezados
-    //     const firstRow = vacacionesData[0]
-
-    //     // Forzar que "Usuario" sea la primera columna
-    //     const cabeceras = ["Usuario/a", ...Object.keys(firstRow).filter(k => k !== "Usuario/a")]
-
-    //     // 1. Convertimos JSON → Hoja Excel (creamos hoja y respetamos el orden)
-    //     const worksheet = XLSX.utils.json_to_sheet(vacacionesData, {header: cabeceras})
-    //     // SheetJS (xlsx) NO permite dar formato (colores, estilos…) dentro de json_to_sheet.
-    //     // Para aplicar colores tienes que hacerlo después, modificando las celdas del worksheet manualmente.
-    //     // Después de crear la hoja Excel, recorrer todas las celdas:
-    //         // Si el valor === "V"
-    //         // → añadir estilo { fill: { fgColor: { rgb: "FF0000" } } }
-    // // ---------------------------------------------------------
-    // // ⭐ NUEVO: recorremos las celdas para colorear las "V" en rojo
-    // // ---------------------------------------------------------
-    //     const range = XLSX.utils.decode_range(worksheet["!ref"]);  // rango total de celdas
-
-    //     for (let R = range.s.r; R <= range.e.r; R++) {
-    //         for (let C = range.s.c; C <= range.e.c; C++) {
-
-    //             const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
-    //             const cell = worksheet[cellRef];
-
-    //             if (!cell) continue;
-
-    //             if (cell.v === "V") {
-    //                 cell.s = {
-    //                     fill: {
-    //                         patternType: "solid",
-    //                         fgColor: { rgb: "FF0000" }   // rojo
-    //                     },
-    //                     font: {
-    //                         color: { rgb: "FFFFFF" },   // texto blanco (opcional)
-    //                         bold: true
-    //                     },
-    //                     alignment: { horizontal: "center" }
-    //                 };
-    //             }
-    //         }
-    //     }
-
-    //     // 2. Creamos el libro de Excel
-    //     const workbook = {
-    //         Sheets: { "Vacaciones": worksheet },
-    //         SheetNames: ["Vacaciones"]
-    //     };
-
-    //     // 3. Lo convertimos a un buffer
-    //     const excelBuffer = XLSX.write(workbook, {
-    //         bookType: "xlsx",
-    //         type: "array",
-    //         cellStyles: true // Para poder usar estilos
-    //     })
-
-    //     // 4. Lo descargamos
-    //     const blob = new Blob([excelBuffer], {
-    //         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    //     })
-
-    //     saveAs(blob, "vacaciones.xlsx")
     }
 
     //  Renombrar columnas
@@ -144,7 +82,7 @@ const useExcelHolidays = () => {
         // Obtener fecha actual
         const year = fecha.getFullYear()
         const month = fecha.getMonth() // OJO: 0 = Enero, 11 = Diciembre
-
+debugger
         // Filtramos for año y mes seleccionado
         const eventosFiltrados = [...eventos].filter(evento => 
             evento.start.getFullYear() === year && evento.start.getMonth() === month

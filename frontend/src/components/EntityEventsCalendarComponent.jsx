@@ -6,6 +6,7 @@ import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { useTranslation } from 'react-i18next';
 import { useContext } from 'react';
 import useLoading from "../hooks/useLoading"
+import useExcelEvents from "../hooks/useExcelEvents";
 import AppContext from '../context/AppContext';
 import { es, eu } from 'date-fns/locale';
 import format from 'date-fns/format';
@@ -19,11 +20,14 @@ import {
 
 import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { GlobalStyles } from '@mui/material'; // para cambiar el estilo del día y permita cambiar de color al pasar raton por encima
+import { circularProgressClasses, GlobalStyles } from '@mui/material'; // para cambiar el estilo del día y permita cambiar de color al pasar raton por encima
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { es as localeEs } from 'date-fns/locale';
+import ExcelIcon from "../assets/images/icons/excel.png";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 
 // MUI
 import {
@@ -44,6 +48,7 @@ import {
     Stack,
     TextField,
     Toolbar, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
+    Tooltip,
     Typography,
 } from '@mui/material';
 import { colorOptions } from '../utils/EventColors';
@@ -73,7 +78,8 @@ const EntityEventsCalendarComponent = () => {
     const { t, i18n } = useTranslation("entityevents")
     const { csrfToken, user, selectedLanguage } = useContext(AppContext)
     const { setIsLoading, WaitingMessage } = useLoading()
-    
+    const { exportEventsToExcel, formatted } = useExcelEvents()
+
     const [events, setEvents] = useState([])
     const [allEvents, setAllEvents] = useState([])
     const [eventData, setEventData] = useState({})          // evento actual
@@ -311,6 +317,16 @@ const EntityEventsCalendarComponent = () => {
         setDialogOpen(false)
     }
 
+    const HandleExportEntityEventsToExcel = (eventos, fecha) => {
+        if (eventos.length === 0) {
+            console.log("No hay Eventos")
+            openDialog('dialogHolidays')
+            return
+        }
+        exportEventsToExcel([formatted(eventos, usuarios, espacios, programas)], fecha)
+    }
+
+
     return (
     <>
         <WaitingMessage />
@@ -400,7 +416,34 @@ const EntityEventsCalendarComponent = () => {
                     {t("mainheader.text2")}: {date.getFullYear()}
             </Typography>
             <Box sx={{ flex: 1}}>
-                <Box> </Box>
+                {/* <Box> </Box> */}
+                <Button sx={{ margin: 0, padding: 0}} onClick={() => HandleExportEntityEventsToExcel(events, date)}>
+                    <Tooltip title="Exportar a Excel">
+                        {/* Exportar a Excel */}
+                        <Box color="primary" aria-label="home"
+                            sx={{
+                                padding: 0, 
+                                width: { xs: 24, md: 32 },
+                                height: { xs: 24, md: 32 },
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center"
+                            }}
+                        >
+                            <Box component= "img" // es una imagen no un componente React
+                                src={ExcelIcon}
+                                alt="excel"
+                                sx={{ 
+                                    height: "100%",
+                                    // size: "contain",
+                                    // marginRight: 8,
+                                    // display: 'flex',
+                                    // borderRadius: "10px",
+                                }}
+                            />
+                        </Box>
+                    </Tooltip>
+                </Button>
             </Box>
         </Stack>
         <Toolbar />

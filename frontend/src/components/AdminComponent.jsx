@@ -86,7 +86,7 @@ const AdminComponent = () => {
             // console.log("Usuarios: ", data)
             // setUsuarios(data)
             // Al ser nombre_apellidos un string usamos localeCompare
-            const dataSorted = [...data].sort((a, b) => b.nombre_apellidos.localeCompare(a.nombre_apellidos));
+            const dataSorted = [...data].sort((a, b) => a.nombre_apellidos.localeCompare(b.nombre_apellidos));
             setUsuarios(dataSorted)
         } catch (error) {
             console.error("Error cargando vacaciones:", error)

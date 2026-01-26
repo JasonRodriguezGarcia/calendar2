@@ -9,6 +9,7 @@ const useExcelHolidays = () => {
     // vacacionesData debe ser un array
     const exportVacacionesToExcel = async (vacacionesData, fecha) => {
         if (vacacionesData.length === 0) return
+
         // Obtener fecha actual
         const year = fecha.getFullYear()
         // const month = fecha.getMonth() // OJO: 0 = Enero, 11 = Diciembre
@@ -77,17 +78,13 @@ const useExcelHolidays = () => {
     }
 
     //  Renombrar columnas
-    const formatted = (usuario, eventos, fecha) => {
-        // Filtrar eventos por mes de la fecha, ya que eventos tiene los días de la semana anterior y posterior
-        // Obtener fecha actual
-        const year = fecha.getFullYear()
-        const month = fecha.getMonth() // OJO: 0 = Enero, 11 = Diciembre
-debugger
-        // Filtramos for año y mes seleccionado
-        const eventosFiltrados = [...eventos].filter(evento => 
-            evento.start.getFullYear() === year && evento.start.getMonth() === month
-        )
-        
+    const formatted = (usuario, eventos) => {
+        // Eventos ya están filtrados por mes de la fecha
+        // Obtener año y mes para el nombre de la pestaña Excel
+        debugger
+        const year = eventos[0].start.getFullYear()
+        const month = eventos[0].start.getMonth() // OJO: 0 = Enero, 11 = Diciembre
+
         // Obtener número de días del mes actual
         const daysMonth = new Date(year, month + 1, 0).getDate() 
 
@@ -109,8 +106,11 @@ debugger
             "Usuario/a": usuario.nombre_apellidos,
             ...Object.fromEntries(
                 tempMonth.map(dia => {
-                    const tieneEvento = eventosFiltrados.some(evento => {
-                        const diaEvento = new Date(evento.start).getDate()
+                    const tieneEvento = eventos.some(evento => {
+                        // Pregunta extraña en la asignación pero es debida a que sino crea un día
+                        // con "V" si el usuario no tiene eventos, aunque realmente se crea uno obligatoriamente
+                        // para aparecer su línea en vacaciones, pero con event_id = nulo
+                        const diaEvento = evento.event_id !== null ? new Date(evento.start).getDate() : ""
                         return diaEvento === dia
                     })
                     // Que hace return
@@ -133,9 +133,9 @@ debugger
             a.nombre_apellidos.localeCompare(b.nombre_apellidos)
         )
         // Recorrer agrupando por usuario
-        let hojas = [];
-        let usuarioActual = null;
-        let eventosUsuario = [];
+        let hojas = []
+        let usuarioActual = null
+        let eventosUsuario = []
 
         for (const evento of eventosOrdenados) {
             const nombre = evento.nombre_apellidos;

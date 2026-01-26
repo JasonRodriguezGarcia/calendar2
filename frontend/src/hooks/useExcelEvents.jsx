@@ -89,19 +89,22 @@ const useExcelEvents = () => {
         const hoja = {
             // "Usuario/a": usuario.nombre_apellidos,
             ...Object.fromEntries(
+                // Se localizan eventos de cada día
                 tempMonth.map(dia => {
                     const hayEventos = eventos.filter(eventosF => 
                         new Date(eventosF.start).getDate()== dia
                     )
                     console.log("hayEventos: ", hayEventos)
                     let cadenaEventos = []
+                    // Si hay eventos se van añadiendo a cadenaEventos
                     if (hayEventos.length > 0) {
                         const resultadosEventosDia = hayEventos.map(hayE => {
+                            // Buscamos el texto en su tabla de cada código id
                             const programa = programas.find(programa => programa.programa_id === hayE.programa_id).descripcion
                             const usuario = usuarios.find(usuario => usuario.usuario_id === hayE.usuario_id)
-                            debugger
                             const {nombre_apellidos, color} = usuario
                             const espacio = espacios.find(espacio => espacio.espacio_id === hayE.programa_id).descripcion
+                            // Creamos el texto del evento
                             const texto = 
                                 `${hayE.start.toLocaleString('es-ES', {
                                     hour: '2-digit',
@@ -116,7 +119,7 @@ const useExcelEvents = () => {
                             // Necesitamos convertir tu color MUI a formato ARGB que ExcelJS entiende.
                             const colorCelda = colorOptions[color]
                             const excelColor = "FF" + colorCelda.replace("#", "") // formato ARGB
-                            // Generando el texto en formato richText para poder presentarlo en Excel
+                            // Añadiendo el texto en formato richText para poder presentarlo en Excel
                             cadenaEventos.push({
                                 text: texto,
                                 font: {
@@ -126,12 +129,11 @@ const useExcelEvents = () => {
                             })
                         })
                     }
-                    debugger
                     const fechaDia = new Date(year, month, dia)
                     const opcionesFecha = { weekday: 'long' }
 
-                // return [dia, { richText: cadenaEventos }]
-                return [`${dia}  ${fechaDia.toLocaleDateString('es-ES', opcionesFecha).toUpperCase()}` , { richText: cadenaEventos }]
+                return [`${dia}  ${fechaDia.toLocaleDateString('es-ES', opcionesFecha).toUpperCase()}`,
+                        { richText: cadenaEventos }]
             }))
         }
         console.log("Hoja: ", hoja)

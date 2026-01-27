@@ -727,7 +727,7 @@ const EntityEventsCalendarComponent = () => {
                                                         // Apunta al input real
                                                         "& .MuiPickersOutlinedInput-root": {
                                                             fontSize: { // cambia tamaño del texto
-                                                                xs: '8px',   // móviles
+                                                                xs: '10px',   // móviles
                                                                 sm: '16px',  // tablets
                                                                 md: '16px',  // escritorio
                                                             }
@@ -749,7 +749,7 @@ const EntityEventsCalendarComponent = () => {
                                                         // Apunta al input real
                                                         "& .MuiPickersOutlinedInput-root": {
                                                             fontSize: { // cambia tamaño del texto
-                                                                xs: '8px',   // móviles
+                                                                xs: '10px',   // móviles
                                                                 sm: '16px',  // tablets
                                                                 md: '16px',  // escritorio
                                                             }

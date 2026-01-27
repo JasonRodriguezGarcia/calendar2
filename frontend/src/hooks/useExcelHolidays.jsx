@@ -81,7 +81,6 @@ const useExcelHolidays = () => {
     const formatted = (usuario, eventos) => {
         // Eventos ya están filtrados por mes de la fecha
         // Obtener año y mes para el nombre de la pestaña Excel
-        debugger
         const year = eventos[0].start.getFullYear()
         const month = eventos[0].start.getMonth() // OJO: 0 = Enero, 11 = Diciembre
 

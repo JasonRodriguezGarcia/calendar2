@@ -715,13 +715,26 @@ const EntityEventsCalendarComponent = () => {
                             </Select>
                         </FormControl>
 
-                        <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+                        <Stack direction="row" spacing={1} justifyContent="center" alignItems="center">
                             <DateTimePicker
                                 label={`${t("dialog.content.stack.datetimepickerlabel1")} *`}
                                 // label="Inicio"
                                 value={eventData.start}
                                 onChange={(newValue) => setEventData({ ...eventData, start: newValue })}
-                                slotProps={{ textField: { fullWidth: true, margin: 'dense' } }}
+                                slotProps={{ textField: { 
+                                                fullWidth: true, margin: 'dense',
+                                                    sx: {
+                                                        // Apunta al input real
+                                                        "& .MuiPickersOutlinedInput-root": {
+                                                            fontSize: { // cambia tamaño del texto
+                                                                xs: '8px',   // móviles
+                                                                sm: '16px',  // tablets
+                                                                md: '16px',  // escritorio
+                                                            }
+                                                        },
+                                                    },
+                                            },
+                                        }}
                                 disabled
                             />
                             <DateTimePicker
@@ -729,7 +742,21 @@ const EntityEventsCalendarComponent = () => {
                                 // label="Fin"
                                 value={eventData.end}
                                 onChange={(newValue) => setEventData({ ...eventData, end: newValue })}
-                                slotProps={{ textField: { fullWidth: true, margin: 'dense' } }} // forma moderna y sin avisos en consola
+                                // slotProps={{ textField: { fullWidth: true, margin: 'dense' } }} // forma moderna y sin avisos en consola
+                                slotProps={{ textField: { 
+                                                fullWidth: true, margin: 'dense',
+                                                    sx: {
+                                                        // Apunta al input real
+                                                        "& .MuiPickersOutlinedInput-root": {
+                                                            fontSize: { // cambia tamaño del texto
+                                                                xs: '8px',   // móviles
+                                                                sm: '16px',  // tablets
+                                                                md: '16px',  // escritorio
+                                                            }
+                                                        },
+                                                    },
+                                            },
+                                        }}
                                 disabled
                             />
                         </Stack>

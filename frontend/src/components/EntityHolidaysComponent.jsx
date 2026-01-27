@@ -318,7 +318,7 @@ const EntityHolidaysComponent = () => {
                                             key={dayIndex}
                                             align="center"
                                             sx={{
-                                                padding: '6px',
+                                                padding: '0px',
                                                 fontSize: '12px',
                                                 backgroundColor: tieneEvento ? 'red' : 
                                                     weekDay === 0 ||

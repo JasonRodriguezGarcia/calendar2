@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import useLoading from "../hooks/useLoading"
 import { styled } from '@mui/material/styles';
 import imagenFondo from "../assets/images/cuerda.jpg";
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import {
     Box,
     Button,
@@ -13,6 +15,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    IconButton,
     Paper,
     Table,
     TableContainer,
@@ -20,6 +23,7 @@ import {
     TableCell,
     TableHead,
     TableRow,
+    Tooltip,
     Typography,
     tableCellClasses,
 } from '@mui/material';
@@ -47,20 +51,26 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 function createData(usuario_id, nombre_apellidos, activo = false, role) {
   return { usuario_id, nombre_apellidos, activo, role }
 }
+
 const AdminComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
 
     const { csrfToken, user, selectedLanguage, logged } = useContext(AppContext)
     const { setIsLoading, WaitingMessage } = useLoading()
 
-    const [initialRows, setInitialRows] = useState([])
-    const [rows, setRows] = useState(initialRows)
+    // const [initialRows, setInitialRows] = useState([])
+    // const [rows, setRows] = useState(initialRows)
+    const [rows, setRows] = useState([])
     const [usuarios, setUsuarios] = useState([])
     const [userChecked, setUserChecked] = useState(false)
     const [confirmChangeOpen, setConfirmChangeOpen] = useState(false)
     const [indexToChange, setIndexToChange] = useState(0)
     const [active, setActive] = useState(false)
     const [usuarioID, setUsuarioID] = useState(0)
+    const [listDetails, setListDetails] = useState([
+        { column: "usuario_id", sort: "ascending", active: false },
+        { column: "nombre_apellidos", sort: "ascending", active: true }
+    ])
 
     const fetchUsuarios = async () => {
         setIsLoading(true)
@@ -110,7 +120,7 @@ const AdminComponent = () => {
                 u.role
             )
         )
-        setInitialRows(initial)
+        // setInitialRows(initial)
         setRows(initial)  // Muy importante para que se renderice la tabla
     }, [usuarios]) // una vez relleno usuarios este useeffect se ejecuta
 
@@ -174,6 +184,53 @@ const AdminComponent = () => {
         setConfirmChangeOpen(false)
     }
 
+    // OJO DEVOLVEMOS UN OBJETO POR ESO ({ }) Y NO USAMOS RETURN, ASÍ ES MÁS LIMPIO
+    const styleArrow = ( active ) => ({
+        backgroundColor: active ? "white" : "black", color: active ? "black" : "white"
+    })
+
+    const arrowIcon = ( fieldIcon) => {
+        const listOrder = listDetails.find(l => l.column == fieldIcon)
+
+        // Metemos en Icon el icono correspondiente
+        const Icon = listOrder.sort === "ascending"
+            ? ArrowUpwardIcon
+            : ArrowDownwardIcon
+
+        return <Icon sx={{ ...styleArrow(listOrder.active)}} />
+    }
+
+    const togleSorting = ( sortField ) => {
+        const list = [...listDetails].map(item => 
+            item.column === sortField
+            ? { 
+                ...item,
+                sort: item.sort === "ascending" ? "descending" : "ascending",
+                active: true
+            }
+            : {
+                ...item,
+                active: false
+            }
+        )
+        const fieldSort = list.find(l => l.column == sortField)
+        const sortedRows = fieldSort.sort === "ascending" 
+                                            ? [...rows].sort((a , b) => {
+                                                if (typeof a[sortField] === "number")
+                                                    return a[sortField] - b[sortField]
+                                                else
+                                                    return a[sortField].localeCompare(b[sortField])
+                                            })
+                                            : [...rows].sort((a , b) => {
+                                                if (typeof a[sortField] === "number")
+                                                    return b[sortField] - a[sortField]
+                                                else
+                                                    return b[sortField].localeCompare(a[sortField])
+                                            })
+        setListDetails(list)
+        setRows (sortedRows)
+    }
+
     return (
     <>
     <Box sx={{
@@ -211,8 +268,29 @@ const AdminComponent = () => {
                 <TableHead>
                     <TableRow>
                         <StyledTableCell>Activo</StyledTableCell>
-                        <StyledTableCell>ID</StyledTableCell>
-                        <StyledTableCell align='left'>Nombre y apellidos</StyledTableCell>
+                        <StyledTableCell>
+                            <Tooltip title="Ascendente/Descendente">
+                                <IconButton color="primary" aria-label="orderid"
+                                    onClick={() => togleSorting("usuario_id")}
+                                >
+                                    {/* {sortingId()} */}
+                                    {arrowIcon("usuario_id")}
+                                </IconButton>
+                            </Tooltip>
+                            ID
+                        </StyledTableCell>
+                        <StyledTableCell align='left'>
+                            <Tooltip title="Ascendente/Descendente">
+                                <IconButton color="primary" aria-label="ordernombreapellidos"
+                                    onClick={() => togleSorting("nombre_apellidos")}
+                                >
+                                    {/* {sortingNombreApellidos()} */}
+                                    {arrowIcon("nombre_apellidos")}
+                                </IconButton>
+                            </Tooltip>
+
+                            Nombre y apellidos
+                        </StyledTableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>

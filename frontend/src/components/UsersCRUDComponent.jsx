@@ -175,9 +175,9 @@ const UsersCRUDComponent = ({ action }) => {
             {lenguaje_id: 0, descripcion: t("lengua.descripcion0")},
             {lenguaje_id: 1, descripcion: t("lengua.descripcion1")},
         ])
-        setTurnos([
-            {turno_id: 0, descripcion: t("turnos.descripcion0")},
-            {turno_id: 1, descripcion: t("turnos.descripcion1")},
+        setTurnos([ // Ojo emplieza por 1
+            {turno_id: 1, descripcion: t("turnos.descripcion0")},
+            {turno_id: 2, descripcion: t("turnos.descripcion1")},
         ])
         setTardesInvierno([
             {tarde_id: 0, descripcion: t("tardesinvierno.descripcion0")},

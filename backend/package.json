@@ -13,10 +13,6 @@
     "dev": "nodemon index.js"
   },
   "dependencies": {
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
     "@sendgrid/mail": "^8.1.6",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
@@ -33,5 +29,9 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
-  }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }

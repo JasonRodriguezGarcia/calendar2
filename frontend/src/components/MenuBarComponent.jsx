@@ -239,8 +239,10 @@ const MenuBarComponent = () => {
                     <Typography
                         variant="h6"
                         noWrap
-                        component = {Link} // Usar link en lugar de "a" y "href" para no rerenderizar
-                        to="https://erroaksartu.org/"
+                        component="a" // NO Usar link porque es un sitio externo
+                        href="https://erroaksartu.org/"
+                        target="_blank"
+                        rel="noopener"
                         sx={{
                             mr: 2,
                             display: { xs: 'none', md: 'flex' },

@@ -66,7 +66,9 @@ const AboutComponent = () => {
                             • Reserva de espacios en pocos clics. <br />
                             • Aviso inmediato si el espacio ya está ocupado. <br />
                             • Reservas recurrentes para espacios concretos. <br />
-                            • Repetición rápida de eventos.
+                            • Repetición rápida de eventos. <br />
+                            • Mueve eventos de sitio con solo arrastrarlos (Drag&Drop). <br />
+                            • Exporta a Excel eventos y vacaciones.
                         </Typography>
 
                         <Typography variant="subtitle1" fontWeight={600}>Organización</Typography>
@@ -78,7 +80,7 @@ const AboutComponent = () => {
                         <Typography variant="subtitle1" fontWeight={600}>Seguridad</Typography>
                         <Typography variant="body2" sx={{ mb: 2 }}>
                             • Protección en backend de rutas con API (anti DoS) & Login limiters (anti brute force), anti CSRF, JWT y cookies. <br />
-                            • Protección en frontend con antiCSRF, JWT y cookies desde backend.
+                            • Protección en frontend con antiCSRF, JWT y cookies desde backend. <br />
                             • Hasheado de contraseña
                         </Typography>
 
@@ -91,7 +93,7 @@ const AboutComponent = () => {
                         </Stack>
 
                         <Typography variant="body2" sx={{ mb: 2 }}>
-                            • Uso de componentes MUI. <br />
+                            • Uso de componentes MUI, librería React-Big-Calendar y otras. <br />
                             • Recuperación de contraseña vía email (sendGrid) con Token. <br />
                             • Edición de datos del perfil. <br />
                             • Cambio de contraseña. <br />
@@ -100,7 +102,6 @@ const AboutComponent = () => {
                             • Patrón Arquitectura MVC. <br />
                             • Cambio de Idioma de forma fácil. <br />
                             • Uso de roles
-
                         </Typography>
 
                         <Divider sx={{ my: 3 }} />
@@ -118,6 +119,7 @@ const AboutComponent = () => {
                                 flexWrap: "wrap",
                                 gap: "1em",
                                 justifyContent: "center",
+                                overflow: "visible",
                                 // backgroundColor: "rgba(255, 255, 255, 0.9)", 
                                 backgroundColor: "transparent",
                                 borderRadius: "10px"
@@ -128,6 +130,7 @@ const AboutComponent = () => {
                                                 minWidth: "20%",
                                                 // backgroundColor: "lightblue",
                                                 backgroundColor: "#37baeeff",
+                                                border: "2px solid",
                                                 borderRadius: "10px",
                                                 my: "20px", 
                                                 display: "flex",
@@ -176,14 +179,26 @@ const AboutComponent = () => {
                             }}
                         >
                             <Tooltip title="InfoJobs">
-                                <IconButton color="primary" aria-label="infojobs" href='http://www.linkedin.com/in/jason-rodriguez-garcia-41364043'>
+                                <IconButton color="primary" aria-label="infojobs" 
+                                    target="_blank"
+                                    rel="noopener"
+                                    href='http://www.linkedin.com/in/jason-rodriguez-garcia-41364043'
+                                >
                                     <InfoJobs   // componente con SVG
                                         sx={{ width: "2em", height: "2em"}}
                                     />
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="LinkedIn">
-                                <IconButton color="primary" aria-label="linkedin" href='https://www.linkedin.com/in/jason-rodriguez-garcia-41364043'>
+                                <IconButton color="primary" aria-label="linkedin" 
+                                    target="_blank" 
+                                    // Para evitar ataque tabnabbing
+                                    // sin noopener puede habrir otra web: window.opener.location = "https://pagina-falsa.com";
+                                    // sin noreferrer La web destino sabe desde qué página venía el usuario y 
+                                    //      puede interfefir en Gooble analytics, OAuth y sistemas antifraude
+                                    rel="noopener" 
+                                    href='https://www.linkedin.com/in/jason-rodriguez-garcia-41364043'
+                                >
                                     <img    // Imagen
                                         src={LinkedIn}
                                         alt="LinkedIn"

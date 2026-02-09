@@ -1,0 +1,326 @@
+Xeon Bronze, Windows Server 2022, 32GB RAM, Disco duro de sobra en GB
+
+Backend (Express)
+    Node.js sobre Windows container
+    Imagen base tipo:
+       mcr.microsoft.com/windows/servercore
+
+
+Express funciona sin problema
+
+Frontend (React)
+
+    Se builda (npm run build)
+    Los archivos estáticos:
+        los sirve Express o
+        un contenedor Nginx para Windows (más pesado)
+
+
+Stack recomendado en Windows
+Docker (Windows containers)
+└─ backend
+   ├─ Express
+   └─ React (build estático)
+(Postgres → Supabase)
+
+Pros y contras
+Pros
+Todo Windows
+    Sin WSL2
+    Administración familiar
+Contras
+    Imágenes grandes
+    Builds más lentos
+    Menos ejemplos que en Linux
+    Nginx en Windows es más tosco
+
+🟢 Conclusión clara
+    ✔️ Docker + Compose sí funcionan en Windows
+    ✔️ Express + React sí funcionan
+    ⚠️ No es lo más eficiente, pero es válido
+    🚀 Con tu hardware, no tendrás problemas
+
+
+Instalar Docker en Windows Server 2022.
+
+Paso a paso, enfocado solo a Windows (sin WSL2)
+
+🧱 Paso 0 — Requisitos previos
+En Windows Server 2022 necesitas:
+    Edición Standard o Datacenter ✅
+    Acceso como Administrador
+    Windows actualizado
+
+🐳 Paso 1 — Instalar Docker en Windows Server 2022
+Abre PowerShell como Administrador y ejecuta:
+    # Instala el proveedor de Docker
+    Install-Module -Name DockerMsftProvider -Repository PSGallery -Force
+
+    # Instala Docker Engine
+    Install-Package -Name docker -ProviderName DockerMsftProvider -Force
+
+
+Cuando termine:
+    Restart-Computer -Force
+
+🔍 Paso 2 — Verificar que Docker funciona
+
+Después del reinicio:
+
+docker version
+docker info
+
+
+Si ves información del cliente y del servidor → ✔️ Docker está instalado.
+
+🧩 Paso 3 — Poner Docker en modo Windows
+
+En Server suele venir ya así, pero por si acaso:
+    docker info | Select-String "OSType"
+
+Debe decir:
+    OSType: windows
+
+🧪 Paso 4 — Probar un contenedor simple
+        docker run hello-world
+    Si imprime el mensaje de bienvenida → 🎉 listo.
+
+📦 Paso 5 — Docker Compose
+En versiones nuevas ya viene incluido:
+    docker compose version
+Si no:
+    Install-Module DockerCompose -Force
+
+🟢 A partir de aquí
+Ya puedes:
+    crear Dockerfile
+    usar docker compose up
+    levantar Express + React
+    conectar con Supabase
+
+⚠️ Nota importante
+    Esto instala Docker Engine, no Docker Desktop   !!!!!!!!!!!!!!!!!!
+    Es la forma correcta en Windows Server
+    No necesitas WSL2 para este modo
+
+*************************
+*************************
+*************************
+HASTA AQUI INSTALAMOS DOCKER ENGINE
+*************************
+*************************
+*************************
+
+
+Siguientes pasos:
+    crear el Dockerfile Windows para Express
+    preparar el build de React
+    montar el compose completo
+
+las 3 cosas:
+1️⃣ Dockerfile
+2️⃣ Build de React
+3️⃣ docker-compose.yml
+
+Arquitectura simple y efectiva: un solo contenedor sirviendo Express + React.
+
+🧱 Estructura del proyecto
+project/
+├─ backend/
+│  ├─ server.js
+│  ├─ package.json
+│  └─ Dockerfile
+├─ frontend/
+│  ├─ package.json
+│  └─ src/…
+└─ docker-compose.yml
+
+1️⃣ Backend Express (sirviendo React)
+backend/server.js
+const express = require("express");
+const path = require("path");
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// API
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" });
+});
+
+// React build
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+2️⃣ Build de React
+
+Desde la carpeta frontend:
+    npm install
+    npm run build
+
+Eso genera:
+    frontend/build/
+
+Copia ese contenido a:
+    backend/public/
+
+👉 En producción React ya no corre, solo son archivos estáticos.
+
+3️⃣ Dockerfile (Windows)
+backend/Dockerfile: 
+
+FROM mcr.microsoft.com/windows/servercore:ltsc2022
+
+# Instalar Node.js
+RUN powershell -Command `
+  Invoke-WebRequest https://nodejs.org/dist/v18.20.4/node-v18.20.4-x64.msi -OutFile node.msi ; `
+  Start-Process msiexec.exe -ArgumentList '/i node.msi /quiet' -Wait ; `
+  Remove-Item node.msi
+
+WORKDIR C:/app
+
+COPY package.json .
+RUN npm install --production
+
+COPY . .
+
+EXPOSE 3000
+CMD ["node", "server.js"]
+
+4️⃣ docker-compose.yml
+
+En la raíz del proyecto:
+
+version: "3.9"
+
+services:
+  app:
+    build: ./backend
+    ports:
+      - "80:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # Supabase
+      - DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DB
+    restart: always
+
+🚀 Levantar todo
+Desde la carpeta raíz:
+    docker compose up -d --build
+
+Luego abre:
+    http://IP_DEL_SERVIDOR
+
+y prueba:
+    http://IP_DEL_SERVIDOR/api/health
+
+🟢 Qué tienes ahora
+
+✔️ Docker en Windows Server
+✔️ Express funcionando
+✔️ React servido correctamente
+✔️ Supabase externo
+✔️ Setup simple y estable
+
+Con tu Xeon + 32 GB RAM, esto va sobrado.
+
+******************
+******************
+******************
+PERO USANDO VITE:
+******************
+******************
+******************
+Ajustamos lo anterior solo en el build del frontend, el resto (Docker + Express en Windows) queda igual.
+
+🧱 Cambios clave al usar React + Vite
+📌 Idea importante
+        Vite genera dist/, no build/
+        En producción NO corre Vite
+        Express sirve los archivos estáticos
+
+1️⃣ Build del frontend con Vite
+Desde la carpeta frontend:
+    npm install
+    npm run build
+
+Eso genera:
+    frontend/dist/
+
+Ahora copia todo el contenido de dist a:
+    backend/public/
+
+Debe quedar así:
+backend/
+├─ public/
+│  ├─ index.html
+│  ├─ assets/
+│  └─ …
+
+2️⃣ Ajuste recomendado en vite.config.js
+Para que funcione bien detrás de Express/Nginx, revisa esto:
+
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+  plugins: [react()],
+  base: "/",   // importante
+});
+
+Si no lo tienes, añádelo.
+
+3️⃣ Backend Express (sin cambios grandes)
+Tu server.js ya está bien, solo confirmo la parte clave:
+    app.use(express.static(path.join(__dirname, "public")));
+
+    app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
+    });
+
+Esto es lo correcto para SPA + Vite.
+
+4️⃣ Dockerfile (sigue igual)
+No hay cambios aquí 👍
+Node + Express + estáticos → perfecto.
+
+5️⃣ Flujo correcto de trabajo (muy importante)
+🔁 Cada vez que cambias el frontend:
+        cd frontend
+        npm run build
+        # copiar dist → backend/public
+        docker compose up -d --build
+
+En producción, React solo son archivos.
+🟢 Resultado final
+
+✔️ React con Vite
+✔️ Express sirviendo SPA
+✔️ Docker en Windows Server
+✔️ Supabase externo
+✔️ Setup limpio y estable
+
+💡 Tip extra (opcional pero bueno)
+
+En desarrollo:
+    React (Vite) en localhost:5173
+    Express en localhost:3000
+
+En producción:
+    solo Docker
+    solo Express
+
+Si quieres, el siguiente paso puede ser:
+    variables de entorno Vite (import.meta.env)
+
+proxy /api en Vite para desarrollo
+
+HTTPS o separar frontend/backend en contenedores

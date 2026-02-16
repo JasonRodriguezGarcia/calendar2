@@ -16,7 +16,6 @@
     "@mui/icons-material": "^7.2.0",
     "@mui/joy": "^5.0.0-beta.52",
     "@mui/material": "^7.2.0",
-    "@mui/x-data-grid": "^8.19.0",
     "@mui/x-date-pickers": "^8.8.0",
     "bcryptjs": "^3.0.3",
     "date-fns": "^4.1.0",

@@ -10,6 +10,25 @@ export default defineConfig({
   plugins: [react()],
   esbuild: {
     jsx: 'automatic'  // 🔧 Esto fuerza el uso del nuevo JSX transform y anula el warning inicial
+  },
+  // Añadido esto para optimizar el bundle al compilar Frontend en Reder
+  build: {
+    chunkSizeWarningLimit: 1000, // opcional (solo para que no moleste el warning)
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          mui: [
+            '@mui/material',
+            '@mui/icons-material',
+            '@mui/x-data-grid',
+            '@mui/x-date-pickers'
+          ],
+          calendar: ['react-big-calendar'],
+          excel: ['exceljs']
+        }
+      }
+    }
   }
 
 })

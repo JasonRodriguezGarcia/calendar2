@@ -1,0 +1,430 @@
+El siguiente texto es mostrado en Render al desplegar Frontend
+
+rendering chunks... 
+computing gzip size... 
+dist/index.html 0.54 kB │ gzip: 0.32 kB 
+dist/assets/express-BoOPpEVH.png 5.03 kB 
+dist/assets/linkedin-CONE8Bpt.png 10.85 kB 
+dist/assets/excel-D7QkiPEc.png 15.27 kB 
+dist/assets/sartu_logo-1-DRD3i4EN.png 18.48 kB 
+dist/assets/erroak_logo-1-BKaAD-b5.png 20.01 kB 
+dist/assets/vite-B-D8GWok.png 22.70 kB 
+dist/assets/postgresql-BHaiyWTh.png 50.28 kB Menu 
+dist/assets/erroaksartu-DXjH6mQL.jpg 57.51 kB 
+dist/assets/render-Dyl7tQec.png 133.73 kB 
+dist/assets/supabase-DoDhvjOD.png 192.30 kB 
+dist/assets/cuerda-Da58_jCU.jpg 344.62 kB 
+dist/assets/index-BNN8Jt5J.css 16.21 kB │ gzip: 3.13 kB 
+dist/assets/index-BfHTJxup.js 2,102.50 kB │ gzip: 617.04 kB 
+(!) Some chunks are larger than 500 kB after minification. Consider: 
+- Using dynamic import() to code-split the application 
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks 
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+Ese mensaje es una advertencia de Vite/Rollup, no un error. Tu app sí se puede desplegar, pero te está avisando 
+que uno o más bundles superan los 500 kB minificados, lo que puede afectar el rendimiento (sobre todo el primer load).
+
+¿Por qué ocurre?
+Cuando haces npm run build, Vite usa Rollup para empaquetar todo tu frontend en archivos .js.
+Si:
+    Estás importando librerías grandes (ej. charts, editores, lodash completo, moment, etc.)
+    Todo tu código está en un solo bundle
+    No estás usando lazy loading
+
+Entonces se genera un chunk grande y aparece la advertencia.
+
+El problema NO son las imágenes.
+El problema es este archivo:
+    dist/assets/index-BfHTJxup.js  2,102.50 kB │ gzip: 617.04 kB
+🔥 2.1 MB sin gzip es bastante grande para un bundle principal.
+
+📌 Qué significa esto realmente
+
+Tu app está enviando:
+    ~617 kB comprimidos al navegador
+Todo en un solo archivo JS
+Eso significa que:
+    No estás haciendo code splitting
+    Todas las dependencias están entrando en el chunk principal
+
+Render no tiene ningún problema aquí.
+Render solo muestra el warning del build.
+
+🎯 Paso 1 — Identificar qué está inflando el Haz
+Instala el visualizador:
+    npm install --save-dev rollup-plugin-visualizer
+
+En tu vite.config.js:
+
+import { defineConfig } from 'vite'
+import { visualizer } from 'rollup-plugin-visualizer'
+
+export default defineConfig({
+  plugins: [visualizer({ open: true })]
+})
+
+Vuelve a hacer:
+    npm run build
+
+Se abrirá un gráfico donde verás exactamente qué librería pesa más.
+🚨 Lo más probable
+Por los logos que veo en tu build:
+    postgresql
+    supabase
+    render
+    express
+
+Si estás importando cosas como:
+    xlsx
+    chart.js
+    supabase
+    librerías completas como lodash
+    icon libraries completas
+
+Eso puede disparar el tamaño.
+
+🥇 Solución profesional (recomendada)
+1️⃣ Separar vendor en chunks
+
+En tu vite.config.js:
+
+export default defineConfig({
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          supabase: ['@supabase/supabase-js']
+        }
+      }
+    }
+  }
+})
+
+Si usas React (lo más probable).
+Eso ya divide el bundle en:
+    index.js (tu código)
+    vendor.js (react)
+    supabase.js
+
+Y mejora caching.
+2️⃣ Lazy load de páginas pesadas
+Si tienes:
+    Dashboard
+    Admin
+    Excel export
+    Gráficos
+Haz esto:
+
+import { lazy } from "react";
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+Eso reduce mucho el index principal.
+
+3️⃣ Revisa imports incorrectos
+❌ MAL:
+    import * as XLSX from 'xlsx'
+
+✅ MEJOR:
+    import { utils, writeFile } from 'xlsx'
+
+❌ MAL:
+    import _ from 'lodash'
+
+✅ MEJOR:
+    import debounce from 'lodash/debounce'
+
+🎯 ¿Es grave tener 617kB gzip?
+
+Depende:
+    App interna → no pasa nada
+    Portfolio → mejor optimizar
+    App pública con tráfico → sí deberías dividir
+
+Lo ideal:
+    Bundle inicial < 300 kB gzip
+
+📊 Resumen de tu caso
+
+Tu build:
+    CSS → OK
+    Imágenes → OK
+    JS principal → GRANDE (2.1MB)
+
+No es error.
+No rompe el deploy.
+Pero sí afecta performance.
+
+Al tener en el package.json:
+"dependencies": { 
+    "@date-io/date-fns": "^3.2.1", 
+    "@emotion/react": "^11.14.0", 
+    "@emotion/styled": "^11.14.1", 
+    "@mui/icons-material": "^7.2.0", 
+    "@mui/joy": "^5.0.0-beta.52", 
+    "@mui/material": "^7.2.0", 
+    "@mui/x-date-pickers": "^8.8.0", 
+    "bcryptjs": "^3.0.3", 
+    "date-fns": "^4.1.0", 
+    "exceljs": "^4.4.0", 
+    "file-saver": "^2.0.5", 
+    "i18next": "^25.6.0", 
+    "js-cookie": "^3.0.5", 
+    "jwt-decode": "^4.0.0", 
+    "react": "^19.1.0", 
+    "react-big-calendar": "^1.19.4", 
+    "react-dom": "^19.1.0", 
+    "react-i18next": "^16.0.1", 
+    "react-router-dom": "^7.7.0"
+},
+
+🔥 LOS CULPABLES PRINCIPALES
+Según tu package.json, las más pesadas son:
+🥉 2️⃣ exceljs
+    Extremadamente pesada.
+    Puede agregar 400–700 kB al bundle.
+
+🥉 3️⃣ react-big-calendar
+    También bastante grande.
+
+4️⃣ Todo el ecosistema MUI
+Estás usando:
+    @mui/material
+    @mui/joy
+    @mui/icons-material
+    @mui/x-date-pickers
+    @emotion/react
+    @emotion/styled
+
+Eso suma MUCHO.
+⚠️ 5️⃣ bcryptjs (esto es importante)
+bcryptjs no debería estar en un frontend.
+Eso es para backend (hashing de passwords).
+No solo agrega peso, sino que es mala práctica de seguridad tener hashing en el cliente.
+👉 Si no lo estás usando directamente en el navegador, elimínalo.
+
+🎯 Qué hacer (plan realista y profesional)
+✅ PASO 1 — Eliminar bcryptjs
+npm uninstall bcryptjs
+Si necesitas hashing → debe hacerse en backend.
+
+✅ PASO 2 — Lazy load para cosas pesadas
+Si usas:
+    Excel export
+    Calendario
+NO los importes directo arriba.
+
+✅ PASO 3 — Separar manualChunks
+
+Agrega esto en vite.config.js:
+    import { defineConfig } from 'vite'
+    import react from '@vitejs/plugin-react'
+
+    export default defineConfig({
+        plugins: [react()],
+        build: {
+            rollupOptions: {
+                output: {
+                    manualChunks: {
+                        react: ['react', 'react-dom'],
+                        mui: [
+                            '@mui/material',
+                            '@mui/icons-material',
+                            '@mui/x-date-pickers'
+                        ],
+                        excel: ['exceljs'],
+                        calendar: ['react-big-calendar']
+                    }
+                }
+            }
+        }
+    })
+
+
+Esto dividirá tu bundle enorme en varios más pequeños.
+
+✅ PASO 4 — Optimizar íconos (muy importante)
+
+Si haces esto:
+    import { Add, Delete } from '@mui/icons-material'
+
+Eso ya es correcto.
+Pero si en algún lado hiciste:
+    import * as Icons from '@mui/icons-material'
+
+Eso mete TODOS los íconos al bundle 😬
+
+🚀 Mejora extra (muy recomendable)
+Si exceljs solo se usa cuando exportas:
+En vez de:
+    import ExcelJS from 'exceljs'
+Haz import dinámico:
+    const ExcelJS = await import('exceljs')
+
+Eso hace que NO entre en el bundle inicial.
+Eso solo puede bajarte 400–600kB.
+📊 Diagnóstico real
+Con tu stack actual:
+    React 19
+    Ecosistema completo de MUI
+    ExcelJS
+    React Big Calendar
+
+Un bundle de 600kB gzip es normal.
+Pero se puede bajar bastante con:
+    manualChunks
+    lazy loading
+    dynamic import
+
+Tengo un componente que usa los siguientes export con el React-Big-Calendar:
+    import { useState, useEffect } from 'react';
+    import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
+    import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
+    import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
+    import { useTranslation } from 'react-i18next';
+    import { useContext } from 'react';
+    import AppContext from '../context/AppContext';
+    import useLoading from "../hooks/useLoading"
+    import useExcelEvents from "../hooks/useExcelEvents";
+    import { es, eu } from 'date-fns/locale';
+    import format from 'date-fns/format';
+    import parse from 'date-fns/parse';
+    import {
+    startOfWeek,
+    endOfWeek,
+    startOfMonth,
+    endOfMonth,
+    } from 'date-fns'; // necesario para calcular el rango visible del calendario y startOfWeek para indicar el día que comienza la semana
+
+    import getDay from 'date-fns/getDay';
+    import 'react-big-calendar/lib/css/react-big-calendar.css';
+    import { GlobalStyles } from '@mui/material'; // para cambiar el estilo del día y permita cambiar de color al pasar raton por encima
+    import ExcelIcon from "../assets/images/icons/excel.png";
+
+    // MUI
+    import {
+        Box,
+        Dialog,
+        DialogTitle,
+        DialogContent,
+        DialogActions,
+        Button,
+        TextField,
+        MenuItem,
+        FormControl, 
+        FormLabel,
+        InputLabel,
+        Select,
+        Stack,
+        Toolbar, // en lugar de box usar Stack, que simplifica aún más la organización vertical.
+        Tooltip,
+        Typography,
+    } from '@mui/material';
+    import { colorOptions } from "../utils/EventColors";
+    import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+    import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+    import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+    import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+    import { es as localeEs } from 'date-fns/locale';
+    import { eu as localeEu } from 'date-fns/locale';
+
+    const DnDCalendar = withDragAndDrop(Calendar);
+    const locales = { es, eu };
+    const localizer = dateFnsLocalizer({
+    format,
+    parse,
+    startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
+    getDay,
+    locales,
+    });
+
+Este componente mete en el bundle inicial:
+    react-big-calendar (grande)
+    addon dragAndDrop (más peso)
+    @mui/material completo
+    @mui/x-date-pickers
+    date-fns + locales
+    CSS del calendario
+    Excel hooks
+
+Todo eso entra en el chunk principal, porque el componente se importa de forma normal.
+🎯 El verdadero problema
+Si este componente está importado así en tu router:
+    import CalendarPage from './pages/CalendarPage'
+
+Entonces TODO lo que importa ese archivo entra en:
+    index.js → 2.1MB
+
+Aunque el usuario nunca entre al calendario.
+
+🥇 SOLUCIÓN PROFESIONAL (la correcta)
+Lazy load del componente de calendario
+En tu router:
+    import { lazy, Suspense } from "react";
+    const CalendarPage = lazy(() => import('./pages/CalendarPage'));
+
+Y luego:
+    <Suspense fallback={<div>Loading...</div>}>
+    <CalendarPage />
+    </Suspense>
+
+🔥 Esto hace que:
+    react-big-calendar
+    @mui/x-date-pickers
+    date-fns
+    dragAndDrop
+    CSS del calendario
+
+NO entren en el bundle inicial.
+Se cargan solo cuando el usuario entra a esa ruta.
+
+🧠 Resultado esperado
+Tu:
+    index.js → 2.1MB
+
+Puede bajar fácilmente a:
+    300–500kB
+
+Y el calendario se convierte en:
+
+    calendar-[hash].js → ~600-800kB
+Pero solo cuando se necesite.
+
+🚨 Extra importante (date-fns locales duplicados)
+
+Aquí tienes esto:
+
+import { es, eu } from 'date-fns/locale';
+import { es as localeEs } from 'date-fns/locale';
+import { eu as localeEu } from 'date-fns/locale';
+
+Eso es redundante.
+
+Quédate solo con:
+import { es, eu } from 'date-fns/locale';
+
+
+Menos código, menos bundle.
+🚀 Mejora avanzada (opcional)
+
+Si quieres optimizar aún más:
+
+En vez de importar todo desde @mui/material así:
+
+import { Box, Dialog, Button, ... } from '@mui/material';
+
+
+Puedes usar imports directos (tree-shaking más agresivo):
+
+import Box from '@mui/material/Box';
+import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
+
+Con MUI v7 normalmente Vite ya hace buen tree-shaking, pero en apps grandes puede ayudar.
+📊 Diagnóstico final
+Tu peso no es raro para una app que usa:
+    react-big-calendar
+    MUI
+    date-fns
+    exceljs
+
+Pero el error es cargarlos en el bundle inicial.

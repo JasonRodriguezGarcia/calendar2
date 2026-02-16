@@ -1,15 +1,15 @@
 import './App.css';
-import { jwtDecode } from 'jwt-decode';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import './utils/i18next/i18n';  // Path is relative to the current file in App.jsx
 // OJO useTranslation tiene su propio context, ni solo se usa la traducción pero no se harían cambios
 // del lenguaje en el propio componente a lo MenuBarComponent, no haría falta pasar parámetros, ya que al usar en el 
 // componente const { t, i18n } = useTranslation("passwordrecovery") se selecciona el lenguaje actual de App.jsx
 import { useTranslation } from 'react-i18next'; 
 import AppContext from './context/AppContext';
-import EventsCalendarPage from './pages/EventsCalendarPage';
+// import EventsCalendarPage from './pages/EventsCalendarPage';
 import HolidaysPage from './pages/HolidaysPage';
 import MainPage from './pages/MainPage';
 import LoginPage from './pages/LoginPage';
@@ -22,7 +22,7 @@ import WinterAfternoonsPage from './pages/WinterAfternoonsPage';
 import ContactsPage from './pages/ContactsPage';
 import PasswordRecoveryPage from './pages/PasswordRecoveryPage';
 import NewPasswordPage from './pages/NewPasswordPage';
-import EntityEventsCalendarPage from './pages/EntityEventsCalendarPage';
+// import EntityEventsCalendarPage from './pages/EntityEventsCalendarPage';
 import AboutPage from './pages/AboutPage';
 import AdminPage from './pages/AdminPage';
 import TextHashPage from './pages/TextHashPage';
@@ -30,6 +30,11 @@ import PaisVasco from "./assets/images/flags/paisvasco.png"
 import Espana from "./assets/images/flags/espana.png"
 import Francia from "./assets/images/flags/francia.png"
 import ReinoUnido from "./assets/images/flags/reinounido.png"
+
+// OPTIMIZAR EL BUNDLE AL COMPILAR FRONTEND EN RENDER
+// SOLO SE PONDRA EN MEMORIA CUANDO SE USE
+const EventsCalendarPage = lazy(() => import('./pages/EventsCalendarPage'))
+const EntityEventsCalendarPage = lazy(() => import('./pages/EntityEventsCalendarPage'))
 
 const App = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
@@ -136,6 +141,7 @@ const App = () => {
         logged, setLogged, user, setUser,
     }} >  
         <BrowserRouter>
+        <Suspense fallback={<div>Cargando...</div>}>
             <Routes>
                 <Route path="/" element={<MainPage />} />
                 <Route path="/eventos" element={<EventsCalendarPage />} />
@@ -155,6 +161,7 @@ const App = () => {
                 <Route path="/admin" element={<AdminPage />} />
                 <Route path="/hash" element={<TextHashPage />} />
             </Routes>
+        </Suspense>
         </BrowserRouter>  
     </AppContext.Provider>
     )

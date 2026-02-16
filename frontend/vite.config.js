@@ -21,7 +21,6 @@ export default defineConfig({
           mui: [
             '@mui/material',
             '@mui/icons-material',
-            '@mui/x-data-grid',
             '@mui/x-date-pickers'
           ],
           calendar: ['react-big-calendar'],

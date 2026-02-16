@@ -1,0 +1,87 @@
+Instalar Docker Engine en Windows Server 2022 (ACTUAL)
+
+Paso a paso, solo Windows, sin WSL2, sin Docker Desktop.
+
+🧱 Paso 0 — Requisitos previos
+En Windows Server 2022 necesitas:
+    Edición Standard o Datacenter ✅
+    Acceso como Administrador
+    Windows actualizado
+
+🐳 Paso 1 — Instalar feature Containers
+Abrir PowerShell como Administrador y ejecutar:
+    Install-WindowsFeature -Name Containers
+    Restart-Computer
+
+🐳 Paso 2 — Instalar Docker Engine (método actual y soportado)
+⚠️ Nota importante
+El método DockerMsftProvider está obsoleto y NO se recomienda.
+
+Usa el script oficial actualizado:
+    Invoke-WebRequest `
+    "https://raw.githubusercontent.com/microsoft/Windows-Containers/Main/helpful_tools/Install-DockerCE/install-docker-ce.ps1" `
+    -UseBasicParsing `
+    -OutFile install-docker-ce.ps1
+
+Ejecutar:
+    .\install-docker-ce.ps1
+    Restart-Computer
+
+
+Este método instala:
+    Docker Engine (actual)
+    Docker CLI
+    Docker Compose v2 (plugin)
+    Configuración correcta para Windows Containers
+
+🔍 Paso 3 — Verificar instalación
+Después del reinicio:
+    docker version
+    docker compose version
+    docker info | Select-String OSType
+
+Debe mostrar:
+    OSType: windows
+
+✔️ Docker Engine instalado
+✔️ Docker Compose disponible
+✔️ Sin Docker Desktop
+✔️ Sin WSL2
+
+🧪 Paso 4 — Probar Docker (TEST CORRECTO EN WINDOWS)
+❌ No usar hello-world en Windows Server
+Usa una imagen Windows nativa de la misma versión del host:
+    docker run mcr.microsoft.com/windows/nanoserver:ltsc2022 cmd /c echo OK
+
+Si imprime:
+    OK
+👉 Docker está funcionando correctamente.
+
+Este test valida:
+    Runtime de Windows Containers
+    Compatibilidad LTSC 2022
+    Networking básico
+    Ejecución real de contenedores
+
+🟢 A partir de aquí
+Ya puedes:
+    crear Dockerfile
+    usar docker compose up
+    levantar Express + React
+    conectar con Supabase
+
+⚠️ Nota importante
+    Esto instala Docker Engine, NO Docker Desktop
+    Es la forma correcta y soportada en Windows Server 2022
+    No necesitas WSL2
+    En Windows, siempre usa imágenes mcr.microsoft.com/windows/*
+
+
+
+
+Si quieres, el siguiente paso puede ser:
+
+    checklist de problemas comunes en Windows Containers
+    aislamiento Hyper-V vs process
+    optimizar imágenes Windows
+    pipeline build para React + Express

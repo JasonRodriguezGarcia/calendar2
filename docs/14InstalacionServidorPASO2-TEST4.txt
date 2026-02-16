@@ -1,0 +1,266 @@
+🔹 Flujo completo de desarrollo y producción (React + Vite + Express + Docker Compose)
+0️⃣ Idea clave
+
+Desarrollo: React + Vite y Express ESM sin Docker
+
+Producción: Imágenes Docker construidas por GitHub Actions, servidor solo ejecuta contenedores
+
+1️⃣ Estructura del proyecto (en tu PC)
+myapp/
+├─ frontend/          ← React + Vite
+│  ├─ src/            ← código React
+│  ├─ public/         ← archivos estáticos
+│  ├─ package.json
+│  ├─ vite.config.js
+│  ├─ Dockerfile      ← PRODUCCIÓN: NO se usa en desarrollo
+│  └─ nginx.conf      ← PRODUCCIÓN
+├─ backend/           ← Express ESM
+│  ├─ server.js
+│  ├─ package.json
+│  └─ Dockerfile      ← PRODUCCIÓN: NO se usa en desarrollo
+├─ docker-compose.yml  ← PRODUCCIÓN en servidor
+└─ .gitignore
+
+.gitignore recomendado
+    node_modules
+    frontend/dist
+
+2️⃣ Desarrollo en tu PC
+
+Frontend:
+    cd frontend
+    npm install
+    npm run dev
+
+React + Vite corre en http://localhost:5173
+
+Backend:
+    cd backend
+    npm install
+    node server.js
+
+Express corre en http://localhost:3000
+
+⚠️ En desarrollo NO se usan Dockerfiles ni Docker.
+
+3️⃣ Dockerfiles para producción
+
+Frontend Dockerfile (frontend/Dockerfile)
+    # Build
+    FROM node:18-alpine AS build
+    WORKDIR /app
+    COPY package*.json ./
+    RUN npm install
+    COPY . .
+    RUN npm run build
+
+    # Runtime
+    FROM nginx:alpine
+    COPY --from=build /app/dist /usr/share/nginx/html
+    COPY nginx.conf /etc/nginx/nginx.conf
+    EXPOSE 80
+
+
+Backend Dockerfile (backend/Dockerfile)
+    FROM node:18-alpine
+    WORKDIR /app
+    COPY package*.json ./
+    RUN npm install --production
+    COPY . .
+    EXPOSE 3000
+    CMD ["node", "server.js"]
+
+
+Nginx config (frontend/nginx.conf)
+    server {
+        listen 80;
+
+        server_name _;
+
+        root /usr/share/nginx/html;
+        index index.html;
+
+        location / {
+            try_files $uri /index.html;
+        }
+
+        location /api/ {
+            proxy_pass http://backend:3000/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+
+🔑 /api/ se reenvía al contenedor backend
+
+4️⃣ Subir el código a GitHub
+    git init
+    git add .
+    git commit -m "Initial commit"
+    git push origin main
+
+
+Ahora tu repo contiene:
+    Código frontend y backend
+    Dockerfiles (producción)
+    nginx.conf
+
+5️⃣ GitHub Actions — Build y deploy de producción
+
+Archivo de workflow (.github/workflows/build-and-push.yml):
+
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      REGISTRY: ghcr.io/usuario
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # --- Frontend ---
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Build frontend Docker image
+        run: |
+          docker build -t $REGISTRY/frontend:latest ./frontend
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Push frontend image
+        run: |
+          docker push $REGISTRY/frontend:latest
+
+      # --- Backend ---
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          npm ci --production
+
+      - name: Build backend Docker image
+        run: |
+          docker build -t $REGISTRY/backend:latest ./backend
+
+      - name: Push backend image
+        run: |
+          docker push $REGISTRY/backend:latest
+
+
+🔑 GHCR_TOKEN debe configurarse como secret en tu repo (Settings → Secrets)
+
+🔑 También puedes usar Docker Hub en lugar de GHCR, cambiando el login y el registry.
+
+6️⃣ Preparar el servidor (Windows Server 2022)
+Instalar Docker Engine + Docker Compose
+No instalar Node, npm ni Vite
+Crear directorio para ejecutar Compose:
+
+C:\projects\myapp
+├─ docker-compose.yml
+
+7️⃣ Docker Compose para producción (docker-compose.yml)
+version: "3.9"
+
+services:
+  frontend:
+    image: ghcr.io/usuario/frontend:latest
+    container_name: frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - myapp-network
+
+  backend:
+    image: ghcr.io/usuario/backend:latest
+    container_name: backend
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    networks:
+      - myapp-network
+
+networks:
+  myapp-network:
+    driver: bridge
+
+
+🔑 Variables de Supabase se pueden definir en un .env en el servidor y se inyectan automáticamente:
+
+SUPABASE_URL=https://xxxx.supabase.co
+SUPABASE_KEY=xxxx
+
+8️⃣ Ejecutar Docker en el servidor
+cd C:\projects\myapp
+
+# Descargar imágenes (si no están locales)
+docker pull ghcr.io/usuario/frontend:latest
+docker pull ghcr.io/usuario/backend:latest
+
+# Levantar contenedores
+docker compose up -d
+
+
+✅ El servidor solo ejecuta contenedores, no compila nada, no necesita Node ni Vite ni Dockerfiles.
+
+9️⃣ Estructura final en el servidor
+C:\projects\myapp
+├─ frontend/
+│  ├─ Dockerfile       ← PRODUCCIÓN: usado solo por GitHub Actions
+│  └─ nginx.conf
+├─ backend/
+│  ├─ server.js
+│  ├─ package.json
+│  └─ Dockerfile       ← PRODUCCIÓN: usado solo por GitHub Actions
+└─ docker-compose.yml
+
+
+dist NO existe en el servidor
+
+Frontend corre React build servido por Nginx dentro del contenedor
+
+Backend corre Express dentro del contenedor
+
+🔟 Resumen visual del flujo
+Entorno	Qué pasa
+PC (desarrollo)	React + Vite (npm run dev), Node backend (node server.js) ✅
+GitHub Actions	Construye dist, crea imágenes Docker usando Dockerfiles ✅
+Servidor	Docker Compose levanta contenedores ✅, no necesita Node/Vite ❌
+
+✅ Frase final clave:
+En desarrollo no se usan Dockerfiles ni Docker.
+Dockerfiles existen en el repo para GitHub Actions, y el servidor solo ejecuta contenedores desde PowerShell.
+
+Si quieres, puedo hacer la versión final “listo para producción con HTTPS automático y .env.example”, donde solo con docker compose up -d tengas todo seguro y funcionando, incluyendo Nginx con SSL.
+
+¿Quieres que haga esa versión también?

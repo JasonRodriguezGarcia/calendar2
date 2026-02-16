@@ -1,0 +1,320 @@
+🔹 Flujo completo de desarrollo y producción (React + Vite + Express + Docker Compose)
+0️⃣ Idea clave
+
+Desarrollo: React + Vite y Express ESM sin Docker.
+
+Producción: Imágenes Docker construidas por GitHub Actions; el servidor solo ejecuta contenedores, no necesita Node, npm ni Vite.
+
+🧱 0️⃣0️⃣ Requisitos previos para Windows Server 2022
+
+    Edición Standard o Datacenter ✅
+    Acceso como Administrador
+    Windows actualizado
+    PowerShell como Administrador
+
+🐳 0️⃣1️⃣ Instalar feature Containers
+    Install-WindowsFeature -Name Containers
+    Restart-Computer
+
+🐳 0️⃣2️⃣ Instalar Docker Engine y Docker Compose
+Usando el método soportado y actualizado:
+    # Descargar script oficial de Microsoft
+    Invoke-WebRequest `
+    "https://raw.githubusercontent.com/microsoft/Windows-Containers/Main/helpful_tools/Install-DockerCE/install-docker-ce.ps1" `
+    -UseBasicParsing -OutFile install-docker-ce.ps1
+
+    # Ejecutar instalación
+    .\install-docker-ce.ps1
+    Restart-Computer
+
+Verificar instalación:
+    docker version
+    docker compose version
+    docker info | Select-String OSType
+
+Debe mostrar:
+    OSType: windows
+
+Prueba de contenedor Windows nativo:
+    docker run mcr.microsoft.com/windows/nanoserver:ltsc2022 cmd /c echo OK
+
+✅ Si imprime OK, Docker Engine y Docker Compose funcionan correctamente.
+
+1️⃣ Estructura del proyecto (en tu PC)
+myapp/
+├─ frontend/          ← React + Vite
+│  ├─ src/            ← código React
+│  ├─ public/         ← archivos estáticos
+│  ├─ package.json
+│  ├─ vite.config.js
+│  ├─ Dockerfile      ← PRODUCCIÓN: usado solo por GitHub Actions
+│  └─ nginx.conf      ← PRODUCCIÓN
+├─ backend/           ← Express ESM
+│  ├─ server.js
+│  ├─ package.json
+│  └─ Dockerfile      ← PRODUCCIÓN: usado solo por GitHub Actions
+├─ docker-compose.yml  ← PRODUCCIÓN en servidor
+├─ .env.example       ← variables sensibles de producción
+└─ .gitignore
+
+
+.gitignore recomendado:
+    node_modules
+    frontend/dist
+    .env
+
+2️⃣ Desarrollo en tu PC
+Frontend:
+    cd frontend
+    npm install
+    npm run dev
+
+React + Vite corre en: http://localhost:5173
+
+Backend:
+    cd backend
+    npm install
+    node server.js
+
+Express corre en: http://localhost:3000
+
+⚠️ En desarrollo NO se usan Dockerfiles ni Docker.
+
+3️⃣ Dockerfiles para producción
+Frontend Dockerfile (frontend/Dockerfile)
+    # Build
+    FROM node:18-alpine AS build
+    WORKDIR /app
+    COPY package*.json ./
+    RUN npm install
+    COPY . .
+    RUN npm run build
+
+    # Runtime
+    FROM nginx:alpine
+    COPY --from=build /app/dist /usr/share/nginx/html
+    COPY nginx.conf /etc/nginx/nginx.conf
+    EXPOSE 80
+
+Backend Dockerfile (backend/Dockerfile)
+    FROM node:18-alpine
+    WORKDIR /app
+    COPY package*.json ./
+    RUN npm install --production
+    COPY . .
+    EXPOSE 3000
+    CMD ["node", "server.js"]
+
+Nginx config (frontend/nginx.conf)
+server {
+    listen 80;
+
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    location / {
+        try_files $uri /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://backend:3000/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+🔑 /api/ se reenvía al contenedor backend.
+
+4️⃣ Subir el código a GitHub
+    git init
+    git add .
+    git commit -m "Initial commit"
+    git push origin main
+
+
+Repo final contiene:
+    Código frontend y backend
+    Dockerfiles para producción
+    nginx.conf
+    .env.example
+
+5️⃣ GitHub Actions — Build y deploy de producción
+Archivo de workflow: .github/workflows/build-and-push.yml
+    name: Build and Push Docker Images
+
+    on:
+    push:
+        branches:
+        - main
+
+    jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        env:
+        REGISTRY: ghcr.io/usuario
+
+        steps:
+        - name: Checkout repository
+            uses: actions/checkout@v3
+
+        - name: Set up Node.js
+            uses: actions/setup-node@v3
+            with:
+            node-version: 18
+
+        # --- Frontend ---
+        - name: Install frontend dependencies
+            run: |
+            cd frontend
+            npm ci
+
+        - name: Build frontend
+            run: |
+            cd frontend
+            npm run build
+
+        - name: Build frontend Docker image
+            run: |
+            docker build -t $REGISTRY/frontend:latest ./frontend
+
+        - name: Log in to GitHub Container Registry
+            uses: docker/login-action@v2
+            with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GHCR_TOKEN }}
+
+        - name: Push frontend image
+            run: |
+            docker push $REGISTRY/frontend:latest
+
+        # --- Backend ---
+        - name: Install backend dependencies
+            run: |
+            cd backend
+            npm ci --production
+
+        - name: Build backend Docker image
+            run: |
+            docker build -t $REGISTRY/backend:latest ./backend
+
+        - name: Push backend image
+            run: |
+            docker push $REGISTRY/backend:latest
+
+
+🔑 GHCR_TOKEN debe configurarse como secret en GitHub.
+También se puede usar Docker Hub cambiando login y registry.
+
+6️⃣ Preparar el servidor (Windows Server 2022)
+    Instalar Docker Engine y Docker Compose (ver sección 🐳 0️⃣2️⃣)
+    No instalar Node, npm ni Vite
+    Crear directorio para ejecutar Compose:
+
+    C:\projects\myapp
+    ├─ docker-compose.yml
+    ├─ .env
+
+7️⃣ Docker Compose para producción (docker-compose.yml)
+    version: "3.9"
+
+    services:
+    frontend:
+        image: ghcr.io/usuario/frontend:latest
+        container_name: frontend
+        ports:
+        - "80:80"
+        depends_on:
+        - backend
+        networks:
+        - myapp-network
+
+    backend:
+        image: ghcr.io/usuario/backend:latest
+        container_name: backend
+        environment:
+        - SUPABASE_URL=${SUPABASE_URL}
+        - SUPABASE_KEY=${SUPABASE_KEY}
+        networks:
+        - myapp-network
+
+    networks:
+    myapp-network:
+        driver: bridge
+
+
+Variables de Supabase se definen en .env:
+    SUPABASE_URL=https://xxxx.supabase.co
+    SUPABASE_KEY=xxxx
+
+8️⃣ Ejecutar Docker en el servidor
+    cd C:\projects\myapp
+
+    # Descargar imágenes si no están locales
+    docker pull ghcr.io/usuario/frontend:latest
+    docker pull ghcr.io/usuario/backend:latest
+
+    # Levantar contenedores
+    docker compose up -d
+
+✅ El servidor solo ejecuta contenedores, no compila nada, no necesita Node ni Vite ni Dockerfiles.
+
+9️⃣ Estructura final en el servidor
+C:\projects\myapp
+├─ frontend/
+│  ├─ Dockerfile       ← PRODUCCIÓN: usado solo por GitHub Actions
+│  └─ nginx.conf
+├─ backend/
+│  ├─ server.js
+│  ├─ package.json
+│  └─ Dockerfile       ← PRODUCCIÓN: usado solo por GitHub Actions
+├─ docker-compose.yml
+└─ .env
+
+dist/ NO existe en el servidor.
+Frontend corre React build servido por Nginx dentro del contenedor.
+Backend corre Express dentro del contenedor.
+
+🔟 Resumen visual del flujo
+Entorno	Qué pasa
+PC (desarrollo)	React + Vite (npm run dev), Node backend (node server.js) ✅
+GitHub Actions	Construye dist, crea imágenes Docker usando Dockerfiles ✅
+Servidor	Docker Compose levanta contenedores ✅, no necesita Node/Vite ❌
+✅ Frase clave:
+
+En desarrollo no se usan Dockerfiles ni Docker.
+Dockerfiles existen en el repo para GitHub Actions, y el servidor solo ejecuta contenedores desde PowerShell.
+
+Si quieres, puedo hacer la versión final “ready for production con HTTPS automático y .env.example”, lista para levantar todo con un solo docker compose up -d y SSL con Let's Encrypt en Windows Server 2022.
+
+¿Quieres que haga esa versión también?
+*********************
+*********************
+EN CASO DE CAMBIAR CÓDIGO DE FRONTEND O BACKEND EN DESARROLLO
+    Cambias código en frontend o backend → lo haces en tu PC.
+    Haces push a GitHub → GitHub Actions:
+        Construye el frontend (dist) y backend.
+        Genera nuevas imágenes Docker.
+        Las sube a GHCR (o Docker Hub).
+
+    En el servidor:
+        Solo necesitas descargar las nuevas imágenes y reiniciar contenedores:
+            docker compose pull
+            docker compose up -d
+
+
+✅ Esto reemplaza automáticamente el código de los contenedores por las nuevas versiones.
+⚠️ No hace falta instalar Node, Vite, npm ni reconstruir nada en el servidor.
+
+En otras palabras: el servidor nunca compila nada, solo ejecuta contenedores con el código ya compilado que llega desde GitHub Actions.
+
+Si quieres, puedo dibujarte un mini-diagrama de flujo “código → GitHub Actions → servidor”, que deja clarísimo este paso de actualización de contenedores. Esto ayuda mucho para documentar el proceso.
+
+¿Quieres que lo haga?
+*********************
+*********************

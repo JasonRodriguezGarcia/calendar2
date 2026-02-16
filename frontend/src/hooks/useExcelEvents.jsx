@@ -103,7 +103,7 @@ const useExcelEvents = () => {
                             const programa = programas.find(programa => programa.programa_id === hayE.programa_id).descripcion
                             const usuario = usuarios.find(usuario => usuario.usuario_id === hayE.usuario_id)
                             const {nombre_apellidos, color} = usuario
-                            const espacio = espacios.find(espacio => espacio.espacio_id === hayE.programa_id).descripcion
+                            const espacio = espacios.find(espacio => espacio.espacio_id === hayE.espacio_id).descripcion
                             // Creamos el texto del evento
                             const texto = 
                                 `${hayE.start.toLocaleString('es-ES', {

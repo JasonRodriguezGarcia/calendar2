@@ -150,8 +150,12 @@ const EntityHolidaysComponent = () => {
             openDialog('dialogHolidays')
             return
         }
-
-        exportVacacionesToExcel(formattedAll(eventos, fecha), fecha)
+        // Filtramos eventos por la fecha que nos pasan
+        const eventsFiltered = eventos.filter(ev => 
+                                ev.start.getFullYear() === fecha.getFullYear() &&
+                                ev.start.getMonth() === fecha.getMonth()
+                            )
+        exportVacacionesToExcel(formattedAll(eventsFiltered, fecha), fecha)
     }
 
     return (

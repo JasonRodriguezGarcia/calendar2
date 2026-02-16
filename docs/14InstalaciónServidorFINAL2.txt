@@ -1,0 +1,326 @@
+Flujo y Dockerfiles para que funcionen 100% nativo en Windows Server 2022, usando 
+imágenes Windows (servercore:ltsc2022) para backend y frontend, sin necesidad de WSL2 ni Linux containers. 
+También adaptaremos Node y Nginx para Windows.
+
+🔹 Flujo completo de desarrollo y producción (React + Vite + Express + Docker Compose) — Windows Server2022 nativo
+0️⃣ Idea clave
+
+    Desarrollo: React + Vite y Express ESM sin Docker.
+    Producción: Imágenes Docker construidas por GitHub Actions; el servidor solo ejecuta contenedores Windows, no necesita Node, npm ni Vite.
+
+🧱 0️⃣0️⃣ Requisitos previos para Windows Server 2022
+Edición Standard o Datacenter ✅
+Acceso como Administrador
+Windows actualizado
+PowerShell como Administrador
+
+🐳 0️⃣1️⃣ Instalar feature Containers
+    Install-WindowsFeature -Name Containers
+    Restart-Computer
+
+🐳 0️⃣2️⃣ Instalar Docker Engine y Docker Compose
+    # Descargar script oficial de Microsoft
+    Invoke-WebRequest `
+    "https://raw.githubusercontent.com/microsoft/Windows-Containers/Main/helpful_tools/Install-DockerCE/install-docker-ce.ps1" `
+    -UseBasicParsing -OutFile install-docker-ce.ps1
+
+    # Ejecutar instalación
+    .\install-docker-ce.ps1
+    Restart-Computer
+
+Verificar instalación:
+    docker version
+    docker compose version
+    docker info | Select-String OSType
+
+Debe mostrar: OSType: windows ✅
+Prueba de contenedor Windows nativo:
+    docker run mcr.microsoft.com/windows/nanoserver:ltsc2022 cmd /c echo OK
+
+Si imprime OK, Docker Engine y Compose funcionan correctamente.
+
+1️⃣ Estructura del proyecto (en tu PC)
+myapp/
+├─ frontend/          ← React + Vite
+│  ├─ src/            ← código React
+│  ├─ public/         ← archivos estáticos
+│  ├─ package.json
+│  ├─ vite.config.js
+│  ├─ Dockerfile      ← PRODUCCIÓN: usado solo por GitHub Actions
+│  └─ nginx.conf      ← PRODUCCIÓN Windows
+├─ backend/           ← Express ESM
+│  ├─ server.js
+│  ├─ package.json
+│  └─ Dockerfile      ← PRODUCCIÓN: usado solo por GitHub Actions
+├─ docker-compose.yml  ← PRODUCCIÓN en servidor
+├─ .env.example       ← variables sensibles de producción
+└─ .gitignore
+
+.gitignore recomendado:
+    node_modules
+    frontend/dist
+    .env
+
+2️⃣ Desarrollo en tu PC
+
+Frontend:
+    cd frontend
+    npm install
+    npm run dev
+
+React + Vite corre en: http://localhost:5173
+
+Backend:
+    cd backend
+    npm install
+    node server.js
+
+Express corre en: http://localhost:3000
+⚠️ En desarrollo NO se usan Dockerfiles ni Docker.
+
+3️⃣ Dockerfiles para producción (Windows)
+Frontend Dockerfile (frontend/Dockerfile)
+    # Build stage (Windows Node)
+    FROM mcr.microsoft.com/windows/servercore:ltsc2022 AS build
+    WORKDIR C:\app
+
+    # Instalar Node.js 18 para Windows
+    RUN powershell -Command `
+        Invoke-WebRequest https://nodejs.org/dist/v18.20.1/node-v18.20.1-x64.msi -OutFile nodejs.msi; `
+        Start-Process msiexec.exe -ArgumentList '/i','nodejs.msi','/quiet','/norestart' -Wait; `
+        Remove-Item nodejs.msi -Force
+
+    COPY package*.json ./
+    RUN npm install
+
+    COPY . .
+    RUN npm run build
+
+    # Runtime stage (Nginx Windows)
+    FROM mcr.microsoft.com/windows/servercore:ltsc2022
+    WORKDIR C:\app
+
+    # Instalar Nginx para Windows
+    RUN powershell -Command `
+        Invoke-WebRequest https://nginx.org/download/nginx-1.25.2.zip -OutFile nginx.zip; `
+        Expand-Archive nginx.zip -DestinationPath C:\nginx; `
+        Remove-Item nginx.zip
+
+    COPY --from=build C:\app\dist C:\nginx\html
+    COPY nginx.conf C:\nginx\conf\nginx.conf
+
+    EXPOSE 80
+    CMD ["C:\\nginx\\nginx.exe", "-g", "daemon off;"]
+
+Backend Dockerfile (backend/Dockerfile)
+    FROM mcr.microsoft.com/windows/servercore:ltsc2022
+    WORKDIR C:\app
+
+    # Instalar Node.js 18 para Windows
+    RUN powershell -Command `
+        Invoke-WebRequest https://nodejs.org/dist/v18.20.1/node-v18.20.1-x64.msi -OutFile nodejs.msi; `
+        Start-Process msiexec.exe -ArgumentList '/i','nodejs.msi','/quiet','/norestart' -Wait; `
+        Remove-Item nodejs.msi -Force
+
+    COPY package*.json ./
+    RUN npm install --production
+
+    COPY . .
+    EXPOSE 3000
+    CMD ["node", "server.js"]
+
+Nginx config (frontend/nginx.conf)
+    worker_processes  1;
+    events { worker_connections 1024; }
+
+    http {
+        include       mime.types;
+        default_type  application/octet-stream;
+
+        sendfile        on;
+        keepalive_timeout  65;
+
+        server {
+            listen 80;
+            server_name _;
+
+            root C:/nginx/html;
+            index index.html;
+
+            location / {
+                try_files $uri /index.html;
+            }
+
+            location /api/ {
+                proxy_pass http://backend:3000/;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+        }
+    }
+
+4️⃣ Subir el código a GitHub
+    git init
+    git add .
+    git commit -m "Initial commit"
+    git push origin main
+
+El repo final contiene:
+    Código frontend y backend
+    Dockerfiles para producción (Windows)
+    nginx.conf
+    .env.example
+
+5️⃣ GitHub Actions — Build y push
+
+Workflow .github/workflows/build-and-push.yml sigue igual, ya que las builds se hacen en Ubuntu/Linux en Actions, 
+solo se crean imágenes Windows para producción.
+Archivo de workflow: .github/workflows/build-and-push.yml
+    name: Build and Push Docker Images
+
+    on:
+    push:
+        branches:
+        - main
+
+    jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        env:
+        REGISTRY: ghcr.io/usuario
+
+        # --- Checkout repository---
+        steps:
+        - name: Checkout repository
+            uses: actions/checkout@v3
+
+        # --- Set up Node.js---
+        - name: Set up Node.js
+            uses: actions/setup-node@v3
+            with:
+                node-version: 18
+
+        # --- Frontend Build---
+        - name: Install frontend dependencies
+            run: |
+                cd frontend
+                npm ci
+
+        - name: Build frontend
+            run: |
+                cd frontend
+                npm run build
+
+        - name: Build frontend Docker image
+            run: |
+            docker build -t $REGISTRY/frontend:latest ./frontend
+
+        - name: Log in to GitHub Container Registry
+            uses: docker/login-action@v2
+            with:
+                registry: ghcr.io
+                username: ${{ github.actor }}
+                password: ${{ secrets.GHCR_TOKEN }}
+
+        - name: Push frontend image
+            run: |
+                docker push $REGISTRY/frontend:latest
+
+        # --- Backend Build---
+        - name: Install backend dependencies
+            run: |
+                cd backend
+                npm ci --production
+
+        - name: Build backend Docker image
+            run: |
+                docker build -t $REGISTRY/backend:latest ./backend
+
+        - name: Push backend image
+            run: |
+                docker push $REGISTRY/backend:latest
+
+
+🔑 GHCR_TOKEN debe configurarse como secret en GitHub.
+También se puede usar Docker Hub cambiando login y registry.
+
+6️⃣ Preparar el servidor Windows Server 2022
+Instalar Docker Engine y Docker Compose
+No instalar Node, npm ni Vite
+Crear directorio para ejecutar Compose:
+    C:\projects\myapp
+    ├─ docker-compose.yml
+    ├─ .env
+
+7️⃣ Docker Compose para producción (docker-compose.yml)
+    version: "3.9"
+
+    services:
+    frontend:
+        image: ghcr.io/usuario/frontend:latest
+        container_name: frontend
+        ports:
+        - "80:80"
+        depends_on:
+        - backend
+        networks:
+        - myapp-network
+
+    backend:
+        image: ghcr.io/usuario/backend:latest
+        container_name: backend
+        environment:
+        - SUPABASE_URL=${SUPABASE_URL}
+        - SUPABASE_KEY=${SUPABASE_KEY}
+        networks:
+        - myapp-network
+
+    networks:
+    myapp-network:
+        driver: nat
+
+driver: nat es la recomendación para redes Windows containers.
+Variables de Supabase se definen en .env:
+    SUPABASE_URL=https://xxxx.supabase.co
+    SUPABASE_KEY=xxxx
+
+8️⃣ Ejecutar Docker en el servidor
+    cd C:\projects\myapp
+    docker pull ghcr.io/usuario/frontend:latest
+    docker pull ghcr.io/usuario/backend:latest
+    docker compose up -d
+
+✅ El servidor solo ejecuta contenedores Windows, no necesita Node, npm ni Vite ni Dockerfiles.
+
+9️⃣ Estructura final en el servidor
+    C:\projects\myapp
+    ├─ frontend/
+    │  ├─ Dockerfile       ← PRODUCCIÓN: usado solo por GitHub Actions
+    │  └─ nginx.conf
+    ├─ backend/
+    │  ├─ server.js
+    │  ├─ package.json
+    │  └─ Dockerfile       ← PRODUCCIÓN: usado solo por GitHub Actions
+    ├─ docker-compose.yml
+    └─ .env
+
+dist/ NO existe en el servidor.
+Frontend corre React build servido por Nginx dentro del contenedor.
+Backend corre Express dentro del contenedor.
+
+🔟 Resumen visual del flujo
+Entorno     	Qué pasa
+PC (desarrollo)	React + Vite (npm run dev), Node backend (node server.js) ✅
+GitHub Actions	Construye dist, crea imágenes Docker Windows usando Dockerfiles ✅
+Servidor	    Docker Compose levanta contenedores Windows ✅, no necesita Node/Vite ❌
+
+✅ Frase clave:
+En desarrollo no se usan Dockerfiles ni Docker.
+Dockerfiles existen en el repo para GitHub Actions, y el servidor solo ejecuta contenedores Windows desde PowerShell.
+
+Si quieres, puedo hacer ahora un diagrama visual actualizado del flujo Windows Server 2022 con contenedores Windows, para que quede 100% claro de un vistazo cómo funciona todo.
+
+¿Quieres que haga ese diagrama?

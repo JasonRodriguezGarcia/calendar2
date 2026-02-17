@@ -145,17 +145,14 @@ const EntityHolidaysComponent = () => {
     }, [usuarios, events])
 
     const HandleExportVacacionesToExcelAll = (eventos, fecha) => {
-        if (eventos.length === 0) {
+        const hayVacaciones = eventos.filter(evento => evento.start.getFullYear() === fecha.getFullYear() && evento.start.getMonth() === fecha.getMonth())
+        if (hayVacaciones.length === 0) {
             console.log("No hay Eventos")
             openDialog('dialogHolidays')
             return
         }
-        // Filtramos eventos por la fecha que nos pasan
-        const eventsFiltered = eventos.filter(ev => 
-                                ev.start.getFullYear() === fecha.getFullYear() &&
-                                ev.start.getMonth() === fecha.getMonth()
-                            )
-        exportVacacionesToExcel(formattedAll(eventsFiltered, fecha), fecha)
+        
+        exportVacacionesToExcel(formattedAll(eventos, fecha), fecha)
     }
 
     return (

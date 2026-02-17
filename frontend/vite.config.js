@@ -11,7 +11,7 @@ export default defineConfig({
   esbuild: {
     jsx: 'automatic'  // 🔧 Esto fuerza el uso del nuevo JSX transform y anula el warning inicial
   },
-  // Añadido esto para optimizar el bundle al compilar Frontend en Reder
+  // Añadido esto para optimizar el bundle al compilar Frontend en Render
   build: {
     chunkSizeWarningLimit: 1000, // opcional (solo para que no moleste el warning)
     rollupOptions: {

@@ -141,27 +141,27 @@ const App = () => {
         logged, setLogged, user, setUser,
     }} >  
         <BrowserRouter>
-        <Suspense fallback={<div>Cargando...</div>}>
-            <Routes>
-                <Route path="/" element={<MainPage />} />
-                <Route path="/eventos" element={<EventsCalendarPage />} />
-                <Route path="/holidays" element={<HolidaysPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignUpPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/editprofile" element={<EditProfilePage />} />
-                <Route path="/changepassword" element={<ChangePasswordPage />} />
-                <Route path="/entityevents" element={<EntityEventsCalendarPage />} />
-                <Route path="/entityholidays" element={<EntityHolidaysPage />} />
-                <Route path="/winterafternoons" element={<WinterAfternoonsPage />} />
-                <Route path="/contacts" element={<ContactsPage />} />
-                <Route path="/passwordrecovery" element={<PasswordRecoveryPage />} />
-                <Route path="/newpassword/:token" element={<NewPasswordPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/admin" element={<AdminPage />} />
-                <Route path="/hash" element={<TextHashPage />} />
-            </Routes>
-        </Suspense>
+            <Suspense fallback={<div>Cargando...</div>}>
+                <Routes>
+                    <Route path="/" element={<MainPage />} />
+                    <Route path="/eventos" element={<EventsCalendarPage />} />
+                    <Route path="/holidays" element={<HolidaysPage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/signup" element={<SignUpPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/editprofile" element={<EditProfilePage />} />
+                    <Route path="/changepassword" element={<ChangePasswordPage />} />
+                    <Route path="/entityevents" element={<EntityEventsCalendarPage />} />
+                    <Route path="/entityholidays" element={<EntityHolidaysPage />} />
+                    <Route path="/winterafternoons" element={<WinterAfternoonsPage />} />
+                    <Route path="/contacts" element={<ContactsPage />} />
+                    <Route path="/passwordrecovery" element={<PasswordRecoveryPage />} />
+                    <Route path="/newpassword/:token" element={<NewPasswordPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/admin" element={<AdminPage />} />
+                    <Route path="/hash" element={<TextHashPage />} />
+                </Routes>
+            </Suspense>
         </BrowserRouter>  
     </AppContext.Provider>
     )

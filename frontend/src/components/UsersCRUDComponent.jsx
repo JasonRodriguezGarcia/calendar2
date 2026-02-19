@@ -336,11 +336,13 @@ const UsersCRUDComponent = ({ action }) => {
                 setErrorMessage(t("error.message8"))
                 return
             }
+            debugger
             if (action !== "create") { // Si no estamos creando, actualizamos datos usuario en frontend
                 const usuario = {
                     id: resultado.usuario_id,
                     nombre_apellidos: formUserData.userNombre_Apellidos.toUpperCase(),
-                    emailUsuario: resultado.email
+                    emailUsuario: resultado.email,
+                    role: resultado.role
                 }
                 setUser(usuario)
                 navigate('/', { replace: true })

@@ -27,6 +27,7 @@ import {
 import { colorOptions } from "../utils/EventColors";
 
 const UsersCRUDComponent = ({ action }) => {
+    const VITE_EMAIL_CHECK = import.meta.env.VITE_EMAIL_CHECK
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("userscrud")
     const { csrfToken, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect } = useContext(AppContext)
@@ -278,7 +279,7 @@ const UsersCRUDComponent = ({ action }) => {
             navigate(`/`, { replace: true })
             return
         }
-        if (!formUserData.userEmail.includes("@erroak.sartu.org") || formUserData.userEmail.length < 18) {
+        if (!formUserData.userEmail.includes(VITE_EMAIL_CHECK) || formUserData.userEmail.length < 18) {
             setErrorMessage(t("error.message5"))
             return
         }

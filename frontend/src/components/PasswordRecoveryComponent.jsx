@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 
 const PasswordRecoveryComponent = () => {
+    const VITE_EMAIL_CHECK = import.meta.env.VITE_EMAIL_CHECK
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
     const { t, i18n } = useTranslation("passwordrecovery")
     const { logged } = useContext(AppContext)
@@ -48,7 +49,7 @@ const PasswordRecoveryComponent = () => {
 
     const handlePasswordRecovery = async (e) => {
         e.preventDefault()
-        if (userEmail.length < 18 && !userEmail.includes("@erroak.sartu.org")) {
+        if (userEmail.length < 18 && !userEmail.includes(VITE_EMAIL_CHECK)) {
             setErrorMessage(t("error.message1"))
             return
         }

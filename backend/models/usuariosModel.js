@@ -125,11 +125,10 @@ export async function postRecoveryPassword(recoveryPasswordDetails) {
                 { expiresIn: '1h', algorithm: 'HS256' },
             )
             const resetLink = `${FRONTEND_URL_RENDER}/newpassword/${tokenRecovery}`
-
+            const EMAIL_TO = process.env.EMAIL_TO
             const data = {
                 from: "Mi App <no-reply@tu-dominio.com>",
-                // to: useremail,
-                to: "arandia@erroak.sartu.org",
+                to: EMAIL_TO,
                 subject: emailmsg.subject,
                 text: "email enviado",
                 html: `

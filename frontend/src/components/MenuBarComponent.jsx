@@ -36,7 +36,7 @@ import HomeIcon from '@mui/icons-material/Home';
 
 const MenuBarComponent = () => {
     const VITE_BACKEND_URL_RENDER = import.meta.env.VITE_BACKEND_URL_RENDER
-    const { logged, setLogged, user, setUser, selectedLanguage, setSelectedLanguage, languagesSelect } = useContext(AppContext)
+    const { logged, setLogged, user, setUser, setToken, selectedLanguage, setSelectedLanguage, languagesSelect } = useContext(AppContext)
     const { setIsLoading, WaitingMessage } = useLoading()
     const navigate = useNavigate()
 
@@ -75,6 +75,7 @@ const MenuBarComponent = () => {
                 // localStorage.removeItem("token")
                 setLogged(false)
                 setUser({})
+                setToken("")
                 setIsLoading(true)
                 try {
                     const response = await fetch(

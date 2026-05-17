@@ -18,8 +18,7 @@ Web para el uso de calendario minimalista adaptado a los requerimientos requerid
 - Uso de Context para un mejor manejo de los props
 
 En la siguiente versión que es Calendar3 se añade:
-- El poder guardar hasta X ficheros en el evento, ficheros que estarían disponibles en modo lectura para el resto de usuario, lo que permite
-  que otros puedan ver ficheros excel, word y pdf con apuntes del día, actas de la reunión, otros, ...
+- El poder guardar hasta X ficheros en el evento, ficheros que estarían disponibles en modo lectura para el resto de usuarios, lo que permite que otros puedan ver ficheros excel, word y pdf con apuntes del día, actas de la reunión, otros, ...
 - Uso de IA para verificar que los datos introducidos sean ofensivos, otros, ...
 - Validación de datos en backend
 - Optimización del control de errores
